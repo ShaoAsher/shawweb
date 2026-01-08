@@ -25,6 +25,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      - name: Verify directory exists
+        run: |
+          if [ ! -d "apkTools_release" ]; then
+            echo "Error: apkTools_release directory not found"
+            exit 1
+          fi
+          ls -la apkTools_release/
+          echo "Directory verified successfully"
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
