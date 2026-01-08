@@ -159,7 +159,30 @@
       word-break: break-all;
       white-space: pre-wrap;
       font-family: 'Courier New', monospace;
-      font-size: 14px
+      font-size: 14px;
+      user-select: text;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text
+    }
+
+    .input-box-wrapper,
+    .output-box-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column
+    }
+
+    .input-box-buttons,
+    .output-box-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px
+    }
+
+    .input-box-buttons .btn,
+    .output-box-buttons .btn {
+      flex: 1
     }
 
     .input-output-grid {
@@ -273,25 +296,33 @@
       </div>
 
       <div class="form-section">
+        <h2>加密参数</h2>
+        <div class="controls-grid" id="algorithmControls"></div>
+      </div>
+
+      <div class="form-section">
         <h2>输入与输出</h2>
         <div class="input-output-grid">
-          <div class="form-group">
-            <label for="inputText">输入文本</label>
-            <textarea id="inputText" placeholder="请输入要加密/解密的内容..."></textarea>
+          <div class="input-box-wrapper">
+            <div class="form-group">
+              <label for="inputText">输入文本</label>
+              <textarea id="inputText" placeholder="请输入要加密/解密的内容..."></textarea>
+            </div>
+            <div class="input-box-buttons">
+              <button class="btn btn-secondary" id="clearBtn">清空</button>
+              <button class="btn btn-encrypt" id="encryptBtn">🔒 加密</button>
+              <button class="btn btn-decrypt" id="decryptBtn">🔓 解密</button>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="outputText">输出结果</label>
-            <div class="result-area" id="outputText"></div>
+          <div class="output-box-wrapper">
+            <div class="form-group">
+              <label for="outputText">输出结果</label>
+              <div class="result-area" id="outputText" contenteditable="false"></div>
+            </div>
+            <div class="output-box-buttons">
+              <button class="btn btn-secondary" id="copyBtn">复制结果</button>
+            </div>
           </div>
-        </div>
-        <div class="controls-grid" id="algorithmControls"></div>
-        <div class="action-buttons">
-          <button class="btn btn-encrypt" id="encryptBtn">🔒 加密</button>
-          <button class="btn btn-decrypt" id="decryptBtn">🔓 解密</button>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:10px">
-          <button class="btn btn-secondary" id="clearBtn" style="flex:1">清空</button>
-          <button class="btn btn-secondary" id="copyBtn" style="flex:1">复制结果</button>
         </div>
         <div class="status" id="status"></div>
       </div>
