@@ -247,7 +247,7 @@
       sha1: { name: 'SHA-1 哈希', type: 'hash', needsKey: false },
       sha256: { name: 'SHA-256 哈希', type: 'hash', needsKey: false },
       sha512: { name: 'SHA-512 哈希', type: 'hash', needsKey: false },
-      aes: { name: 'AES 加密', type: 'crypto', needsKey: true },
+      aes: { name: 'AES 加密', type: 'crypto', needsKey: true, hasOptions: true },
       caesar: { name: '凯撒密码', type: 'crypto', needsKey: true },
       morse: { name: '摩斯密码', type: 'encode', needsKey: false }
     };
@@ -312,6 +312,35 @@
           </select>
         `;
         algorithmControls.appendChild(modeGroup);
+
+        const aesModeGroup = document.createElement('div');
+        aesModeGroup.className = 'form-group';
+        aesModeGroup.innerHTML = `
+          <label for="aesMode">AES 模式</label>
+          <select id="aesMode">
+            <option value="GCM" selected>GCM (Galois/Counter Mode) - 推荐，支持认证</option>
+            <option value="CBC">CBC (Cipher Block Chaining)</option>
+            <option value="CTR">CTR (Counter Mode)</option>
+            <option value="CFB">CFB (Cipher Feedback)</option>
+            <option value="OFB">OFB (Output Feedback)</option>
+            <option value="KW">KW (Key Wrap)</option>
+          </select>
+          <div class="info-text">GCM 最安全（支持认证），CBC/CTR 兼容性好</div>
+        `;
+        algorithmControls.appendChild(aesModeGroup);
+
+        const keyLengthGroup = document.createElement('div');
+        keyLengthGroup.className = 'form-group';
+        keyLengthGroup.innerHTML = `
+          <label for="aesKeyLength">密钥长度</label>
+          <select id="aesKeyLength">
+            <option value="128">128 位 (16 字节) - 较快</option>
+            <option value="192">192 位 (24 字节)</option>
+            <option value="256" selected>256 位 (32 字节) - 最安全</option>
+          </select>
+          <div class="info-text">密钥长度越长越安全，但加密速度稍慢</div>
+        `;
+        algorithmControls.appendChild(keyLengthGroup);
       } else if (algo.type === 'encode') {
         const modeGroup = document.createElement('div');
         modeGroup.className = 'form-group';
@@ -320,6 +349,17 @@
           <select id="operationMode">
             <option value="encode">编码</option>
             <option value="decode">解码</option>
+          </select>
+        `;
+        algorithmControls.appendChild(modeGroup);
+      } else if (algo.type === 'crypto') {
+        const modeGroup = document.createElement('div');
+        modeGroup.className = 'form-group';
+        modeGroup.innerHTML = `
+          <label for="operationMode">操作模式</label>
+          <select id="operationMode">
+            <option value="encrypt">加密</option>
+            <option value="decrypt">解密</option>
           </select>
         `;
         algorithmControls.appendChild(modeGroup);
@@ -349,7 +389,12 @@
             return;
           }
           const mode = document.getElementById('operationMode')?.value || 'encrypt';
-          result = await handleCrypto(currentAlgorithm, input, key, mode);
+          const options = {};
+          if (currentAlgorithm === 'aes') {
+            options.aesMode = document.getElementById('aesMode')?.value || 'GCM';
+            options.keyLength = parseInt(document.getElementById('aesKeyLength')?.value || '256');
+          }
+          result = await handleCrypto(currentAlgorithm, input, key, mode, options);
         }
 
         outputText.textContent = result;
@@ -616,10 +661,12 @@
       return (rhex(a) + rhex(b) + rhex(c) + rhex(d)).toLowerCase();
     }
 
-    async function handleCrypto(algorithm, input, key, mode) {
+    async function handleCrypto(algorithm, input, key, mode, options = {}) {
       switch (algorithm) {
         case 'aes':
-          return await aesCrypto(input, key, mode);
+          const aesMode = options.aesMode || 'GCM';
+          const keyLength = options.keyLength || 256;
+          return await aesCrypto(input, key, mode, aesMode, keyLength);
         case 'caesar':
           return caesarCipher(input, parseInt(key) || 3, mode);
         default:
@@ -627,33 +674,153 @@
       }
     }
 
-    async function aesCrypto(text, password, mode) {
+    async function aesCrypto(text, password, mode, aesMode, keyLength) {
       const encoder = new TextEncoder();
       const decoder = new TextDecoder();
+      
+      // 确定 IV 长度和算法名称（不同模式需要不同长度的 IV）
+      let ivLength = 16; // 默认 16 字节
+      let algorithmName;
+      
+      if (aesMode === 'GCM') {
+        ivLength = 12; // GCM 推荐使用 12 字节 IV
+        algorithmName = 'AES-GCM';
+      } else if (aesMode === 'CBC') {
+        ivLength = 16; // CBC 使用 16 字节 IV
+        algorithmName = 'AES-CBC';
+      } else if (aesMode === 'CTR') {
+        ivLength = 16; // CTR 使用 16 字节 IV
+        algorithmName = 'AES-CTR';
+      } else if (aesMode === 'CFB') {
+        ivLength = 16; // CFB 使用 16 字节 IV
+        algorithmName = 'AES-CFB';
+      } else if (aesMode === 'OFB') {
+        ivLength = 16; // OFB 使用 16 字节 IV
+        algorithmName = 'AES-OFB';
+      } else {
+        // 默认使用 GCM
+        ivLength = 12;
+        algorithmName = 'AES-GCM';
+      }
+
       const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
       const salt = crypto.getRandomValues(new Uint8Array(16));
-      const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+      
+      // 创建密钥配置
+      const keyConfig = { name: algorithmName, length: keyLength };
+      
+      const key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+        keyMaterial,
+        keyConfig,
+        false,
+        ['encrypt', 'decrypt']
+      );
 
       if (mode === 'encrypt') {
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, encoder.encode(text));
-        const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+        let iv = null;
+        let encryptParams = {};
+        
+        if (aesMode === 'GCM') {
+          iv = crypto.getRandomValues(new Uint8Array(12));
+          encryptParams = { name: 'AES-GCM', iv: iv };
+        } else if (aesMode === 'CBC') {
+          iv = crypto.getRandomValues(new Uint8Array(16));
+          encryptParams = { name: 'AES-CBC', iv: iv };
+        } else if (aesMode === 'CTR') {
+          iv = crypto.getRandomValues(new Uint8Array(16));
+          encryptParams = { name: 'AES-CTR', counter: iv, length: 128 };
+        } else if (aesMode === 'CFB') {
+          iv = crypto.getRandomValues(new Uint8Array(16));
+          encryptParams = { name: 'AES-CFB', iv: iv };
+        } else if (aesMode === 'OFB') {
+          iv = crypto.getRandomValues(new Uint8Array(16));
+          encryptParams = { name: 'AES-OFB', iv: iv };
+        } else {
+          // 默认使用 GCM
+          iv = crypto.getRandomValues(new Uint8Array(12));
+          encryptParams = { name: 'AES-GCM', iv: iv };
+        }
+
+        const encrypted = await crypto.subtle.encrypt(encryptParams, key, encoder.encode(text));
+        
+        // 组合 salt + iv + encrypted data
+        const ivSize = iv.length;
+        const combined = new Uint8Array(salt.length + ivSize + encrypted.byteLength);
         combined.set(salt, 0);
         combined.set(iv, salt.length);
-        combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-        return btoa(String.fromCharCode(...combined));
+        combined.set(new Uint8Array(encrypted), salt.length + ivSize);
+        
+        // 添加元数据标识（salt长度 + iv长度 + 模式 + 密钥长度）
+        const metadata = {
+          saltLen: salt.length,
+          ivLen: ivSize,
+          mode: aesMode,
+          keyLen: keyLength
+        };
+        const metadataStr = JSON.stringify(metadata);
+        const metadataBytes = encoder.encode(metadataStr);
+        const metadataLen = new Uint8Array(2);
+        metadataLen[0] = (metadataBytes.length >> 8) & 0xFF;
+        metadataLen[1] = metadataBytes.length & 0xFF;
+        
+        const final = new Uint8Array(2 + metadataBytes.length + combined.length);
+        final.set(metadataLen, 0);
+        final.set(metadataBytes, 2);
+        final.set(combined, 2 + metadataBytes.length);
+        
+        return btoa(String.fromCharCode(...final));
       } else {
         try {
-          const combined = Uint8Array.from(atob(text), c => c.charCodeAt(0));
-          const salt = combined.slice(0, 16);
-          const iv = combined.slice(16, 28);
-          const encrypted = combined.slice(28);
+          // 解码并提取元数据
+          const allData = Uint8Array.from(atob(text), c => c.charCodeAt(0));
+          const metadataLen = (allData[0] << 8) | allData[1];
+          const metadataStr = decoder.decode(allData.slice(2, 2 + metadataLen));
+          const metadata = JSON.parse(metadataStr);
+          const dataStart = 2 + metadataLen;
+          
+          const salt = allData.slice(dataStart, dataStart + metadata.saltLen);
+          const ivStart = dataStart + metadata.saltLen;
+          const iv = allData.slice(ivStart, ivStart + metadata.ivLen);
+          const encrypted = allData.slice(ivStart + metadata.ivLen);
+          
+          const storedMode = metadata.mode || aesMode;
+          const storedKeyLen = metadata.keyLen || keyLength;
+          
+          // 重新派生密钥
+          const keyConfig = { name: `AES-${storedMode}`, length: storedKeyLen };
+          
           const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
-          const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
-          const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, encrypted);
+          const key = await crypto.subtle.deriveKey(
+            { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+            keyMaterial,
+            keyConfig,
+            false,
+            ['encrypt', 'decrypt']
+          );
+          
+          // 根据存储的模式创建解密参数
+          let decryptParams = {};
+          if (storedMode === 'GCM') {
+            decryptParams = { name: 'AES-GCM', iv: iv };
+          } else if (storedMode === 'CBC') {
+            decryptParams = { name: 'AES-CBC', iv: iv };
+          } else if (storedMode === 'CTR') {
+            decryptParams = { name: 'AES-CTR', counter: iv, length: 128 };
+          } else if (storedMode === 'CFB') {
+            decryptParams = { name: 'AES-CFB', iv: iv };
+          } else if (storedMode === 'OFB') {
+            decryptParams = { name: 'AES-OFB', iv: iv };
+          } else {
+            // 默认使用 GCM
+            decryptParams = { name: 'AES-GCM', iv: iv };
+          }
+          
+          const decrypted = await crypto.subtle.decrypt(decryptParams, key, encrypted);
           return decoder.decode(decrypted);
         } catch (e) {
-          throw new Error('解密失败，请检查密钥和密文是否正确');
+          console.error('解密错误:', e);
+          throw new Error('解密失败，请检查密钥、模式和密文是否正确。错误：' + e.message);
         }
       }
     }
