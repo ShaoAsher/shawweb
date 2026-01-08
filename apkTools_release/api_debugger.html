@@ -545,7 +545,8 @@
                 <button onclick="parseBatchParams('colon')">批量导入（冒号格式）</button>
                 <button onclick="exportBatchParams()">批量导出</button>
               </div>
-              <textarea id="batchParamsInput" placeholder='逗号格式：key1=value1,key2=value2&#10;冒号格式：key1:value1&#10;key2:value2'></textarea>
+              <textarea id="batchParamsInput"
+                placeholder='逗号格式：key1=value1,key2=value2&#10;冒号格式：key1:value1&#10;key2:value2'></textarea>
             </div>
             <div class="headers-list" id="paramsList">
               <div class="param-item">
@@ -709,7 +710,7 @@
       `;
       list.appendChild(item);
       // 监听类型变化
-      item.querySelector('.param-type').addEventListener('change', function() {
+      item.querySelector('.param-type').addEventListener('change', function () {
         const valueInput = item.querySelector('.param-value');
         if (this.value === 'file') {
           const fileInput = document.createElement('input');
@@ -724,7 +725,7 @@
             <span class="file-name"></span>
           `;
           valueInput.replaceWith(wrapper);
-          wrapper.querySelector('.param-file').addEventListener('change', function(e) {
+          wrapper.querySelector('.param-file').addEventListener('change', function (e) {
             wrapper.querySelector('.file-name').textContent = e.target.files[0]?.name || '';
           });
         } else {
@@ -750,12 +751,12 @@
       document.querySelectorAll('.param-item').forEach(item => {
         const checkbox = item.querySelector('input[type="checkbox"]');
         if (!checkbox.checked) return;
-        
+
         const key = item.querySelector('.param-key').value.trim();
         const type = item.querySelector('.param-type').value;
-        
+
         if (!key) return;
-        
+
         if (type === 'file') {
           const fileInput = item.querySelector('.param-file');
           if (fileInput && fileInput.files.length > 0) {
