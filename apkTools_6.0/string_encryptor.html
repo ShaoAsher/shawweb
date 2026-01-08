@@ -567,7 +567,17 @@
           if (mode === 'encode') {
             return Array.from(input).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
           } else {
-            return input.split(' ').map(h => String.fromCharCode(parseInt(h, 16))).join('');
+            // 支持空格分隔或连续Hex字符串
+            const hexStr = input.replace(/\s+/g, '');
+            if (hexStr.length % 2 !== 0) {
+              throw new Error('Hex字符串长度必须是偶数');
+            }
+            let result = '';
+            for (let i = 0; i < hexStr.length; i += 2) {
+              const hex = hexStr.substr(i, 2);
+              result += String.fromCharCode(parseInt(hex, 16));
+            }
+            return result;
           }
         case 'unicode':
           if (mode === 'encode') {
@@ -589,9 +599,13 @@
           const reverseMorse = {};
           Object.keys(morseCode).forEach(k => reverseMorse[morseCode[k]] = k);
           if (mode === 'encode') {
-            return input.toUpperCase().split('').map(c => morseCode[c] || c).join(' ').replace(/  +/g, ' / ');
+            return input.toUpperCase().split('').map(c => morseCode[c] || (c === ' ' ? '/' : c)).join(' ').replace(/  +/g, ' / ');
           } else {
-            return input.split(' ').map(m => reverseMorse[m] || (m === '/' ? ' ' : m)).join('');
+            // 处理摩斯密码解码，支持 / 作为单词分隔符
+            return input.split(/[\s\/]+/).map(m => {
+              if (m === '' || m === '/') return ' ';
+              return reverseMorse[m] || m;
+            }).join('').replace(/\s+/g, ' ');
           }
         default:
           throw new Error('不支持的编码算法');
@@ -929,20 +943,15 @@
         if (aesMode === 'GCM') {
           encryptParams = { name: 'AES-GCM', iv: iv };
         } else if (aesMode === 'CBC') {
-          iv = crypto.getRandomValues(new Uint8Array(16));
           encryptParams = { name: 'AES-CBC', iv: iv };
         } else if (aesMode === 'CTR') {
-          iv = crypto.getRandomValues(new Uint8Array(16));
           encryptParams = { name: 'AES-CTR', counter: iv, length: 128 };
         } else if (aesMode === 'CFB') {
-          iv = crypto.getRandomValues(new Uint8Array(16));
           encryptParams = { name: 'AES-CFB', iv: iv };
         } else if (aesMode === 'OFB') {
-          iv = crypto.getRandomValues(new Uint8Array(16));
           encryptParams = { name: 'AES-OFB', iv: iv };
         } else {
           // 默认使用 GCM
-          iv = crypto.getRandomValues(new Uint8Array(12));
           encryptParams = { name: 'AES-GCM', iv: iv };
         }
 
