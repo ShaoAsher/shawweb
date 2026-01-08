@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API 调试工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: #e9ecef;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .3s
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff
+    }
+
+    .tab-content {
+      display: none
+    }
+
+    .tab-content.active {
+      display: block
+    }
+
+    .form-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .form-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px
+    }
+
+    .form-group {
+      margin-bottom: 18px
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color .3s;
+      font-family: 'Courier New', monospace
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical
+    }
+
+    .request-line {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .request-line select {
+      width: 120px;
+      flex-shrink: 0
+    }
+
+    .request-line input {
+      flex: 1
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #07C160 0%, #42BD56 100%);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #FF0050 0%, #E83C3C 100%);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px
+    }
+
+    .headers-list {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 100px;
+      max-height: 200px;
+      overflow-y: auto
+    }
+
+    .header-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center
+    }
+
+    .header-item input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      font-size: 13px
+    }
+
+    .header-item button {
+      padding: 8px 12px;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px
+    }
+
+    .response-section {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px
+    }
+
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #dee2e6
+    }
+
+    .response-status {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px
+    }
+
+    .status-2xx {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .status-4xx {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .status-5xx {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .status-other {
+      background: #e2e3e5;
+      color: #383d41
+    }
+
+    .response-body {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all
+    }
+
+    .response-headers {
+      margin-bottom: 15px;
+      font-size: 12px;
+      color: #6c757d
+    }
+
+    .response-headers div {
+      margin-bottom: 5px
+    }
+
+    .ws-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px
+    }
+
+    .ws-status {
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px
+    }
+
+    .ws-status.connected {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .ws-status.disconnected {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .ws-status.connecting {
+      background: #fff3cd;
+      color: #856404
+    }
+
+    .ws-messages {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px
+    }
+
+    .ws-message {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border-left: 3px solid #667eea
+    }
+
+    .ws-message.sent {
+      background: #e7f3ff;
+      border-left-color: #1677FF
+    }
+
+    .ws-message.received {
+      background: #f0f9ff;
+      border-left-color: #07C160
+    }
+
+    .ws-message.error {
+      background: #fff5f5;
+      border-left-color: #FF0050
+    }
+
+    .ws-message-time {
+      font-size: 10px;
+      color: #6c757d;
+      margin-bottom: 4px
+    }
+
+    .history-section {
+      max-height: 300px;
+      overflow-y: auto;
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 10px
+    }
+
+    .history-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .2s;
+      border-left: 3px solid #667eea
+    }
+
+    .history-item:hover {
+      background: #e9ecef;
+      transform: translateX(5px)
+    }
+
+    .history-item-method {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 8px
+    }
+
+    .method-get {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .method-post {
+      background: #cce5ff;
+      color: #004085
+    }
+
+    .method-put {
+      background: #fff3cd;
+      color: #856404
+    }
+
+    .method-delete {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px
+    }
+
+    @media (max-width: 768px) {
+      .two-columns {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 API 调试工具</h1>
+      <p>支持 HTTP 请求和 WebSocket (WSS) 连接调试，类似 APIFOX</p>
+    </div>
+    <div class="content">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="http">HTTP 请求</button>
+        <button class="tab-btn" data-tab="websocket">WebSocket (WSS)</button>
+        <button class="tab-btn" data-tab="history">历史记录</button>
+      </div>
+
+      <!-- HTTP 请求标签页 -->
+      <div class="tab-content active" id="httpTab">
+        <div class="form-section">
+          <h2>请求配置</h2>
+          <div class="form-group">
+            <label>请求方法和 URL</label>
+            <div class="request-line">
+              <select id="httpMethod">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+                <option value="PATCH">PATCH</option>
+                <option value="HEAD">HEAD</option>
+                <option value="OPTIONS">OPTIONS</option>
+              </select>
+              <input type="text" id="httpUrl" placeholder="https://api.example.com/users" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>请求头</label>
+            <div class="headers-list" id="httpHeadersList">
+              <div class="header-item">
+                <input type="text" placeholder="Key" class="header-key" value="Content-Type">
+                <input type="text" placeholder="Value" class="header-value" value="application/json">
+                <button onclick="removeHeader(this)">删除</button>
+              </div>
+            </div>
+            <button class="btn btn-secondary" onclick="addHeader()"
+              style="margin-top: 10px; width: auto;">添加请求头</button>
+          </div>
+          <div class="form-group">
+            <label>请求体 (Body)</label>
+            <select id="bodyType" style="margin-bottom: 10px; width: auto;">
+              <option value="none">无 Body</option>
+              <option value="json" selected>JSON</option>
+              <option value="text">Text</option>
+              <option value="form">Form Data</option>
+              <option value="xml">XML</option>
+            </select>
+            <textarea id="httpBody" placeholder='{"key": "value"}'></textarea>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-success" id="sendHttpBtn">发送请求</button>
+            <button class="btn btn-secondary" onclick="clearHttpRequest()">清空</button>
+          </div>
+        </div>
+
+        <div class="response-section" id="httpResponse" style="display: none;">
+          <div class="response-header">
+            <h3>响应结果</h3>
+            <div>
+              <span class="response-status" id="responseStatus">200 OK</span>
+              <span id="responseTime" style="margin-left: 10px; color: #6c757d; font-size: 12px;"></span>
+            </div>
+          </div>
+          <div class="response-headers" id="responseHeaders"></div>
+          <div class="form-group">
+            <label>响应体</label>
+            <div class="response-body" id="responseBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WebSocket 标签页 -->
+      <div class="tab-content" id="websocketTab">
+        <div class="form-section">
+          <h2>WebSocket 连接</h2>
+          <div class="form-group">
+            <label>WebSocket URL (ws:// 或 wss://)</label>
+            <input type="text" id="wsUrl" placeholder="wss://echo.websocket.org" value="">
+          </div>
+          <div class="ws-controls">
+            <button class="btn btn-success" id="wsConnectBtn">连接</button>
+            <button class="btn btn-danger" id="wsDisconnectBtn" disabled>断开</button>
+            <span class="ws-status disconnected" id="wsStatus">未连接</span>
+          </div>
+          <div class="form-group">
+            <label>发送消息</label>
+            <textarea id="wsMessage" placeholder='输入要发送的消息，支持 JSON 格式'></textarea>
+            <button class="btn" id="wsSendBtn" disabled style="margin-top: 10px;">发送消息</button>
+          </div>
+          <div class="form-group">
+            <label>消息历史</label>
+            <div class="ws-messages" id="wsMessages"></div>
+            <button class="btn btn-secondary" onclick="clearWsMessages()"
+              style="margin-top: 10px; width: auto;">清空消息</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 历史记录标签页 -->
+      <div class="tab-content" id="historyTab">
+        <div class="form-section">
+          <h2>请求历史</h2>
+          <div class="history-section" id="historyList"></div>
+          <button class="btn btn-secondary" onclick="clearHistory()"
+            style="margin-top: 15px; width: auto;">清空历史</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 标签页切换
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tab + 'Tab').classList.add('active');
+      });
+    });
+
+    // HTTP 请求相关
+    let requestHistory = JSON.parse(localStorage.getItem('apiDebuggerHistory') || '[]');
+
+    function addHeader() {
+      const list = document.getElementById('httpHeadersList');
+      const item = document.createElement('div');
+      item.className = 'header-item';
+      item.innerHTML = `
+        <input type="text" placeholder="Key" class="header-key">
+        <input type="text" placeholder="Value" class="header-value">
+        <button onclick="removeHeader(this)">删除</button>
+      `;
+      list.appendChild(item);
+    }
+
+    function removeHeader(btn) {
+      btn.parentElement.remove();
+    }
+
+    function getHeaders() {
+      const headers = {};
+      document.querySelectorAll('.header-item').forEach(item => {
+        const key = item.querySelector('.header-key').value.trim();
+        const value = item.querySelector('.header-value').value.trim();
+        if (key && value) {
+          headers[key] = value;
+        }
+      });
+      return headers;
+    }
+
+    function clearHttpRequest() {
+      document.getElementById('httpUrl').value = '';
+      document.getElementById('httpBody').value = '';
+      document.getElementById('httpHeadersList').innerHTML = `
+        <div class="header-item">
+          <input type="text" placeholder="Key" class="header-key" value="Content-Type">
+          <input type="text" placeholder="Value" class="header-value" value="application/json">
+          <button onclick="removeHeader(this)">删除</button>
+        </div>
+      `;
+      document.getElementById('httpResponse').style.display = 'none';
+    }
+
+    document.getElementById('sendHttpBtn').addEventListener('click', async () => {
+      const method = document.getElementById('httpMethod').value;
+      const url = document.getElementById('httpUrl').value.trim();
+      const bodyType = document.getElementById('bodyType').value;
+      const body = document.getElementById('httpBody').value.trim();
+      const headers = getHeaders();
+
+      if (!url) {
+        alert('请输入 URL');
+        return;
+      }
+
+      const startTime = Date.now();
+      const requestConfig = {
+        method: method,
+        headers: headers
+      };
+
+      if (bodyType !== 'none' && body) {
+        if (bodyType === 'json') {
+          try {
+            JSON.parse(body);
+            requestConfig.body = body;
+          } catch (e) {
+            alert('JSON 格式错误：' + e.message);
+            return;
+          }
+        } else {
+          requestConfig.body = body;
+        }
+      }
+
+      try {
+        const response = await fetch(url, requestConfig);
+        const endTime = Date.now();
+        const duration = endTime - startTime;
+
+        // 保存到历史
+        const historyItem = {
+          method,
+          url,
+          timestamp: new Date().toISOString(),
+          status: response.status,
+          statusText: response.statusText
+        };
+        requestHistory.unshift(historyItem);
+        if (requestHistory.length > 50) requestHistory.pop();
+        localStorage.setItem('apiDebuggerHistory', JSON.stringify(requestHistory));
+        updateHistoryList();
+
+        // 显示响应
+        const responseHeaders = {};
+        response.headers.forEach((value, key) => {
+          responseHeaders[key] = value;
+        });
+
+        let responseBody = '';
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          try {
+            const json = await response.json();
+            responseBody = JSON.stringify(json, null, 2);
+          } catch (e) {
+            responseBody = await response.text();
+          }
+        } else {
+          responseBody = await response.text();
+        }
+
+        displayResponse(response.status, response.statusText, responseHeaders, responseBody, duration);
+      } catch (error) {
+        displayResponse(0, 'Error', {}, '请求失败：' + error.message, Date.now() - startTime);
+      }
+    });
+
+    function displayResponse(status, statusText, headers, body, duration) {
+      const responseDiv = document.getElementById('httpResponse');
+      const statusSpan = document.getElementById('responseStatus');
+      const timeSpan = document.getElementById('responseTime');
+      const headersDiv = document.getElementById('responseHeaders');
+      const bodyDiv = document.getElementById('responseBody');
+
+      statusSpan.textContent = status + ' ' + statusText;
+      statusSpan.className = 'response-status ';
+      if (status >= 200 && status < 300) {
+        statusSpan.className += 'status-2xx';
+      } else if (status >= 400 && status < 500) {
+        statusSpan.className += 'status-4xx';
+      } else if (status >= 500) {
+        statusSpan.className += 'status-5xx';
+      } else {
+        statusSpan.className += 'status-other';
+      }
+
+      timeSpan.textContent = `耗时: ${duration}ms`;
+
+      headersDiv.innerHTML = '<strong>响应头：</strong><br>';
+      Object.entries(headers).forEach(([key, value]) => {
+        headersDiv.innerHTML += `<div>${key}: ${value}</div>`;
+      });
+
+      bodyDiv.textContent = body;
+      responseDiv.style.display = 'block';
+    }
+
+    // WebSocket 相关
+    let ws = null;
+
+    document.getElementById('wsConnectBtn').addEventListener('click', () => {
+      const url = document.getElementById('wsUrl').value.trim();
+      if (!url) {
+        alert('请输入 WebSocket URL');
+        return;
+      }
+
+      try {
+        updateWsStatus('connecting', '连接中...');
+        ws = new WebSocket(url);
+
+        ws.onopen = () => {
+          updateWsStatus('connected', '已连接');
+          document.getElementById('wsConnectBtn').disabled = true;
+          document.getElementById('wsDisconnectBtn').disabled = false;
+          document.getElementById('wsSendBtn').disabled = false;
+          addWsMessage('系统', '连接成功', 'received');
+        };
+
+        ws.onmessage = (event) => {
+          addWsMessage('接收', event.data, 'received');
+        };
+
+        ws.onerror = (error) => {
+          addWsMessage('错误', '连接错误', 'error');
+        };
+
+        ws.onclose = () => {
+          updateWsStatus('disconnected', '已断开');
+          document.getElementById('wsConnectBtn').disabled = false;
+          document.getElementById('wsDisconnectBtn').disabled = true;
+          document.getElementById('wsSendBtn').disabled = true;
+          addWsMessage('系统', '连接已关闭', 'error');
+        };
+      } catch (error) {
+        updateWsStatus('disconnected', '连接失败');
+        addWsMessage('错误', error.message, 'error');
+      }
+    });
+
+    document.getElementById('wsDisconnectBtn').addEventListener('click', () => {
+      if (ws) {
+        ws.close();
+        ws = null;
+      }
+    });
+
+    document.getElementById('wsSendBtn').addEventListener('click', () => {
+      const message = document.getElementById('wsMessage').value.trim();
+      if (!message) {
+        alert('请输入要发送的消息');
+        return;
+      }
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+        addWsMessage('发送', message, 'sent');
+        document.getElementById('wsMessage').value = '';
+      } else {
+        alert('WebSocket 未连接');
+      }
+    });
+
+    function updateWsStatus(status, text) {
+      const statusEl = document.getElementById('wsStatus');
+      statusEl.className = 'ws-status ' + status;
+      statusEl.textContent = text;
+    }
+
+    function addWsMessage(type, message, className) {
+      const messagesDiv = document.getElementById('wsMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'ws-message ' + className;
+      const time = new Date().toLocaleTimeString();
+      messageDiv.innerHTML = `
+        <div class="ws-message-time">[${time}] ${type}</div>
+        <div>${message}</div>
+      `;
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function clearWsMessages() {
+      document.getElementById('wsMessages').innerHTML = '';
+    }
+
+    // 历史记录
+    function updateHistoryList() {
+      const historyDiv = document.getElementById('historyList');
+      if (requestHistory.length === 0) {
+        historyDiv.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">暂无历史记录</p>';
+        return;
+      }
+
+      historyDiv.innerHTML = requestHistory.map((item, index) => {
+        const time = new Date(item.timestamp).toLocaleString();
+        const methodClass = 'method-' + item.method.toLowerCase();
+        return `
+          <div class="history-item" onclick="loadHistoryItem(${index})">
+            <span class="history-item-method ${methodClass}">${item.method}</span>
+            <span>${item.url}</span>
+            <span style="float: right; color: #6c757d; font-size: 12px;">${item.status} - ${time}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadHistoryItem(index) {
+      const item = requestHistory[index];
+      document.getElementById('httpMethod').value = item.method;
+      document.getElementById('httpUrl').value = item.url;
+      document.querySelector('.tab-btn[data-tab="http"]').click();
+    }
+
+    function clearHistory() {
+      if (confirm('确定要清空所有历史记录吗？')) {
+        requestHistory = [];
+        localStorage.setItem('apiDebuggerHistory', JSON.stringify(requestHistory));
+        updateHistoryList();
+      }
+    }
+
+    // 初始化
+    updateHistoryList();
+  </script>
+</body>
+
+</html>
