@@ -101,47 +101,72 @@
 
     .color-presets {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
       margin-top: 15px
     }
 
     .color-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       background: #fff;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      overflow: hidden;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 6px;
       cursor: pointer;
-      transition: all .2s
+      transition: all .3s ease;
+      position: relative;
+      overflow: visible
     }
 
-    .color-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    .color-card:hover,
+    .color-card.expanded {
+      transform: scale(1.15);
+      z-index: 10;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
       border-color: #667eea
     }
 
-    .color-card-bar {
-      height: 60px;
-      width: 100%
+    .color-card-square {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, .1);
+      flex-shrink: 0;
+      transition: all .3s ease
+    }
+
+    .color-card:hover .color-card-square,
+    .color-card.expanded .color-card-square {
+      width: 40px;
+      height: 40px
     }
 
     .color-card-info {
-      padding: 10px;
-      text-align: center
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px
     }
 
     .color-card-name {
       font-weight: 600;
       color: #495057;
-      font-size: 13px;
-      margin-bottom: 4px
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
     }
 
     .color-card-values {
-      font-size: 11px;
+      font-size: 9px;
       color: #6c757d;
-      line-height: 1.4
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
     }
 
     .btn {
@@ -419,19 +444,29 @@
         card.className = 'color-card';
         const rgb = hexToRgb(color.hex);
         card.innerHTML = `
-          <div class="color-card-bar" style="background:${color.hex}"></div>
+          <div class="color-card-square" style="background:${color.hex}"></div>
           <div class="color-card-info">
             <div class="color-card-name">${color.name}</div>
-            <div class="color-card-values">${color.hex}<br>${color.rgb}</div>
+            <div class="color-card-values">${color.hex} ${color.rgb}</div>
           </div>
         `;
+        
+        // 点击选择颜色并放大
         card.onclick = () => {
           hexInput.value = color.hex;
           rInput.value = rgb.r;
           gInput.value = rgb.g;
           bInput.value = rgb.b;
           convert();
+          
+          // 移除其他卡片的放大状态
+          document.querySelectorAll('.color-card.expanded').forEach(c => {
+            if (c !== card) c.classList.remove('expanded');
+          });
+          // 切换当前卡片的放大状态
+          card.classList.toggle('expanded');
         };
+        
         colorPresets.appendChild(card);
       });
     }
