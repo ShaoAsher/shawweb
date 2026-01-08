@@ -99,21 +99,38 @@
       background: #f0f0f0
     }
 
+    .color-presets-group {
+      margin-bottom: 25px
+    }
+
+    .color-presets-group:last-child {
+      margin-bottom: 0
+    }
+
+    .color-presets-group-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #667eea
+    }
+
     .color-presets {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 8px;
-      margin-top: 15px
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 0
     }
 
     .color-card {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       background: #fff;
       border: 1px solid #dee2e6;
       border-radius: 6px;
-      padding: 6px;
+      padding: 8px;
       cursor: pointer;
       transition: all .3s ease;
       position: relative;
@@ -122,15 +139,15 @@
 
     .color-card:hover,
     .color-card.expanded {
-      transform: scale(1.15);
+      transform: scale(1.1);
       z-index: 10;
       box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
       border-color: #667eea
     }
 
     .color-card-square {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 4px;
       border: 1px solid rgba(0, 0, 0, .1);
       flex-shrink: 0;
@@ -139,8 +156,8 @@
 
     .color-card:hover .color-card-square,
     .color-card.expanded .color-card-square {
-      width: 40px;
-      height: 40px
+      width: 44px;
+      height: 44px
     }
 
     .color-card-info {
@@ -148,25 +165,24 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 2px
+      gap: 3px
     }
 
     .color-card-name {
       font-weight: 600;
       color: #495057;
-      font-size: 11px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis
+      font-size: 13px;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.3
     }
 
     .color-card-values {
-      font-size: 9px;
+      font-size: 10px;
       color: #6c757d;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis
+      line-height: 1.4;
+      white-space: normal;
+      word-break: break-word
     }
 
     .btn {
@@ -247,8 +263,8 @@
       </div>
 
       <div class="form-section">
-        <h2>主流颜色预设</h2>
-        <div class="color-presets" id="colorPresets"></div>
+        <h2>颜色预设</h2>
+        <div id="colorPresetsContainer"></div>
       </div>
     </div>
   </div>
@@ -262,10 +278,12 @@
     const resultDisplay = document.getElementById('resultDisplay');
     const convertBtn = document.getElementById('convertBtn');
     const clearBtn = document.getElementById('clearBtn');
-    const colorPresets = document.getElementById('colorPresets');
+    const colorPresetsContainer = document.getElementById('colorPresetsContainer');
 
-    const presetColors = [
-      // 基础颜色
+    const presetColorsGroups = [
+      {
+        title: '基础颜色',
+        colors: [
       { name: '红色', hex: '#FF0000', rgb: 'rgb(255, 0, 0)' },
       { name: '绿色', hex: '#00FF00', rgb: 'rgb(0, 255, 0)' },
       { name: '蓝色', hex: '#0000FF', rgb: 'rgb(0, 0, 255)' },
@@ -276,66 +294,75 @@
       { name: '粉色', hex: '#FFC0CB', rgb: 'rgb(255, 192, 203)' },
       { name: '黑色', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
       { name: '白色', hex: '#FFFFFF', rgb: 'rgb(255, 255, 255)' },
-      { name: '灰色', hex: '#808080', rgb: 'rgb(128, 128, 128)' },
-
-      // 主流 App 颜色
-      { name: '微信绿', hex: '#07C160', rgb: 'rgb(7, 193, 96)' },
-      { name: '支付宝蓝', hex: '#1677FF', rgb: 'rgb(22, 119, 255)' },
-      { name: '抖音红', hex: '#FF0050', rgb: 'rgb(255, 0, 80)' },
-      { name: '微博橙', hex: '#FF6600', rgb: 'rgb(255, 102, 0)' },
-      { name: 'QQ蓝', hex: '#12B7F5', rgb: 'rgb(18, 183, 245)' },
-      { name: '淘宝橙', hex: '#FF5000', rgb: 'rgb(255, 80, 0)' },
-      { name: '京东红', hex: '#E1251B', rgb: 'rgb(225, 37, 27)' },
-      { name: '美团黄', hex: '#FFC300', rgb: 'rgb(255, 195, 0)' },
-      { name: '饿了么蓝', hex: '#0096FF', rgb: 'rgb(0, 150, 255)' },
-      { name: '小红书红', hex: '#FF2442', rgb: 'rgb(255, 36, 66)' },
-      { name: 'B站粉', hex: '#FB7299', rgb: 'rgb(251, 114, 153)' },
-      { name: '知乎蓝', hex: '#0084FF', rgb: 'rgb(0, 132, 255)' },
-      { name: '豆瓣绿', hex: '#42BD56', rgb: 'rgb(66, 189, 86)' },
-      { name: '网易云红', hex: '#E83C3C', rgb: 'rgb(232, 60, 60)' },
-      { name: 'QQ音乐绿', hex: '#31C27C', rgb: 'rgb(49, 194, 124)' },
-      { name: '酷狗蓝', hex: '#00A0E9', rgb: 'rgb(0, 160, 233)' },
-      { name: '爱奇艺粉', hex: '#FF6B9D', rgb: 'rgb(255, 107, 157)' },
-      { name: '腾讯视频蓝', hex: '#002FA7', rgb: 'rgb(0, 47, 167)' },
-      { name: '优酷蓝', hex: '#00A8E6', rgb: 'rgb(0, 168, 230)' },
-      { name: '百度红', hex: '#2932E1', rgb: 'rgb(41, 50, 225)' },
-      { name: '高德蓝', hex: '#0091FF', rgb: 'rgb(0, 145, 255)' },
-      { name: '滴滴橙', hex: '#FF6600', rgb: 'rgb(255, 102, 0)' },
-      { name: '携程蓝', hex: '#1BA9BA', rgb: 'rgb(27, 169, 186)' },
-      { name: '飞猪橙', hex: '#FF6A00', rgb: 'rgb(255, 106, 0)' },
-
-      // 国际品牌色
-      { name: '苹果黑', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
-      { name: '苹果灰', hex: '#86868B', rgb: 'rgb(134, 134, 139)' },
-      { name: '谷歌蓝', hex: '#4285F4', rgb: 'rgb(66, 133, 244)' },
-      { name: '谷歌红', hex: '#EA4335', rgb: 'rgb(234, 67, 53)' },
-      { name: '谷歌黄', hex: '#FBBC05', rgb: 'rgb(251, 188, 5)' },
-      { name: '谷歌绿', hex: '#34A853', rgb: 'rgb(52, 168, 83)' },
-      { name: 'Facebook蓝', hex: '#1877F2', rgb: 'rgb(24, 119, 242)' },
-      { name: 'Twitter蓝', hex: '#1DA1F2', rgb: 'rgb(29, 161, 242)' },
-      { name: 'Instagram紫', hex: '#E4405F', rgb: 'rgb(228, 64, 95)' },
-      { name: 'YouTube红', hex: '#FF0000', rgb: 'rgb(255, 0, 0)' },
-      { name: 'LinkedIn蓝', hex: '#0077B5', rgb: 'rgb(0, 119, 181)' },
-      { name: 'GitHub黑', hex: '#24292E', rgb: 'rgb(36, 41, 46)' },
-      { name: 'GitHub紫', hex: '#6F42C1', rgb: 'rgb(111, 66, 193)' },
-      { name: 'Spotify绿', hex: '#1DB954', rgb: 'rgb(29, 185, 84)' },
-      { name: 'Netflix红', hex: '#E50914', rgb: 'rgb(229, 9, 20)' },
-      { name: 'Amazon橙', hex: '#FF9900', rgb: 'rgb(255, 153, 0)' },
-      { name: 'Microsoft蓝', hex: '#0078D4', rgb: 'rgb(0, 120, 212)' },
-      { name: 'Adobe红', hex: '#FF0000', rgb: 'rgb(255, 0, 0)' },
-      { name: 'PayPal蓝', hex: '#003087', rgb: 'rgb(0, 48, 135)' },
-      { name: 'Stripe蓝', hex: '#635BFF', rgb: 'rgb(99, 91, 255)' },
-      { name: 'Airbnb红', hex: '#FF5A5F', rgb: 'rgb(255, 90, 95)' },
-      { name: 'Uber黑', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
-      { name: 'Tesla红', hex: '#E31937', rgb: 'rgb(227, 25, 55)' },
-      { name: 'Nike黑', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
-      { name: 'Coca-Cola红', hex: '#F40009', rgb: 'rgb(244, 0, 9)' },
-      { name: 'Pepsi蓝', hex: '#004B93', rgb: 'rgb(0, 75, 147)' },
-      { name: 'Starbucks绿', hex: '#00704A', rgb: 'rgb(0, 112, 74)' },
-      { name: 'McDonald\'s金', hex: '#FFC72C', rgb: 'rgb(255, 199, 44)' },
-      { name: 'McDonald\'s红', hex: '#DA291C', rgb: 'rgb(218, 41, 28)' },
-
-      // 其他常用颜色
+          { name: '灰色', hex: '#808080', rgb: 'rgb(128, 128, 128)' }
+        ]
+      },
+      {
+        title: '主流 App 颜色',
+        colors: [
+          { name: '微信绿', hex: '#07C160', rgb: 'rgb(7, 193, 96)' },
+          { name: '支付宝蓝', hex: '#1677FF', rgb: 'rgb(22, 119, 255)' },
+          { name: '抖音红', hex: '#FF0050', rgb: 'rgb(255, 0, 80)' },
+          { name: '微博橙', hex: '#FF6600', rgb: 'rgb(255, 102, 0)' },
+          { name: 'QQ蓝', hex: '#12B7F5', rgb: 'rgb(18, 183, 245)' },
+          { name: '淘宝橙', hex: '#FF5000', rgb: 'rgb(255, 80, 0)' },
+          { name: '京东红', hex: '#E1251B', rgb: 'rgb(225, 37, 27)' },
+          { name: '美团黄', hex: '#FFC300', rgb: 'rgb(255, 195, 0)' },
+          { name: '饿了么蓝', hex: '#0096FF', rgb: 'rgb(0, 150, 255)' },
+          { name: '小红书红', hex: '#FF2442', rgb: 'rgb(255, 36, 66)' },
+          { name: 'B站粉', hex: '#FB7299', rgb: 'rgb(251, 114, 153)' },
+          { name: '知乎蓝', hex: '#0084FF', rgb: 'rgb(0, 132, 255)' },
+          { name: '豆瓣绿', hex: '#42BD56', rgb: 'rgb(66, 189, 86)' },
+          { name: '网易云红', hex: '#E83C3C', rgb: 'rgb(232, 60, 60)' },
+          { name: 'QQ音乐绿', hex: '#31C27C', rgb: 'rgb(49, 194, 124)' },
+          { name: '酷狗蓝', hex: '#00A0E9', rgb: 'rgb(0, 160, 233)' },
+          { name: '爱奇艺粉', hex: '#FF6B9D', rgb: 'rgb(255, 107, 157)' },
+          { name: '腾讯视频蓝', hex: '#002FA7', rgb: 'rgb(0, 47, 167)' },
+          { name: '优酷蓝', hex: '#00A8E6', rgb: 'rgb(0, 168, 230)' },
+          { name: '百度红', hex: '#2932E1', rgb: 'rgb(41, 50, 225)' },
+          { name: '高德蓝', hex: '#0091FF', rgb: 'rgb(0, 145, 255)' },
+          { name: '滴滴橙', hex: '#FF6600', rgb: 'rgb(255, 102, 0)' },
+          { name: '携程蓝', hex: '#1BA9BA', rgb: 'rgb(27, 169, 186)' },
+          { name: '飞猪橙', hex: '#FF6A00', rgb: 'rgb(255, 106, 0)' }
+        ]
+      },
+      {
+        title: '国际品牌色',
+        colors: [
+          { name: '苹果黑', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
+          { name: '苹果灰', hex: '#86868B', rgb: 'rgb(134, 134, 139)' },
+          { name: '谷歌蓝', hex: '#4285F4', rgb: 'rgb(66, 133, 244)' },
+          { name: '谷歌红', hex: '#EA4335', rgb: 'rgb(234, 67, 53)' },
+          { name: '谷歌黄', hex: '#FBBC05', rgb: 'rgb(251, 188, 5)' },
+          { name: '谷歌绿', hex: '#34A853', rgb: 'rgb(52, 168, 83)' },
+          { name: 'Facebook蓝', hex: '#1877F2', rgb: 'rgb(24, 119, 242)' },
+          { name: 'Twitter蓝', hex: '#1DA1F2', rgb: 'rgb(29, 161, 242)' },
+          { name: 'Instagram紫', hex: '#E4405F', rgb: 'rgb(228, 64, 95)' },
+          { name: 'YouTube红', hex: '#FF0000', rgb: 'rgb(255, 0, 0)' },
+          { name: 'LinkedIn蓝', hex: '#0077B5', rgb: 'rgb(0, 119, 181)' },
+          { name: 'GitHub黑', hex: '#24292E', rgb: 'rgb(36, 41, 46)' },
+          { name: 'GitHub紫', hex: '#6F42C1', rgb: 'rgb(111, 66, 193)' },
+          { name: 'Spotify绿', hex: '#1DB954', rgb: 'rgb(29, 185, 84)' },
+          { name: 'Netflix红', hex: '#E50914', rgb: 'rgb(229, 9, 20)' },
+          { name: 'Amazon橙', hex: '#FF9900', rgb: 'rgb(255, 153, 0)' },
+          { name: 'Microsoft蓝', hex: '#0078D4', rgb: 'rgb(0, 120, 212)' },
+          { name: 'Adobe红', hex: '#FF0000', rgb: 'rgb(255, 0, 0)' },
+          { name: 'PayPal蓝', hex: '#003087', rgb: 'rgb(0, 48, 135)' },
+          { name: 'Stripe蓝', hex: '#635BFF', rgb: 'rgb(99, 91, 255)' },
+          { name: 'Airbnb红', hex: '#FF5A5F', rgb: 'rgb(255, 90, 95)' },
+          { name: 'Uber黑', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
+          { name: 'Tesla红', hex: '#E31937', rgb: 'rgb(227, 25, 55)' },
+          { name: 'Nike黑', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
+          { name: 'Coca-Cola红', hex: '#F40009', rgb: 'rgb(244, 0, 9)' },
+          { name: 'Pepsi蓝', hex: '#004B93', rgb: 'rgb(0, 75, 147)' },
+          { name: 'Starbucks绿', hex: '#00704A', rgb: 'rgb(0, 112, 74)' },
+          { name: 'McDonald\'s金', hex: '#FFC72C', rgb: 'rgb(255, 199, 44)' },
+          { name: 'McDonald\'s红', hex: '#DA291C', rgb: 'rgb(218, 41, 28)' }
+        ]
+      },
+      {
+        title: '其他常用颜色',
+        colors: [
       { name: '深红', hex: '#8B0000', rgb: 'rgb(139, 0, 0)' },
       { name: '深绿', hex: '#006400', rgb: 'rgb(0, 100, 0)' },
       { name: '深蓝', hex: '#00008B', rgb: 'rgb(0, 0, 139)' },
@@ -354,7 +381,9 @@
       { name: '紫罗兰', hex: '#8A2BE2', rgb: 'rgb(138, 43, 226)' },
       { name: '深紫色', hex: '#4B0082', rgb: 'rgb(75, 0, 130)' },
       { name: '深粉色', hex: '#FF1493', rgb: 'rgb(255, 20, 147)' },
-      { name: '薄荷绿', hex: '#00CED1', rgb: 'rgb(0, 206, 209)' }
+          { name: '薄荷绿', hex: '#00CED1', rgb: 'rgb(0, 206, 209)' }
+        ]
+      }
     ];
 
     function hexToRgb(hex) {
@@ -439,35 +468,55 @@
     }
 
     function initPresets() {
-      presetColors.forEach(color => {
+      presetColorsGroups.forEach(group => {
+        // 创建分组容器
+        const groupContainer = document.createElement('div');
+        groupContainer.className = 'color-presets-group';
+        
+        // 创建分组标题
+        const groupTitle = document.createElement('div');
+        groupTitle.className = 'color-presets-group-title';
+        groupTitle.textContent = group.title;
+        groupContainer.appendChild(groupTitle);
+        
+        // 创建颜色网格
+        const colorGrid = document.createElement('div');
+        colorGrid.className = 'color-presets';
+        
+        // 添加颜色卡片
+        group.colors.forEach(color => {
         const card = document.createElement('div');
         card.className = 'color-card';
         const rgb = hexToRgb(color.hex);
         card.innerHTML = `
-          <div class="color-card-square" style="background:${color.hex}"></div>
+            <div class="color-card-square" style="background:${color.hex}"></div>
           <div class="color-card-info">
             <div class="color-card-name">${color.name}</div>
-            <div class="color-card-values">${color.hex} ${color.rgb}</div>
+              <div class="color-card-values">${color.hex} ${color.rgb}</div>
           </div>
         `;
-        
-        // 点击选择颜色并放大
+          
+          // 点击选择颜色并放大
         card.onclick = () => {
           hexInput.value = color.hex;
           rInput.value = rgb.r;
           gInput.value = rgb.g;
           bInput.value = rgb.b;
           convert();
-          
-          // 移除其他卡片的放大状态
-          document.querySelectorAll('.color-card.expanded').forEach(c => {
-            if (c !== card) c.classList.remove('expanded');
-          });
-          // 切换当前卡片的放大状态
-          card.classList.toggle('expanded');
-        };
+
+            // 移除其他卡片的放大状态
+            document.querySelectorAll('.color-card.expanded').forEach(c => {
+              if (c !== card) c.classList.remove('expanded');
+            });
+            // 切换当前卡片的放大状态
+            card.classList.toggle('expanded');
+          };
+
+          colorGrid.appendChild(card);
+        });
         
-        colorPresets.appendChild(card);
+        groupContainer.appendChild(colorGrid);
+        colorPresetsContainer.appendChild(groupContainer);
       });
     }
 
