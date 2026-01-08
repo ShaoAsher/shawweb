@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符串加解密工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .form-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .form-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px
+    }
+
+    .form-group {
+      margin-bottom: 18px
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 14px 35px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+      width: 100%
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      margin-top: 10px
+    }
+
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px
+    }
+
+    .status.show {
+      display: block
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb
+    }
+
+    .result-area {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 120px;
+      word-break: break-all;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      font-size: 14px
+    }
+
+    .algorithm-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    .tab-btn {
+      background: #e9ecef;
+      color: #495057;
+      border: 2px solid #dee2e6;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all .2s
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-color: #667eea
+    }
+
+    .tab-content {
+      display: none
+    }
+
+    .tab-content.active {
+      display: block
+    }
+
+    .info-text {
+      color: #6c757d;
+      font-size: 12px;
+      margin-top: 5px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 字符串加解密工具</h1>
+      <p>支持多种主流加解密算法和编码方式</p>
+    </div>
+    <div class="content">
+      <div class="form-section">
+        <h2>选择算法</h2>
+        <div class="algorithm-tabs" id="algorithmTabs"></div>
+      </div>
+
+      <div class="form-section">
+        <h2>输入内容</h2>
+        <div class="form-group">
+          <label for="inputText">输入文本</label>
+          <textarea id="inputText" placeholder="请输入要加密/解密的内容..."></textarea>
+        </div>
+        <div class="controls-grid" id="algorithmControls"></div>
+        <button class="btn" id="processBtn">处理</button>
+        <button class="btn btn-secondary" id="clearBtn">清空</button>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="form-section">
+        <h2>输出结果</h2>
+        <div class="form-group">
+          <label for="outputText">结果</label>
+          <div class="result-area" id="outputText"></div>
+        </div>
+        <button class="btn btn-secondary" id="copyBtn">复制结果</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const algorithms = {
+      base64: { name: 'Base64', type: 'encode', needsKey: false },
+      url: { name: 'URL 编码', type: 'encode', needsKey: false },
+      html: { name: 'HTML 实体', type: 'encode', needsKey: false },
+      hex: { name: 'Hex 编码', type: 'encode', needsKey: false },
+      unicode: { name: 'Unicode 编码', type: 'encode', needsKey: false },
+      md5: { name: 'MD5 哈希', type: 'hash', needsKey: false },
+      sha1: { name: 'SHA-1 哈希', type: 'hash', needsKey: false },
+      sha256: { name: 'SHA-256 哈希', type: 'hash', needsKey: false },
+      sha512: { name: 'SHA-512 哈希', type: 'hash', needsKey: false },
+      aes: { name: 'AES 加密', type: 'crypto', needsKey: true },
+      caesar: { name: '凯撒密码', type: 'crypto', needsKey: true },
+      morse: { name: '摩斯密码', type: 'encode', needsKey: false }
+    };
+
+    const algorithmTabs = document.getElementById('algorithmTabs');
+    const algorithmControls = document.getElementById('algorithmControls');
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const processBtn = document.getElementById('processBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const status = document.getElementById('status');
+
+    let currentAlgorithm = 'base64';
+
+    function showStatus(text, type) {
+      status.textContent = text;
+      status.className = 'status show ' + (type || 'success');
+      setTimeout(() => status.classList.remove('show'), 3000);
+    }
+
+    function initTabs() {
+      Object.keys(algorithms).forEach(key => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (key === currentAlgorithm ? ' active' : '');
+        btn.textContent = algorithms[key].name;
+        btn.onclick = () => selectAlgorithm(key);
+        algorithmTabs.appendChild(btn);
+      });
+    }
+
+    function selectAlgorithm(key) {
+      currentAlgorithm = key;
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', Object.keys(algorithms)[i] === key);
+      });
+      renderControls();
+    }
+
+    function renderControls() {
+      algorithmControls.innerHTML = '';
+      const algo = algorithms[currentAlgorithm];
+
+      if (algo.needsKey) {
+        const keyGroup = document.createElement('div');
+        keyGroup.className = 'form-group';
+        keyGroup.innerHTML = `
+          <label for="keyInput">密钥/参数</label>
+          <input type="text" id="keyInput" placeholder="${currentAlgorithm === 'caesar' ? '偏移量（如：3）' : '密钥'}" value="${currentAlgorithm === 'caesar' ? '3' : ''}">
+        `;
+        algorithmControls.appendChild(keyGroup);
+      }
+
+      if (algo.type === 'crypto' && currentAlgorithm === 'aes') {
+        const modeGroup = document.createElement('div');
+        modeGroup.className = 'form-group';
+        modeGroup.innerHTML = `
+          <label for="operationMode">操作模式</label>
+          <select id="operationMode">
+            <option value="encrypt">加密</option>
+            <option value="decrypt">解密</option>
+          </select>
+        `;
+        algorithmControls.appendChild(modeGroup);
+      } else if (algo.type === 'encode') {
+        const modeGroup = document.createElement('div');
+        modeGroup.className = 'form-group';
+        modeGroup.innerHTML = `
+          <label for="operationMode">操作模式</label>
+          <select id="operationMode">
+            <option value="encode">编码</option>
+            <option value="decode">解码</option>
+          </select>
+        `;
+        algorithmControls.appendChild(modeGroup);
+      }
+    }
+
+    async function process() {
+      const input = inputText.value.trim();
+      if (!input) {
+        showStatus('请输入内容', 'error');
+        return;
+      }
+
+      try {
+        const algo = algorithms[currentAlgorithm];
+        let result = '';
+
+        if (algo.type === 'encode') {
+          const mode = document.getElementById('operationMode')?.value || 'encode';
+          result = await handleEncode(currentAlgorithm, input, mode);
+        } else if (algo.type === 'hash') {
+          result = await handleHash(currentAlgorithm, input);
+        } else if (algo.type === 'crypto') {
+          const key = document.getElementById('keyInput')?.value || '';
+          if (algo.needsKey && !key) {
+            showStatus('请输入密钥', 'error');
+            return;
+          }
+          const mode = document.getElementById('operationMode')?.value || 'encrypt';
+          result = await handleCrypto(currentAlgorithm, input, key, mode);
+        }
+
+        outputText.textContent = result;
+        showStatus('处理成功', 'success');
+      } catch (err) {
+        console.error(err);
+        showStatus('处理失败：' + err.message, 'error');
+        outputText.textContent = '';
+      }
+    }
+
+    async function handleEncode(algorithm, input, mode) {
+      switch (algorithm) {
+        case 'base64':
+          return mode === 'encode' ? btoa(unescape(encodeURIComponent(input))) : decodeURIComponent(escape(atob(input)));
+        case 'url':
+          return mode === 'encode' ? encodeURIComponent(input) : decodeURIComponent(input);
+        case 'html':
+          const div = document.createElement('div');
+          if (mode === 'encode') {
+            div.textContent = input;
+            return div.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+          } else {
+            div.innerHTML = input;
+            return div.textContent;
+          }
+        case 'hex':
+          if (mode === 'encode') {
+            return Array.from(input).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+          } else {
+            return input.split(' ').map(h => String.fromCharCode(parseInt(h, 16))).join('');
+          }
+        case 'unicode':
+          if (mode === 'encode') {
+            return Array.from(input).map(c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')).join('');
+          } else {
+            return input.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+          }
+        case 'morse':
+          const morseCode = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+            'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+            'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+            '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', '.': '.-.-.-', ',': '--..--',
+            '?': '..--..', "'": '.----.', '!': '-.-.--', '/': '-..-.', '(': '-.--.', ')': '-.--.-',
+            '&': '.-...', ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.', '-': '-....-',
+            '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.'
+          };
+          const reverseMorse = {};
+          Object.keys(morseCode).forEach(k => reverseMorse[morseCode[k]] = k);
+          if (mode === 'encode') {
+            return input.toUpperCase().split('').map(c => morseCode[c] || c).join(' ').replace(/  +/g, ' / ');
+          } else {
+            return input.split(' ').map(m => reverseMorse[m] || (m === '/' ? ' ' : m)).join('');
+          }
+        default:
+          throw new Error('不支持的编码算法');
+      }
+    }
+
+    async function handleHash(algorithm, input) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      let hash;
+      switch (algorithm) {
+        case 'md5':
+          return await md5(input);
+        case 'sha1':
+          hash = await crypto.subtle.digest('SHA-1', data);
+          return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        case 'sha256':
+          hash = await crypto.subtle.digest('SHA-256', data);
+          return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        case 'sha512':
+          hash = await crypto.subtle.digest('SHA-512', data);
+          return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        default:
+          throw new Error('不支持的哈希算法');
+      }
+    }
+
+    async function md5(str) {
+      function md5cycle(x, k) {
+        let a = x[0], b = x[1], c = x[2], d = x[3];
+        a = ff(a, b, c, d, k[0], 7, -680876936);
+        d = ff(d, a, b, c, k[1], 12, -389564586);
+        c = ff(c, d, a, b, k[2], 17, 606105819);
+        b = ff(b, c, d, a, k[3], 22, -1044525330);
+        a = ff(a, b, c, d, k[4], 7, -176418897);
+        d = ff(d, a, b, c, k[5], 12, 1200080426);
+        c = ff(c, d, a, b, k[6], 17, -1473231341);
+        b = ff(b, c, d, a, k[7], 22, -45705983);
+        a = ff(a, b, c, d, k[8], 7, 1770035416);
+        d = ff(d, a, b, c, k[9], 12, -1958414417);
+        c = ff(c, d, a, b, k[10], 17, -42063);
+        b = ff(b, c, d, a, k[11], 22, -1990404162);
+        a = ff(a, b, c, d, k[12], 7, 1804603682);
+        d = ff(d, a, b, c, k[13], 12, -40341101);
+        c = ff(c, d, a, b, k[14], 17, -1502002290);
+        b = ff(b, c, d, a, k[15], 22, 1236535329);
+        a = gg(a, b, c, d, k[1], 5, -165796510);
+        d = gg(d, a, b, c, k[6], 9, -1069501632);
+        c = gg(c, d, a, b, k[11], 14, 643717713);
+        b = gg(b, c, d, a, k[0], 20, -373897302);
+        a = gg(a, b, c, d, k[5], 5, -701558691);
+        d = gg(d, a, b, c, k[10], 9, 38016083);
+        c = gg(c, d, a, b, k[15], 14, -660478335);
+        b = gg(b, c, d, a, k[4], 20, -405537848);
+        a = gg(a, b, c, d, k[9], 5, 568446438);
+        d = gg(d, a, b, c, k[14], 9, -1019803690);
+        c = gg(c, d, a, b, k[3], 14, -187363961);
+        b = gg(b, c, d, a, k[8], 20, 1163531501);
+        a = gg(a, b, c, d, k[13], 5, -1444681467);
+        d = gg(d, a, b, c, k[2], 9, -51403784);
+        c = gg(c, d, a, b, k[7], 14, 1735328473);
+        b = gg(b, c, d, a, k[12], 20, -1926607734);
+        a = hh(a, b, c, d, k[5], 4, -378558);
+        d = hh(d, a, b, c, k[8], 11, -2022574463);
+        c = hh(c, d, a, b, k[11], 16, 1839030562);
+        b = hh(b, c, d, a, k[14], 23, -35309556);
+        a = hh(a, b, c, d, k[1], 4, -1530992060);
+        d = hh(d, a, b, c, k[4], 11, 1272893353);
+        c = hh(c, d, a, b, k[7], 16, -155497632);
+        b = hh(b, c, d, a, k[10], 23, -1094730640);
+        a = hh(a, b, c, d, k[13], 4, 681279174);
+        d = hh(d, a, b, c, k[0], 11, -358537222);
+        c = hh(c, d, a, b, k[3], 16, -722521979);
+        b = hh(b, c, d, a, k[6], 23, 76029189);
+        a = hh(a, b, c, d, k[9], 4, -640364487);
+        d = hh(d, a, b, c, k[12], 11, -421815835);
+        c = hh(c, d, a, b, k[15], 16, 530742520);
+        b = hh(b, c, d, a, k[2], 23, -995338651);
+        a = ii(a, b, c, d, k[0], 6, -198630844);
+        d = ii(d, a, b, c, k[7], 10, 1126891415);
+        c = ii(c, d, a, b, k[14], 15, -1416354905);
+        b = ii(b, c, d, a, k[5], 21, -57434055);
+        a = ii(a, b, c, d, k[12], 6, 1700485571);
+        d = ii(d, a, b, c, k[3], 10, -1894986606);
+        c = ii(c, d, a, b, k[10], 15, -1051523);
+        b = ii(b, c, d, a, k[1], 21, -2054922799);
+        a = ii(a, b, c, d, k[8], 6, 1873313359);
+        d = ii(d, a, b, c, k[15], 10, -30611744);
+        c = ii(c, d, a, b, k[6], 15, -1560198380);
+        b = ii(b, c, d, a, k[13], 21, 1309151649);
+        a = ii(a, b, c, d, k[4], 6, -145523070);
+        d = ii(d, a, b, c, k[11], 10, -1120210379);
+        c = ii(c, d, a, b, k[2], 15, 718787259);
+        b = ii(b, c, d, a, k[9], 21, -343485551);
+        x[0] = add32(a, x[0]);
+        x[1] = add32(b, x[1]);
+        x[2] = add32(c, x[2]);
+        x[3] = add32(d, x[3]);
+      }
+      function cmn(q, a, b, x, s, t) {
+        a = add32(add32(a, q), add32(x, t));
+        return add32((a << s) | (a >>> (32 - s)), b);
+      }
+      function ff(a, b, c, d, x, s, t) {
+        return cmn((b & c) | ((~b) & d), a, b, x, s, t);
+      }
+      function gg(a, b, c, d, x, s, t) {
+        return cmn((b & d) | (c & (~d)), a, b, x, s, t);
+      }
+      function hh(a, b, c, d, x, s, t) {
+        return cmn(b ^ c ^ d, a, b, x, s, t);
+      }
+      function ii(a, b, c, d, x, s, t) {
+        return cmn(c ^ (b | (~d)), a, b, x, s, t);
+      }
+      function add32(a, b) {
+        return (a + b) & 0xFFFFFFFF;
+      }
+      function rhex(n) {
+        let s = '', v = '0123456789abcdef';
+        for (let j = 0; j <= 3; j++)s += v.charAt((n >> (j * 8 + 4)) & 0x0F) + v.charAt((n >> (j * 8)) & 0x0F);
+        return s;
+      }
+      const x = [];
+      let AA, BB, CC, DD, a, b, c, d;
+      const S11 = 7, S12 = 12, S13 = 17, S14 = 22;
+      const S21 = 5, S22 = 9, S23 = 14, S24 = 20;
+      const S31 = 4, S32 = 11, S33 = 16, S34 = 23;
+      const S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+      str = unescape(encodeURIComponent(str));
+      const len = str.length;
+      x[len >> 5] |= 0x80 << ((len) % 32);
+      x[(((len + 64) >>> 9) << 4) + 14] = len;
+      let i, j;
+      for (i = 0; i < x.length; i += 16) {
+        AA = a = 1732584193;
+        BB = b = 271733879;
+        CC = c = 1732584194;
+        DD = d = 271733880;
+        a = ff(a, b, c, d, x[i + 0], S11, 3614090360);
+        d = ff(d, a, b, c, x[i + 1], S12, 3905402710);
+        c = ff(c, d, a, b, x[i + 2], S13, 606105819);
+        b = ff(b, c, d, a, x[i + 3], S14, 3250441966);
+        a = ff(a, b, c, d, x[i + 4], S11, 4118548399);
+        d = ff(d, a, b, c, x[i + 5], S12, 1200080426);
+        c = ff(c, d, a, b, x[i + 6], S13, 2821735955);
+        b = ff(b, c, d, a, x[i + 7], S14, 4249261313);
+        a = ff(a, b, c, d, x[i + 8], S11, 1770035416);
+        d = ff(d, a, b, c, x[i + 9], S12, 2336552879);
+        c = ff(c, d, a, b, x[i + 10], S13, 4294925233);
+        b = ff(b, c, d, a, x[i + 11], S14, 2304563134);
+        a = ff(a, b, c, d, x[i + 12], S11, 1804603682);
+        d = ff(d, a, b, c, x[i + 13], S12, 4254626195);
+        c = ff(c, d, a, b, x[i + 14], S13, 2792965006);
+        b = ff(b, c, d, a, x[i + 15], S14, 1236535329);
+        a = gg(a, b, c, d, x[i + 1], S21, 4129170786);
+        d = gg(d, a, b, c, x[i + 6], S22, 3225465664);
+        c = gg(c, d, a, b, x[i + 11], S23, 643717713);
+        b = gg(b, c, d, a, x[i + 0], S24, 3921069994);
+        a = gg(a, b, c, d, x[i + 5], S21, 3593408605);
+        d = gg(d, a, b, c, x[i + 10], S22, 38016083);
+        c = gg(c, d, a, b, x[i + 15], S23, 3634488961);
+        b = gg(b, c, d, a, x[i + 4], S24, 3889429448);
+        a = gg(a, b, c, d, x[i + 9], S21, 568446438);
+        d = gg(d, a, b, c, x[i + 14], S22, 3275163606);
+        c = gg(c, d, a, b, x[i + 3], S23, 4107603335);
+        b = gg(b, c, d, a, x[i + 8], S24, 1163531501);
+        a = gg(a, b, c, d, x[i + 13], S21, 2850285829);
+        d = gg(d, a, b, c, x[i + 2], S22, 4243563512);
+        c = gg(c, d, a, b, x[i + 7], S23, 1735328473);
+        b = gg(b, c, d, a, x[i + 12], S24, 2368359562);
+        a = hh(a, b, c, d, x[i + 5], S31, 4294588738);
+        d = hh(d, a, b, c, x[i + 8], S32, 2272392833);
+        c = hh(c, d, a, b, x[i + 11], S33, 1839030562);
+        b = hh(b, c, d, a, x[i + 14], S34, 4259657740);
+        a = hh(a, b, c, d, x[i + 1], S31, 2763975236);
+        d = hh(d, a, b, c, x[i + 4], S32, 1272893353);
+        c = hh(c, d, a, b, x[i + 7], S33, 4139469664);
+        b = hh(b, c, d, a, x[i + 10], S34, 3200236656);
+        a = hh(a, b, c, d, x[i + 13], S31, 681279174);
+        d = hh(d, a, b, c, x[i + 0], S32, 3936430074);
+        c = hh(c, d, a, b, x[i + 3], S33, 3572445317);
+        b = hh(b, c, d, a, x[i + 6], S34, 76029189);
+        a = hh(a, b, c, d, x[i + 9], S31, 3654602809);
+        d = hh(d, a, b, c, x[i + 12], S32, 3873151461);
+        c = hh(c, d, a, b, x[i + 15], S33, 530742520);
+        b = hh(b, c, d, a, x[i + 2], S34, 3299628645);
+        a = ii(a, b, c, d, x[i + 0], S41, 4096336452);
+        d = ii(d, a, b, c, x[i + 7], S42, 1126891415);
+        c = ii(c, d, a, b, x[i + 14], S43, 2878612391);
+        b = ii(b, c, d, a, x[i + 5], S44, 4237533241);
+        a = ii(a, b, c, d, x[i + 12], S41, 1700485571);
+        d = ii(d, a, b, c, x[i + 3], S42, 2399980690);
+        c = ii(c, d, a, b, x[i + 10], S43, 4293915773);
+        b = ii(b, c, d, a, x[i + 1], S44, 2240044497);
+        a = ii(a, b, c, d, x[i + 8], S41, 1873313359);
+        d = ii(d, a, b, c, x[i + 15], S42, 4264355552);
+        c = ii(c, d, a, b, x[i + 6], S43, 2734768916);
+        b = ii(b, c, d, a, x[i + 13], S44, 1309151649);
+        a = ii(a, b, c, d, x[i + 4], S41, 4149444226);
+        d = ii(d, a, b, c, x[i + 11], S42, 3174756917);
+        c = ii(c, d, a, b, x[i + 2], S43, 718787259);
+        b = ii(b, c, d, a, x[i + 9], S44, 3951481745);
+        a = add32(a, AA);
+        b = add32(b, BB);
+        c = add32(c, CC);
+        d = add32(d, DD);
+      }
+      return (rhex(a) + rhex(b) + rhex(c) + rhex(d)).toLowerCase();
+    }
+
+    async function handleCrypto(algorithm, input, key, mode) {
+      switch (algorithm) {
+        case 'aes':
+          return await aesCrypto(input, key, mode);
+        case 'caesar':
+          return caesarCipher(input, parseInt(key) || 3, mode);
+        default:
+          throw new Error('不支持的加密算法');
+      }
+    }
+
+    async function aesCrypto(text, password, mode) {
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+
+      if (mode === 'encrypt') {
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, encoder.encode(text));
+        const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+        combined.set(salt, 0);
+        combined.set(iv, salt.length);
+        combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+        return btoa(String.fromCharCode(...combined));
+      } else {
+        try {
+          const combined = Uint8Array.from(atob(text), c => c.charCodeAt(0));
+          const salt = combined.slice(0, 16);
+          const iv = combined.slice(16, 28);
+          const encrypted = combined.slice(28);
+          const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
+          const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+          const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, encrypted);
+          return decoder.decode(decrypted);
+        } catch (e) {
+          throw new Error('解密失败，请检查密钥和密文是否正确');
+        }
+      }
+    }
+
+    function caesarCipher(text, shift, mode) {
+      shift = mode === 'decrypt' ? -shift : shift;
+      return text.split('').map(char => {
+        const code = char.charCodeAt(0);
+        if (code >= 65 && code <= 90) {
+          return String.fromCharCode(((code - 65 + shift + 26) % 26) + 65);
+        } else if (code >= 97 && code <= 122) {
+          return String.fromCharCode(((code - 97 + shift + 26) % 26) + 97);
+        }
+        return char;
+      }).join('');
+    }
+
+    function clearAll() {
+      inputText.value = '';
+      outputText.textContent = '';
+      showStatus('已清空', 'success');
+    }
+
+    function copyResult() {
+      const text = outputText.textContent;
+      if (!text) {
+        showStatus('没有可复制的内容', 'error');
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        showStatus('已复制到剪贴板', 'success');
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showStatus('已复制到剪贴板', 'success');
+      });
+    }
+
+    processBtn.addEventListener('click', process);
+    clearBtn.addEventListener('click', clearAll);
+    copyBtn.addEventListener('click', copyResult);
+
+    initTabs();
+    renderControls();
+  </script>
+</body>
+
+</html>
