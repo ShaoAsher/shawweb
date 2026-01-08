@@ -67,7 +67,8 @@
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px
+      gap: 15px;
+      margin-top: 20px
     }
 
     .form-group {
@@ -188,6 +189,27 @@
       flex: 1
     }
 
+    .btn-encrypt {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      color: #fff
+    }
+
+    .btn-encrypt:hover {
+      background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, .4)
+    }
+
+    .btn-decrypt {
+      background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+      color: #fff
+    }
+
+    .btn-decrypt:hover {
+      background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+      box-shadow: 0 5px 15px rgba(39, 174, 96, .4)
+    }
+
+
     @media (max-width: 768px) {
       .input-output-grid {
         grid-template-columns: 1fr
@@ -260,8 +282,8 @@
         </div>
         <div class="controls-grid" id="algorithmControls"></div>
         <div class="action-buttons">
-          <button class="btn" id="encryptBtn">🔒 加密</button>
-          <button class="btn" id="decryptBtn">🔓 解密</button>
+          <button class="btn btn-encrypt" id="encryptBtn">🔒 加密</button>
+          <button class="btn btn-decrypt" id="decryptBtn">🔓 解密</button>
         </div>
         <div style="display:flex;gap:10px;margin-top:10px">
           <button class="btn btn-secondary" id="clearBtn" style="flex:1">清空</button>
@@ -430,7 +452,7 @@
       }
     }
 
-    async function process() {
+    async function process(mode) {
       const input = inputText.value.trim();
       if (!input) {
         showStatus('请输入内容', 'error');
@@ -442,7 +464,6 @@
         let result = '';
 
         if (algo.type === 'encode') {
-          const mode = document.getElementById('operationMode')?.value || 'encode';
           result = await handleEncode(currentAlgorithm, input, mode);
         } else if (algo.type === 'hash') {
           result = await handleHash(currentAlgorithm, input);
@@ -452,7 +473,6 @@
             showStatus('请输入密钥', 'error');
             return;
           }
-          const mode = document.getElementById('operationMode')?.value || 'encrypt';
           const options = {};
           if (currentAlgorithm === 'aes') {
             options.aesMode = document.getElementById('aesMode')?.value || 'GCM';
@@ -466,7 +486,7 @@
         }
 
         outputText.textContent = result;
-        showStatus('处理成功', 'success');
+        showStatus(mode === 'encrypt' || mode === 'encode' ? '加密/编码成功' : '解密/解码成功', 'success');
       } catch (err) {
         console.error(err);
         showStatus('处理失败：' + err.message, 'error');
