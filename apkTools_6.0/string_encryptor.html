@@ -341,6 +341,66 @@
           <div class="info-text">密钥长度越长越安全，但加密速度稍慢</div>
         `;
         algorithmControls.appendChild(keyLengthGroup);
+
+        const saltGroup = document.createElement('div');
+        saltGroup.className = 'form-group';
+        const saltBtn = document.createElement('button');
+        saltBtn.type = 'button';
+        saltBtn.className = 'btn';
+        saltBtn.id = 'generateSaltBtn';
+        saltBtn.textContent = '生成';
+        saltBtn.style.cssText = 'width:auto;padding:12px 20px;font-size:14px';
+        saltGroup.innerHTML = `
+          <label for="saltInput">盐值 (Salt)</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="saltInput" placeholder="留空自动生成，或输入32个Hex字符(16字节)" style="flex:1">
+          </div>
+          <div class="info-text">盐值用于增强密钥安全性，建议使用16字节随机值</div>
+        `;
+        const saltInputContainer = saltGroup.querySelector('div');
+        saltInputContainer.appendChild(saltBtn);
+        algorithmControls.appendChild(saltGroup);
+
+        const ivGroup = document.createElement('div');
+        ivGroup.className = 'form-group';
+        const ivBtn = document.createElement('button');
+        ivBtn.type = 'button';
+        ivBtn.className = 'btn';
+        ivBtn.id = 'generateIvBtn';
+        ivBtn.textContent = '生成';
+        ivBtn.style.cssText = 'width:auto;padding:12px 20px;font-size:14px';
+        ivGroup.innerHTML = `
+          <label for="ivInput">初始化向量 (IV)</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="ivInput" placeholder="留空自动生成，或输入Hex字符串" style="flex:1">
+          </div>
+          <div class="info-text">IV用于确保相同明文产生不同密文，GCM模式12字节(24个Hex字符)，其他模式16字节(32个Hex字符)</div>
+        `;
+        const ivInputContainer = ivGroup.querySelector('div');
+        ivInputContainer.appendChild(ivBtn);
+        algorithmControls.appendChild(ivGroup);
+
+        const iterationsGroup = document.createElement('div');
+        iterationsGroup.className = 'form-group';
+        iterationsGroup.innerHTML = `
+          <label for="iterationsInput">PBKDF2 迭代次数</label>
+          <input type="number" id="iterationsInput" value="100000" min="1000" max="10000000" step="1000">
+          <div class="info-text">迭代次数越多越安全但越慢，推荐100000-1000000</div>
+        `;
+        algorithmControls.appendChild(iterationsGroup);
+
+        const hashAlgoGroup = document.createElement('div');
+        hashAlgoGroup.className = 'form-group';
+        hashAlgoGroup.innerHTML = `
+          <label for="hashAlgoSelect">PBKDF2 哈希算法</label>
+          <select id="hashAlgoSelect">
+            <option value="SHA-256" selected>SHA-256 - 推荐</option>
+            <option value="SHA-384">SHA-384</option>
+            <option value="SHA-512">SHA-512 - 更安全但更慢</option>
+          </select>
+          <div class="info-text">用于PBKDF2密钥派生，SHA-256是平衡选择</div>
+        `;
+        algorithmControls.appendChild(hashAlgoGroup);
       } else if (algo.type === 'encode') {
         const modeGroup = document.createElement('div');
         modeGroup.className = 'form-group';
@@ -393,6 +453,10 @@
           if (currentAlgorithm === 'aes') {
             options.aesMode = document.getElementById('aesMode')?.value || 'GCM';
             options.keyLength = parseInt(document.getElementById('aesKeyLength')?.value || '256');
+            options.salt = document.getElementById('saltInput')?.value || '';
+            options.iv = document.getElementById('ivInput')?.value || '';
+            options.iterations = parseInt(document.getElementById('iterationsInput')?.value || '100000');
+            options.hashAlgo = document.getElementById('hashAlgoSelect')?.value || 'SHA-256';
           }
           result = await handleCrypto(currentAlgorithm, input, key, mode, options);
         }
@@ -666,7 +730,11 @@
         case 'aes':
           const aesMode = options.aesMode || 'GCM';
           const keyLength = options.keyLength || 256;
-          return await aesCrypto(input, key, mode, aesMode, keyLength);
+          const salt = options.salt || '';
+          const iv = options.iv || '';
+          const iterations = options.iterations || 100000;
+          const hashAlgo = options.hashAlgo || 'SHA-256';
+          return await aesCrypto(input, key, mode, aesMode, keyLength, salt, iv, iterations, hashAlgo);
         case 'caesar':
           return caesarCipher(input, parseInt(key) || 3, mode);
         default:
@@ -674,14 +742,28 @@
       }
     }
 
-    async function aesCrypto(text, password, mode, aesMode, keyLength) {
+    function hexToBytes(hex) {
+      hex = hex.replace(/\s+/g, ''); // 移除空格
+      if (hex.length % 2 !== 0) throw new Error('Hex字符串长度必须是偶数');
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+      }
+      return bytes;
+    }
+
+    function bytesToHex(bytes) {
+      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function aesCrypto(text, password, mode, aesMode, keyLength, saltInput, ivInput, iterations, hashAlgo) {
       const encoder = new TextEncoder();
       const decoder = new TextDecoder();
-      
+
       // 确定 IV 长度和算法名称（不同模式需要不同长度的 IV）
       let ivLength = 16; // 默认 16 字节
       let algorithmName;
-      
+
       if (aesMode === 'GCM') {
         ivLength = 12; // GCM 推荐使用 12 字节 IV
         algorithmName = 'AES-GCM';
@@ -703,14 +785,45 @@
         algorithmName = 'AES-GCM';
       }
 
+      // 处理盐值
+      let salt;
+      if (mode === 'encrypt') {
+        if (saltInput && saltInput.trim()) {
+          try {
+            salt = hexToBytes(saltInput.trim());
+            if (salt.length !== 16) {
+              throw new Error('盐值必须是16字节（32个Hex字符）');
+            }
+          } catch (e) {
+            throw new Error('盐值格式错误：' + e.message);
+          }
+        } else {
+          salt = crypto.getRandomValues(new Uint8Array(16));
+        }
+      } else {
+        // 解密时从密文中提取盐值
+        const allData = Uint8Array.from(atob(text), c => c.charCodeAt(0));
+        const metadataLen = (allData[0] << 8) | allData[1];
+        const metadataStr = decoder.decode(allData.slice(2, 2 + metadataLen));
+        const metadata = JSON.parse(metadataStr);
+        const dataStart = 2 + metadataLen;
+        salt = allData.slice(dataStart, dataStart + metadata.saltLen);
+      }
+
       const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
-      const salt = crypto.getRandomValues(new Uint8Array(16));
-      
+
       // 创建密钥配置
       const keyConfig = { name: algorithmName, length: keyLength };
-      
+
+      // 验证哈希算法
+      const validHashAlgos = ['SHA-256', 'SHA-384', 'SHA-512'];
+      const hashAlgorithm = validHashAlgos.includes(hashAlgo) ? hashAlgo : 'SHA-256';
+
+      // 验证迭代次数
+      const validIterations = Math.max(1000, Math.min(10000000, iterations));
+
       const key = await crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+        { name: 'PBKDF2', salt: salt, iterations: validIterations, hash: hashAlgorithm },
         keyMaterial,
         keyConfig,
         false,
@@ -720,9 +833,22 @@
       if (mode === 'encrypt') {
         let iv = null;
         let encryptParams = {};
-        
+
+        // 处理 IV
+        if (ivInput && ivInput.trim()) {
+          try {
+            iv = hexToBytes(ivInput.trim());
+            if (iv.length !== ivLength) {
+              throw new Error(`IV必须是${ivLength}字节（${ivLength * 2}个Hex字符）`);
+            }
+          } catch (e) {
+            throw new Error('IV格式错误：' + e.message);
+          }
+        } else {
+          iv = crypto.getRandomValues(new Uint8Array(ivLength));
+        }
+
         if (aesMode === 'GCM') {
-          iv = crypto.getRandomValues(new Uint8Array(12));
           encryptParams = { name: 'AES-GCM', iv: iv };
         } else if (aesMode === 'CBC') {
           iv = crypto.getRandomValues(new Uint8Array(16));
@@ -743,32 +869,34 @@
         }
 
         const encrypted = await crypto.subtle.encrypt(encryptParams, key, encoder.encode(text));
-        
+
         // 组合 salt + iv + encrypted data
         const ivSize = iv.length;
         const combined = new Uint8Array(salt.length + ivSize + encrypted.byteLength);
         combined.set(salt, 0);
         combined.set(iv, salt.length);
         combined.set(new Uint8Array(encrypted), salt.length + ivSize);
-        
-        // 添加元数据标识（salt长度 + iv长度 + 模式 + 密钥长度）
+
+        // 添加元数据标识（salt长度 + iv长度 + 模式 + 密钥长度 + 迭代次数 + 哈希算法）
         const metadata = {
           saltLen: salt.length,
           ivLen: ivSize,
           mode: aesMode,
-          keyLen: keyLength
+          keyLen: keyLength,
+          iterations: validIterations,
+          hashAlgo: hashAlgorithm
         };
         const metadataStr = JSON.stringify(metadata);
         const metadataBytes = encoder.encode(metadataStr);
         const metadataLen = new Uint8Array(2);
         metadataLen[0] = (metadataBytes.length >> 8) & 0xFF;
         metadataLen[1] = metadataBytes.length & 0xFF;
-        
+
         const final = new Uint8Array(2 + metadataBytes.length + combined.length);
         final.set(metadataLen, 0);
         final.set(metadataBytes, 2);
         final.set(combined, 2 + metadataBytes.length);
-        
+
         return btoa(String.fromCharCode(...final));
       } else {
         try {
@@ -778,27 +906,29 @@
           const metadataStr = decoder.decode(allData.slice(2, 2 + metadataLen));
           const metadata = JSON.parse(metadataStr);
           const dataStart = 2 + metadataLen;
-          
+
           const salt = allData.slice(dataStart, dataStart + metadata.saltLen);
           const ivStart = dataStart + metadata.saltLen;
           const iv = allData.slice(ivStart, ivStart + metadata.ivLen);
           const encrypted = allData.slice(ivStart + metadata.ivLen);
-          
+
           const storedMode = metadata.mode || aesMode;
           const storedKeyLen = metadata.keyLen || keyLength;
-          
+          const storedIterations = metadata.iterations || validIterations;
+          const storedHashAlgo = metadata.hashAlgo || hashAlgorithm;
+
           // 重新派生密钥
           const keyConfig = { name: `AES-${storedMode}`, length: storedKeyLen };
-          
+
           const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
           const key = await crypto.subtle.deriveKey(
-            { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+            { name: 'PBKDF2', salt: salt, iterations: storedIterations, hash: storedHashAlgo },
             keyMaterial,
             keyConfig,
             false,
             ['encrypt', 'decrypt']
           );
-          
+
           // 根据存储的模式创建解密参数
           let decryptParams = {};
           if (storedMode === 'GCM') {
@@ -815,7 +945,7 @@
             // 默认使用 GCM
             decryptParams = { name: 'AES-GCM', iv: iv };
           }
-          
+
           const decrypted = await crypto.subtle.decrypt(decryptParams, key, encrypted);
           return decoder.decode(decrypted);
         } catch (e) {
@@ -863,12 +993,42 @@
       });
     }
 
+    function generateRandomHex(bytes) {
+      const random = crypto.getRandomValues(new Uint8Array(bytes));
+      return bytesToHex(random);
+    }
+
+    function setupEventListeners() {
+      // 使用事件委托处理动态生成的按钮
+      document.addEventListener('click', (e) => {
+        if (e.target.id === 'generateSaltBtn') {
+          e.preventDefault();
+          const saltInput = document.getElementById('saltInput');
+          if (saltInput) {
+            saltInput.value = generateRandomHex(16);
+            showStatus('已生成16字节随机盐值', 'success');
+          }
+        }
+        if (e.target.id === 'generateIvBtn') {
+          e.preventDefault();
+          const ivInput = document.getElementById('ivInput');
+          const aesMode = document.getElementById('aesMode')?.value || 'GCM';
+          if (ivInput) {
+            const ivLength = aesMode === 'GCM' ? 12 : 16;
+            ivInput.value = generateRandomHex(ivLength);
+            showStatus(`已生成${ivLength}字节随机IV`, 'success');
+          }
+        }
+      });
+    }
+
     processBtn.addEventListener('click', process);
     clearBtn.addEventListener('click', clearAll);
     copyBtn.addEventListener('click', copyResult);
 
     initTabs();
     renderControls();
+    setupEventListeners();
   </script>
 </body>
 
