@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RGB 颜色互转工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .form-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .form-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px
+    }
+
+    .form-group {
+      margin-bottom: 18px
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px
+    }
+
+    .color-preview {
+      width: 100%;
+      height: 120px;
+      border-radius: 8px;
+      border: 2px solid #dee2e6;
+      margin-top: 10px;
+      background: #f0f0f0
+    }
+
+    .color-presets {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 15px
+    }
+
+    .color-card {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .color-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      border-color: #667eea
+    }
+
+    .color-card-bar {
+      height: 60px;
+      width: 100%
+    }
+
+    .color-card-info {
+      padding: 10px;
+      text-align: center
+    }
+
+    .color-card-name {
+      font-weight: 600;
+      color: #495057;
+      font-size: 13px;
+      margin-bottom: 4px
+    }
+
+    .color-card-values {
+      font-size: 11px;
+      color: #6c757d;
+      line-height: 1.4
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      margin-left: 10px
+    }
+
+    .result-display {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      word-break: break-all
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎨 RGB 颜色互转工具</h1>
+      <p>支持 RGB、HEX、HSL 颜色格式互转，提供主流颜色预设</p>
+    </div>
+    <div class="content">
+      <div class="form-section">
+        <h2>颜色输入</h2>
+        <div class="controls-grid">
+          <div class="form-group">
+            <label for="hexInput">HEX 颜色值</label>
+            <input type="text" id="hexInput" placeholder="#FF5733 或 FF5733" value="#667eea">
+          </div>
+          <div class="form-group">
+            <label for="rInput">R (0-255)</label>
+            <input type="number" id="rInput" min="0" max="255" value="102">
+          </div>
+          <div class="form-group">
+            <label for="gInput">G (0-255)</label>
+            <input type="number" id="gInput" min="0" max="255" value="126">
+          </div>
+          <div class="form-group">
+            <label for="bInput">B (0-255)</label>
+            <input type="number" id="bInput" min="0" max="255" value="234">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>颜色预览</label>
+          <div class="color-preview" id="colorPreview"></div>
+        </div>
+        <div style="margin-top:15px">
+          <button class="btn" id="convertBtn">转换</button>
+          <button class="btn btn-secondary" id="clearBtn">清空</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>转换结果</h2>
+        <div class="result-display" id="resultDisplay"></div>
+      </div>
+
+      <div class="form-section">
+        <h2>主流颜色预设</h2>
+        <div class="color-presets" id="colorPresets"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const hexInput = document.getElementById('hexInput');
+    const rInput = document.getElementById('rInput');
+    const gInput = document.getElementById('gInput');
+    const bInput = document.getElementById('bInput');
+    const colorPreview = document.getElementById('colorPreview');
+    const resultDisplay = document.getElementById('resultDisplay');
+    const convertBtn = document.getElementById('convertBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const colorPresets = document.getElementById('colorPresets');
+
+    const presetColors = [
+      { name: '红色', hex: '#FF0000', rgb: 'rgb(255, 0, 0)' },
+      { name: '绿色', hex: '#00FF00', rgb: 'rgb(0, 255, 0)' },
+      { name: '蓝色', hex: '#0000FF', rgb: 'rgb(0, 0, 255)' },
+      { name: '黄色', hex: '#FFFF00', rgb: 'rgb(255, 255, 0)' },
+      { name: '紫色', hex: '#800080', rgb: 'rgb(128, 0, 128)' },
+      { name: '青色', hex: '#00FFFF', rgb: 'rgb(0, 255, 255)' },
+      { name: '橙色', hex: '#FFA500', rgb: 'rgb(255, 165, 0)' },
+      { name: '粉色', hex: '#FFC0CB', rgb: 'rgb(255, 192, 203)' },
+      { name: '黑色', hex: '#000000', rgb: 'rgb(0, 0, 0)' },
+      { name: '白色', hex: '#FFFFFF', rgb: 'rgb(255, 255, 255)' },
+      { name: '灰色', hex: '#808080', rgb: 'rgb(128, 128, 128)' },
+      { name: '深红', hex: '#8B0000', rgb: 'rgb(139, 0, 0)' },
+      { name: '深绿', hex: '#006400', rgb: 'rgb(0, 100, 0)' },
+      { name: '深蓝', hex: '#00008B', rgb: 'rgb(0, 0, 139)' },
+      { name: '浅蓝', hex: '#87CEEB', rgb: 'rgb(135, 206, 235)' },
+      { name: '浅绿', hex: '#90EE90', rgb: 'rgb(144, 238, 144)' },
+      { name: '浅红', hex: '#FFB6C1', rgb: 'rgb(255, 182, 193)' },
+      { name: '金色', hex: '#FFD700', rgb: 'rgb(255, 215, 0)' },
+      { name: '银色', hex: '#C0C0C0', rgb: 'rgb(192, 192, 192)' },
+      { name: '棕色', hex: '#A52A2A', rgb: 'rgb(165, 42, 42)' },
+      { name: '橄榄色', hex: '#808000', rgb: 'rgb(128, 128, 0)' },
+      { name: '海军蓝', hex: '#000080', rgb: 'rgb(0, 0, 128)' },
+      { name: '青绿色', hex: '#40E0D0', rgb: 'rgb(64, 224, 208)' },
+      { name: '珊瑚色', hex: '#FF7F50', rgb: 'rgb(255, 127, 80)' },
+      { name: '番茄色', hex: '#FF6347', rgb: 'rgb(255, 99, 71)' },
+      { name: '天蓝色', hex: '#87CEEB', rgb: 'rgb(135, 206, 235)' },
+      { name: '紫罗兰', hex: '#8A2BE2', rgb: 'rgb(138, 43, 226)' },
+      { name: '深紫色', hex: '#4B0082', rgb: 'rgb(75, 0, 130)' },
+      { name: '深粉色', hex: '#FF1493', rgb: 'rgb(255, 20, 147)' },
+      { name: '青绿色', hex: '#00CED1', rgb: 'rgb(0, 206, 209)' }
+    ];
+
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      return { r, g, b };
+    }
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('').toUpperCase();
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+      return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        l: Math.round(l * 100)
+      };
+    }
+
+    function updatePreview(r, g, b) {
+      const hex = rgbToHex(r, g, b);
+      colorPreview.style.backgroundColor = hex;
+      const hsl = rgbToHsl(r, g, b);
+      resultDisplay.innerHTML = `
+        <div style="line-height:1.8">
+          <strong>HEX:</strong> ${hex}<br>
+          <strong>RGB:</strong> rgb(${r}, ${g}, ${b})<br>
+          <strong>RGBA:</strong> rgba(${r}, ${g}, ${b}, 1)<br>
+          <strong>HSL:</strong> hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)<br>
+          <strong>HSLA:</strong> hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, 1)
+        </div>
+      `;
+    }
+
+    function convert() {
+      let r, g, b;
+      if (hexInput.value.trim()) {
+        try {
+          const rgb = hexToRgb(hexInput.value.trim());
+          r = rgb.r; g = rgb.g; b = rgb.b;
+          rInput.value = r;
+          gInput.value = g;
+          bInput.value = b;
+        } catch (e) {
+          alert('HEX格式错误');
+          return;
+        }
+      } else {
+        r = parseInt(rInput.value) || 0;
+        g = parseInt(gInput.value) || 0;
+        b = parseInt(bInput.value) || 0;
+        r = Math.max(0, Math.min(255, r));
+        g = Math.max(0, Math.min(255, g));
+        b = Math.max(0, Math.min(255, b));
+        rInput.value = r;
+        gInput.value = g;
+        bInput.value = b;
+        hexInput.value = rgbToHex(r, g, b);
+      }
+      updatePreview(r, g, b);
+    }
+
+    function initPresets() {
+      presetColors.forEach(color => {
+        const card = document.createElement('div');
+        card.className = 'color-card';
+        const rgb = hexToRgb(color.hex);
+        card.innerHTML = `
+          <div class="color-card-bar" style="background:${color.hex}"></div>
+          <div class="color-card-info">
+            <div class="color-card-name">${color.name}</div>
+            <div class="color-card-values">${color.hex}<br>${color.rgb}</div>
+          </div>
+        `;
+        card.onclick = () => {
+          hexInput.value = color.hex;
+          rInput.value = rgb.r;
+          gInput.value = rgb.g;
+          bInput.value = rgb.b;
+          convert();
+        };
+        colorPresets.appendChild(card);
+      });
+    }
+
+    hexInput.addEventListener('input', convert);
+    rInput.addEventListener('input', convert);
+    gInput.addEventListener('input', convert);
+    bInput.addEventListener('input', convert);
+    convertBtn.addEventListener('click', convert);
+    clearBtn.addEventListener('click', () => {
+      hexInput.value = '';
+      rInput.value = '0';
+      gInput.value = '0';
+      bInput.value = '0';
+      colorPreview.style.backgroundColor = '#f0f0f0';
+      resultDisplay.innerHTML = '';
+    });
+
+    initPresets();
+    convert();
+  </script>
+</body>
+
+</html>
