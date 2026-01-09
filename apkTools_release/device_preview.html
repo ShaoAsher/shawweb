@@ -864,13 +864,22 @@
         const brandIcon = brandIcons[brand] || 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/android.svg';
         const groupId = `brand-group-${brandIndex}`;
 
-        const devicesHtml = brandDevices.map(device => {
+        // 存储设备数据到全局对象
+        if (!window.deviceDataMap) {
+          window.deviceDataMap = {};
+        }
+
+        const devicesHtml = brandDevices.map((device, deviceIndex) => {
           const displaySize = device.size || '-';
           const displayResolution = device.resolution || '-';
           const displayDate = device.releaseDate || '-';
+          const deviceId = `${groupId}-device-${deviceIndex}`;
+          
+          // 存储设备数据
+          window.deviceDataMap[deviceId] = device;
 
           return `
-            <div class="device-card">
+            <div class="device-card" data-device-id="${deviceId}">
               <div class="device-header">
                 <img src="${brandIcon}" alt="${brand}" class="brand-icon" onerror="this.src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/android.svg'">
                 <div class="device-title">
