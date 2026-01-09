@@ -516,9 +516,6 @@
         <div class="stat-item">
           <strong>行数:</strong> ${outputLines}
         </div>
-        <div class="stat-item">
-          <strong>压缩率:</strong> ${((1 - outputLength / inputLength) * 100).toFixed(1)}%
-        </div>
       `;
     }
 
@@ -588,7 +585,7 @@
     const exampleJSON = {
       "name": "JSON 格式化工具",
       "version": "1.0.0",
-      "features": ["格式化", "压缩", "验证", "预览"],
+      "features": ["格式化", "验证", "预览"],
       "author": {
         "name": "开发者",
         "email": "dev@example.com"
