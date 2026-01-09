@@ -641,14 +641,45 @@
       'ASUS': 'https://www.asus.com.cn'
     };
 
-    // 获取手机图片URL（可以从公开API获取）
+    // 品牌图片映射（使用品牌代表性图片）
+    const brandImages = {
+      'Apple': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
+      'Samsung': 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400',
+      'Huawei': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Xiaomi': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'OPPO': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'vivo': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'OnePlus': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Realme': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Honor': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Google': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Sony': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'LG': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Motorola': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Nokia': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Redmi': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Meizu': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'Lenovo': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'ZTE': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400',
+      'ASUS': 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400'
+    };
+
+    // 获取手机图片URL（使用品牌图片）
     function getDeviceImageUrl(device) {
-      // 使用GSMArena或其他公开图片源
-      const modelName = device.model.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-      const brandName = device.brand.toLowerCase();
-      // 示例：可以从公开API获取，这里使用占位图
-      return `https://fdn2.gsmarena.com/vv/bigpic/${modelName}.jpg`;
+      return brandImages[device.brand] || 'https://images.unsplash.com/photo-1592750475338-74b7bae5fcf7?w=400';
     }
+
+    // 品牌排序优先级
+    const brandSortOrder = {
+      'Apple': 1,
+      'Huawei': 2,
+      'Xiaomi': 3,
+      'OPPO': 4,
+      'vivo': 5,
+      'OnePlus': 6,
+      'ASUS': 7,
+      'Samsung': 8
+    };
 
     // 默认机型数据（可以从API获取）
     let deviceData = [
@@ -855,8 +886,15 @@
         groupedDevices[device.brand].push(device);
       });
 
-      // 按品牌名称排序
-      const sortedBrands = Object.keys(groupedDevices).sort();
+      // 按自定义品牌排序
+      const sortedBrands = Object.keys(groupedDevices).sort((a, b) => {
+        const orderA = brandSortOrder[a] || 999;
+        const orderB = brandSortOrder[b] || 999;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        return a.localeCompare(b);
+      });
 
       // 生成HTML
       deviceList.innerHTML = sortedBrands.map((brand, brandIndex) => {
@@ -874,7 +912,7 @@
           const displayResolution = device.resolution || '-';
           const displayDate = device.releaseDate || '-';
           const deviceId = `${groupId}-device-${deviceIndex}`;
-          
+
           // 存储设备数据
           window.deviceDataMap[deviceId] = device;
 
@@ -968,74 +1006,118 @@
       document.getElementById('lastUpdate').textContent = lastUpdateTime;
     }
 
+    // 从GitHub获取Apple设备数据
+    async function fetchAppleDeviceData() {
+      try {
+        // 从GitHub获取Apple设备型号列表
+        const response = await fetch('https://raw.githubusercontent.com/pluwen/apple-device-model-list/main/README.md', {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/plain'
+          },
+          signal: AbortSignal.timeout(5000)
+        });
+
+        if (response.ok) {
+          const text = await response.text();
+          const appleDevices = parseAppleDeviceList(text);
+          
+          if (appleDevices.length > 0) {
+            // 合并到现有数据，更新Apple设备
+            const existingKeys = new Set(deviceData.map(d => `${d.brand}-${d.model}`));
+            const newAppleDevices = appleDevices.filter(d => {
+              const key = `${d.brand}-${d.model}`;
+              return !existingKeys.has(key);
+            });
+
+            // 移除旧的Apple设备，添加新的
+            deviceData = deviceData.filter(d => d.brand !== 'Apple');
+            deviceData = [...deviceData, ...appleDevices];
+            
+            // 按上市时间排序
+            deviceData.sort((a, b) => {
+              if (!a.releaseDate) return 1;
+              if (!b.releaseDate) return -1;
+              return b.releaseDate.localeCompare(a.releaseDate);
+            });
+            
+            return true;
+          }
+        }
+      } catch (e) {
+        console.warn('获取Apple设备数据失败:', e);
+      }
+      return false;
+    }
+
+    // 解析Apple设备列表（从README.md格式解析）
+    function parseAppleDeviceList(text) {
+      const devices = [];
+      const lines = text.split('\n');
+      let inIPhoneSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // 检测iPhone部分
+        if (line.includes('## iPhone') || line.includes('##iPhone')) {
+          inIPhoneSection = true;
+          continue;
+        }
+        
+        // 检测其他部分，停止解析iPhone
+        if (inIPhoneSection && (line.startsWith('##') || line.startsWith('# '))) {
+          break;
+        }
+        
+        if (inIPhoneSection && line.includes('iPhone')) {
+          // 解析格式: "iPhone15,2": iPhone 14 Pro
+          const match = line.match(/"([^"]+)":\s*(.+)/);
+          if (match) {
+            const internalModel = match[1];
+            const deviceName = match[2].trim();
+            
+            // 提取型号和上市时间（从现有数据中匹配或使用默认值）
+            const existingDevice = deviceData.find(d => 
+              d.brand === 'Apple' && d.name === deviceName
+            );
+            
+            devices.push({
+              brand: 'Apple',
+              name: deviceName,
+              model: existingDevice?.model || internalModel,
+              internalModel: internalModel,
+              size: existingDevice?.size || '-',
+              resolution: existingDevice?.resolution || '-',
+              releaseDate: existingDevice?.releaseDate || getReleaseDateFromName(deviceName)
+            });
+          }
+        }
+      }
+      
+      return devices;
+    }
+
+    // 从设备名称推断上市时间
+    function getReleaseDateFromName(name) {
+      // 简单的年份推断逻辑
+      if (name.includes('16')) return '2024-09';
+      if (name.includes('15')) return '2023-09';
+      if (name.includes('14')) return '2022-09';
+      if (name.includes('13')) return '2021-09';
+      if (name.includes('12')) return '2020-10';
+      if (name.includes('11')) return '2019-09';
+      if (name.includes('SE 3') || name.includes('SE 第三代')) return '2022-03';
+      if (name.includes('SE 2') || name.includes('SE 第二代')) return '2020-04';
+      if (name.includes('SE')) return '2016-03';
+      return '';
+    }
+
     // 从公开API获取最新数据
     async function fetchDeviceData() {
       try {
-        // 尝试从公开数据源获取数据（GitHub raw content或其他公开API）
-        // 注意：由于CORS限制，某些API可能需要代理
-        const apiSources = [
-          // 示例：GitHub上的公开JSON数据源
-          // 'https://raw.githubusercontent.com/user/repo/main/devices.json',
-          // 可以添加更多公开API源
-        ];
-
-        let hasNewData = false;
-
-        // 尝试从各个数据源获取
-        for (const apiUrl of apiSources) {
-          if (!apiUrl) continue;
-
-          try {
-            const response = await fetch(apiUrl, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json'
-              },
-              signal: AbortSignal.timeout(5000)
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-
-              // 转换数据格式以匹配我们的结构
-              if (Array.isArray(data)) {
-                const fetchedDevices = data.map(item => ({
-                  brand: item.brand || item.manufacturer || '',
-                  name: item.name || item.model || '',
-                  model: item.model || item.device || '',
-                  size: item.size || item.display_size || item.screen_size || '',
-                  resolution: item.resolution || item.display_resolution || '',
-                  releaseDate: item.releaseDate || item.release_date || item.announced || ''
-                })).filter(item => item.brand && item.name);
-
-                if (fetchedDevices.length > 0) {
-                  // 合并新数据（去重）
-                  const existingKeys = new Set(deviceData.map(d => `${d.brand}-${d.model}`));
-                  const newDevices = fetchedDevices.filter(d => {
-                    const key = `${d.brand}-${d.model}`;
-                    return !existingKeys.has(key);
-                  });
-
-                  if (newDevices.length > 0) {
-                    deviceData = [...deviceData, ...newDevices];
-                    // 按上市时间排序
-                    deviceData.sort((a, b) => {
-                      if (!a.releaseDate) return 1;
-                      if (!b.releaseDate) return -1;
-                      return b.releaseDate.localeCompare(a.releaseDate);
-                    });
-                    hasNewData = true;
-                  }
-                }
-              }
-
-              if (hasNewData) break;
-            }
-          } catch (e) {
-            console.warn('API获取失败:', apiUrl, e);
-            continue;
-          }
-        }
+        // 首先获取Apple设备数据
+        await fetchAppleDeviceData();
 
         // 更新时间戳
         lastUpdateTime = new Date().toLocaleString('zh-CN');
@@ -1055,7 +1137,7 @@
         // 即使失败也更新时间戳
         lastUpdateTime = new Date().toLocaleString('zh-CN');
         updateLastUpdateTime();
-
+        
         // 确保显示本地数据
         if (filteredData.length === 0) {
           filteredData = [...deviceData];
@@ -1159,36 +1241,6 @@
       document.body.style.overflow = '';
     }
 
-    // 获取摄像头信息（可以从API获取或使用默认数据）
-    function getCameraInfo(device) {
-      // 这里可以根据设备型号返回具体的摄像头参数
-      // 示例数据，实际应该从API获取
-      const defaultCamera = [
-        { label: '后置主摄', value: '48MP' },
-        { label: '后置超广角', value: '12MP' },
-        { label: '后置长焦', value: '12MP' },
-        { label: '前置摄像头', value: '12MP' },
-        { label: '视频录制', value: '4K@60fps' }
-      ];
-
-      // 可以根据品牌和型号返回更具体的信息
-      return defaultCamera;
-    }
-
-    // 获取设备其他规格
-    function getDeviceSpecs(device) {
-      // 示例数据，实际应该从API获取
-      return [
-        { label: '处理器', value: '高性能处理器' },
-        { label: '内存', value: '8GB/12GB' },
-        { label: '存储', value: '128GB/256GB/512GB' },
-        { label: '电池容量', value: '4500mAh' },
-        { label: '充电功率', value: '65W快充' },
-        { label: '操作系统', value: 'Android/iOS' },
-        { label: '网络支持', value: '5G' },
-        { label: '防水等级', value: 'IP68' }
-      ];
-    }
 
     // 页面加载完成后初始化
     document.addEventListener('DOMContentLoaded', init);
