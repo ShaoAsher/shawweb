@@ -779,6 +779,20 @@
     let currentBatchType = 'params';
     let currentBodyType = 'none';
 
+    // 初始化：显示 body none 内容
+    window.addEventListener('DOMContentLoaded', () => {
+      showBodyContent('none');
+    });
+
+    // 确保在页面加载后初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        showBodyContent('none');
+      });
+    } else {
+      showBodyContent('none');
+    }
+
     // 标签页切换
     document.querySelectorAll('.main-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -1128,11 +1142,11 @@
 
     // 历史记录
     let requestHistory = JSON.parse(localStorage.getItem('apiDebuggerHistory') || '[]');
-    
+
     document.getElementById('historyBtn').addEventListener('click', () => {
       showHistoryModal();
     });
-    
+
     function showHistoryModal() {
       const modal = document.createElement('div');
       modal.className = 'modal active';
@@ -1168,7 +1182,7 @@
         }
       });
     }
-    
+
     function getMethodColor(method) {
       const colors = {
         'GET': '#07C160',
@@ -1179,14 +1193,14 @@
       };
       return colors[method] || '#6c757d';
     }
-    
+
     function loadHistoryItem(index) {
       const item = requestHistory[index];
       document.getElementById('httpMethod').value = item.method;
       document.getElementById('httpUrl').value = item.url;
       document.querySelector('.modal.active')?.remove();
     }
-    
+
     function clearHistory() {
       if (confirm('确定要清空所有历史记录吗？')) {
         requestHistory = [];
@@ -1225,7 +1239,7 @@
 
       // 判断当前选中的标签页
       const activeTab = document.querySelector('.main-tab.active').dataset.tab;
-      
+
       // 如果选中的是 Body 标签页，处理 Body
       if (activeTab === 'body') {
         if (currentBodyType === 'form-data') {
@@ -1282,7 +1296,7 @@
           }
         }
       }
-      
+
       // 如果选中的是 Params 标签页，处理 Query 参数
       if (activeTab === 'params') {
         const urlObj = new URL(url.startsWith('http') ? url : 'https://example.com' + url);
