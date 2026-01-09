@@ -121,6 +121,49 @@
       line-height: 1.6
     }
 
+    .json-collapsible {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .json-collapsible:hover {
+      background: #f8f9fa;
+    }
+
+    .json-collapsible::before {
+      content: '▶';
+      display: inline-block;
+      width: 12px;
+      margin-right: 4px;
+      transition: transform 0.2s;
+      color: #6c757d;
+    }
+
+    .json-collapsible.collapsed::before {
+      transform: rotate(0deg);
+    }
+
+    .json-collapsible.expanded::before {
+      transform: rotate(90deg);
+    }
+
+    .json-children {
+      margin-left: 20px;
+      border-left: 1px solid #e9ecef;
+      padding-left: 10px;
+    }
+
+    .json-collapsible.collapsed + .json-children {
+      display: none;
+    }
+
+    .json-count {
+      color: #6c757d;
+      font-size: 12px;
+      font-weight: normal;
+      margin-left: 5px;
+    }
+
     .preview-section .json-key {
       color: #0969da;
       font-weight: 600
@@ -335,38 +378,99 @@
 
     // 显示预览
     function displayPreview(jsonString, parsedObj) {
-      const html = syntaxHighlight(jsonString, parsedObj);
+      const html = renderJSON(parsedObj, 0);
       jsonPreview.innerHTML = html;
       previewStatus.textContent = '已格式化';
       previewStatus.className = 'status valid';
+      
+      // 绑定折叠展开事件
+      bindCollapseEvents();
     }
 
-    // 语法高亮（使用更简单的方法）
-    function syntaxHighlight(jsonString, parsedObj) {
-      // 转义HTML
-      let html = jsonString
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+    // 渲染JSON（支持折叠展开）
+    function renderJSON(obj, indent = 0) {
+      const indentStr = '&nbsp;'.repeat(indent * 2);
+      const nextIndent = indent + 1;
+      const nextIndentStr = '&nbsp;'.repeat(nextIndent * 2);
 
-      // 高亮字符串
-      html = html.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        let cls = 'json-number';
-        if (/^"/.test(match)) {
-          if (/:$/.test(match)) {
-            cls = 'json-key';
-          } else {
-            cls = 'json-string';
-          }
-        } else if (/true|false/.test(match)) {
-          cls = 'json-boolean';
-        } else if (/null/.test(match)) {
-          cls = 'json-null';
+      if (obj === null) {
+        return `<span class="json-null">null</span>`;
+      }
+
+      if (typeof obj === 'string') {
+        return `<span class="json-string">"${escapeHtml(obj)}"</span>`;
+      }
+
+      if (typeof obj === 'number') {
+        return `<span class="json-number">${obj}</span>`;
+      }
+
+      if (typeof obj === 'boolean') {
+        return `<span class="json-boolean">${obj}</span>`;
+      }
+
+      if (Array.isArray(obj)) {
+        if (obj.length === 0) {
+          return `[]`;
         }
-        return '<span class="' + cls + '">' + match + '</span>';
-      });
+        const id = 'arr_' + Math.random().toString(36).substr(2, 9);
+        let html = `<span class="json-collapsible collapsed" data-id="${id}">[<span class="json-count">${obj.length} items</span>]</span>`;
+        html += `<div class="json-children" id="${id}">`;
+        obj.forEach((item, index) => {
+          html += `${nextIndentStr}${renderJSON(item, nextIndent)}`;
+          if (index < obj.length - 1) html += ',';
+          html += '<br>';
+        });
+        html += `${indentStr}]</div>`;
+        return html;
+      }
 
-      return html || '<div style="color: #6c757d;">暂无内容</div>';
+      if (typeof obj === 'object') {
+        const keys = Object.keys(obj);
+        if (keys.length === 0) {
+          return `{}`;
+        }
+        const id = 'obj_' + Math.random().toString(36).substr(2, 9);
+        let html = `<span class="json-collapsible collapsed" data-id="${id}">{<span class="json-count">${keys.length} keys</span>}</span>`;
+        html += `<div class="json-children" id="${id}">`;
+        keys.forEach((key, index) => {
+          html += `${nextIndentStr}<span class="json-key">"${escapeHtml(key)}"</span>: ${renderJSON(obj[key], nextIndent)}`;
+          if (index < keys.length - 1) html += ',';
+          html += '<br>';
+        });
+        html += `${indentStr}}</div>`;
+        return html;
+      }
+
+      return escapeHtml(String(obj));
+    }
+
+    // 绑定折叠展开事件
+    function bindCollapseEvents() {
+      document.querySelectorAll('.json-collapsible').forEach(el => {
+        el.addEventListener('click', function () {
+          const id = this.dataset.id;
+          const children = document.getElementById(id);
+          if (children) {
+            if (this.classList.contains('collapsed')) {
+              this.classList.remove('collapsed');
+              this.classList.add('expanded');
+              children.style.display = 'block';
+            } else {
+              this.classList.remove('expanded');
+              this.classList.add('collapsed');
+              children.style.display = 'none';
+            }
+          }
+        });
+      });
+    }
+
+    // HTML转义
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
 
     // 显示错误

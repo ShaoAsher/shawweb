@@ -202,13 +202,48 @@
       <!-- 银行卡号生成器 -->
       <div class="generator-section">
         <h2>标准银行卡卡号生成器</h2>
-        <div class="form-group">
-          <label>生成数量</label>
-          <input type="number" id="cardCount" value="1" min="1" max="100" placeholder="输入生成数量">
+        <div class="controls-grid">
+          <div class="form-group">
+            <label>选择银行</label>
+            <select id="cardBank">
+              <option value="random">随机银行</option>
+              <option value="6217">中国工商银行 (6217)</option>
+              <option value="6228">中国工商银行 (6228)</option>
+              <option value="6222">中国工商银行 (6222)</option>
+              <option value="6212">中国农业银行 (6212)</option>
+              <option value="6228">中国农业银行 (6228)</option>
+              <option value="6228">中国建设银行 (6228)</option>
+              <option value="6227">中国建设银行 (6227)</option>
+              <option value="6225">中国建设银行 (6225)</option>
+              <option value="6221">中国银行 (6221)</option>
+              <option value="6227">中国银行 (6227)</option>
+              <option value="6225">交通银行 (6225)</option>
+              <option value="6221">交通银行 (6221)</option>
+              <option value="6221">招商银行 (6221)</option>
+              <option value="6225">招商银行 (6225)</option>
+              <option value="6228">招商银行 (6228)</option>
+              <option value="6221">浦发银行 (6221)</option>
+              <option value="6225">浦发银行 (6225)</option>
+              <option value="6221">民生银行 (6221)</option>
+              <option value="6225">民生银行 (6225)</option>
+              <option value="6221">中信银行 (6221)</option>
+              <option value="6225">中信银行 (6225)</option>
+              <option value="6221">光大银行 (6221)</option>
+              <option value="6225">光大银行 (6225)</option>
+              <option value="6221">华夏银行 (6221)</option>
+              <option value="6225">华夏银行 (6225)</option>
+              <option value="6221">平安银行 (6221)</option>
+              <option value="6225">平安银行 (6225)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>生成数量</label>
+            <input type="number" id="cardCount" value="1" min="1" max="100" placeholder="输入生成数量">
+          </div>
         </div>
         <div class="form-group">
-          <label>卡号前缀（可选，如：6217, 6228）</label>
-          <input type="text" id="cardPrefix" placeholder="留空则随机生成" maxlength="6">
+          <label>自定义前缀（可选，如：6217, 6228，留空则使用选择的银行）</label>
+          <input type="text" id="cardPrefix" placeholder="留空则使用选择的银行" maxlength="6">
         </div>
         <div class="btn-group">
           <button class="btn" onclick="generateCardNumbers()">生成银行卡号</button>
@@ -321,24 +356,47 @@
       return (10 - (sum % 10)) % 10;
     }
 
+    // 银行前缀映射
+    const bankPrefixes = {
+      '6217': ['6217'],
+      '6228': ['6228'],
+      '6222': ['6222'],
+      '6212': ['6212'],
+      '6227': ['6227'],
+      '6225': ['6225'],
+      '6221': ['6221'],
+      'random': []
+    };
+
     // 生成银行卡号
     function generateCardNumbers() {
       const count = parseInt(document.getElementById('cardCount').value) || 1;
-      const prefix = document.getElementById('cardPrefix').value.trim();
+      const selectedBank = document.getElementById('cardBank').value;
+      const customPrefix = document.getElementById('cardPrefix').value.trim();
       const results = [];
 
       for (let i = 0; i < count; i++) {
-        let cardNumber;
-        if (prefix) {
-          // 如果有前缀，补齐到15位，然后计算校验位
-          cardNumber = prefix.padEnd(15, Math.floor(Math.random() * 10).toString());
+        let prefix;
+        if (customPrefix) {
+          // 优先使用自定义前缀
+          prefix = customPrefix;
+        } else if (selectedBank !== 'random' && bankPrefixes[selectedBank]) {
+          // 使用选择的银行前缀
+          const prefixes = bankPrefixes[selectedBank];
+          prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
         } else {
-          // 随机生成15位数字
-          cardNumber = '';
-          for (let j = 0; j < 15; j++) {
-            cardNumber += Math.floor(Math.random() * 10).toString();
-          }
+          // 随机生成前缀（常见的前缀）
+          const commonPrefixes = ['6217', '6228', '6222', '6212', '6227', '6225', '6221', '6210', '6211', '6213'];
+          prefix = commonPrefixes[Math.floor(Math.random() * commonPrefixes.length)];
         }
+
+        // 补齐到15位，然后计算校验位
+        let cardNumber = prefix;
+        while (cardNumber.length < 15) {
+          cardNumber += Math.floor(Math.random() * 10).toString();
+        }
+        cardNumber = cardNumber.substring(0, 15); // 确保正好15位
+
         // 计算校验位
         const checksum = luhnChecksum(cardNumber);
         cardNumber += checksum;
