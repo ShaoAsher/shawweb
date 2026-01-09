@@ -52,73 +52,117 @@
       padding: 40px 30px
     }
 
-    /* 轮播容器 */
+    /* 卡片堆叠容器 */
     .carousel-section {
-      margin-bottom: 60px
+      margin-bottom: 80px;
+      padding: 60px 0
     }
 
     .carousel-container {
       position: relative;
       width: 100%;
-      padding: 40px 0 80px 0;
-      overflow: hidden
+      height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
+      overflow: visible
     }
 
-    .carousel-wrapper {
+    .carousel-stack {
       position: relative;
       width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
-      justify-content: center;
-      min-height: 450px
-    }
-
-    .carousel-track {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform
+      justify-content: center
     }
 
     .tool-card {
-      width: 300px;
-      height: 420px;
+      position: absolute;
+      width: 320px;
+      height: 450px;
       background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, .15);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       display: flex;
       flex-direction: column;
       border: 3px solid transparent;
-      flex-shrink: 0;
-      opacity: 0.5;
-      transform: scale(0.85);
-      pointer-events: none
+      backface-visibility: hidden;
+      will-change: transform, z-index
     }
 
-    .tool-card.active {
-      opacity: 1;
-      transform: scale(1);
-      border-color: #667eea;
-      box-shadow: 0 20px 60px rgba(102, 126, 234, .4);
-      z-index: 10;
+    /* 堆叠效果 - 后面的卡片 */
+    .tool-card:not(.active) {
+      transform: scale(0.85) translateX(0) translateY(20px);
+      opacity: 0.7;
+      z-index: 1;
+      filter: blur(2px);
       pointer-events: auto
     }
 
-    .tool-card:hover {
-      transform: scale(1.05) translateY(-10px);
-      box-shadow: 0 25px 70px rgba(102, 126, 234, .5)
+    /* 最前面的卡片 */
+    .tool-card.active {
+      transform: scale(1) translateX(0) translateY(0);
+      opacity: 1;
+      z-index: 10;
+      filter: blur(0);
+      border-color: #667eea;
+      box-shadow: 0 30px 80px rgba(102, 126, 234, .4);
+      pointer-events: auto
+    }
+
+    /* 后面的卡片位置调整 */
+    .tool-card[data-index="1"]:not(.active) {
+      transform: scale(0.9) translateX(-280px) translateY(30px);
+      z-index: 2
+    }
+
+    .tool-card[data-index="2"]:not(.active) {
+      transform: scale(0.85) translateX(-240px) translateY(40px);
+      z-index: 1
+    }
+
+    .tool-card[data-index="3"]:not(.active) {
+      transform: scale(0.8) translateX(-200px) translateY(50px);
+      z-index: 1
+    }
+
+    .tool-card[data-index="-1"]:not(.active) {
+      transform: scale(0.9) translateX(280px) translateY(30px);
+      z-index: 2
+    }
+
+    .tool-card[data-index="-2"]:not(.active) {
+      transform: scale(0.85) translateX(240px) translateY(40px);
+      z-index: 1
+    }
+
+    .tool-card[data-index="-3"]:not(.active) {
+      transform: scale(0.8) translateX(200px) translateY(50px);
+      z-index: 1
+    }
+
+    .tool-card:hover:not(.active) {
+      transform: scale(0.95) translateX(var(--hover-x, 0)) translateY(10px) !important;
+      opacity: 0.9;
+      filter: blur(1px);
+      z-index: 5 !important
+    }
+
+    .tool-card.active:hover {
+      transform: scale(1.05) translateY(-10px) !important;
+      box-shadow: 0 40px 100px rgba(102, 126, 234, .5)
     }
 
     .tool-icon {
-      font-size: 56px;
-      margin-bottom: 20px;
+      font-size: 64px;
+      margin-bottom: 24px;
       text-align: center;
-      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .1));
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, .15));
       transition: transform 0.3s
     }
 
@@ -127,10 +171,10 @@
     }
 
     .tool-title {
-      font-size: 20px;
+      font-size: 22px;
       color: #2d3748;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       text-align: center;
       line-height: 1.4
     }
@@ -138,8 +182,8 @@
     .tool-desc {
       font-size: 14px;
       color: #718096;
-      line-height: 1.7;
-      margin-bottom: 24px;
+      line-height: 1.8;
+      margin-bottom: 28px;
       flex: 1;
       text-align: center
     }
@@ -158,7 +202,12 @@
       text-decoration: none;
       text-align: center;
       display: block;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, .3)
+      box-shadow: 0 4px 15px rgba(102, 126, 234, .3);
+      pointer-events: none
+    }
+
+    .tool-card.active .btn {
+      pointer-events: auto
     }
 
     .btn:hover {
@@ -172,7 +221,7 @@
       justify-content: center;
       align-items: center;
       gap: 20px;
-      margin-top: 30px;
+      margin-top: 40px;
       margin-bottom: 30px
     }
 
@@ -209,7 +258,7 @@
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 40px;
+      margin-bottom: 50px;
       padding-bottom: 20px;
       flex-wrap: wrap
     }
@@ -238,7 +287,7 @@
 
     /* 快捷入口分组 */
     .quick-section {
-      margin-top: 40px;
+      margin-top: 60px;
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
       border-radius: 20px;
       padding: 40px 30px;
@@ -345,34 +394,42 @@
     /* 响应式 */
     @media (max-width: 1024px) {
       .tool-card {
-        width: 280px;
-        height: 400px
+        width: 300px;
+        height: 420px
+      }
+
+      .tool-card[data-index="1"]:not(.active) {
+        transform: scale(0.9) translateX(-250px) translateY(30px)
+      }
+
+      .tool-card[data-index="-1"]:not(.active) {
+        transform: scale(0.9) translateX(250px) translateY(30px)
       }
     }
 
     @media (max-width: 768px) {
       .tool-card {
-        width: 260px;
-        height: 380px;
-        padding: 24px
+        width: 280px;
+        height: 400px;
+        padding: 28px
       }
 
       .carousel-container {
-        padding: 30px 0 60px 0
+        height: 450px
+      }
+
+      .tool-card[data-index="1"]:not(.active),
+      .tool-card[data-index="-1"]:not(.active) {
+        transform: scale(0.85) translateX(0) translateY(20px)
+      }
+
+      .tool-card[data-index="2"]:not(.active),
+      .tool-card[data-index="-2"]:not(.active) {
+        display: none
       }
 
       .quick-groups {
         grid-template-columns: 1fr
-      }
-
-      .carousel-indicators {
-        margin-bottom: 30px;
-        padding-bottom: 15px
-      }
-
-      .quick-section {
-        margin-top: 30px;
-        padding: 30px 20px
       }
     }
   </style>
@@ -386,18 +443,16 @@
       <p>统一入口，快速访问常用页面</p>
     </div>
     <div class="content">
-      <!-- 卡片轮播 -->
+      <!-- 卡片堆叠轮播 -->
       <div class="carousel-section">
         <div class="carousel-container">
-          <div class="carousel-wrapper">
-            <div class="carousel-track" id="carouselTrack"></div>
-          </div>
-          <div class="carousel-nav">
-            <button class="nav-btn" id="prevBtn">‹</button>
-            <button class="nav-btn" id="nextBtn">›</button>
-          </div>
-          <div class="carousel-indicators" id="indicators"></div>
+          <div class="carousel-stack" id="carouselStack"></div>
         </div>
+        <div class="carousel-nav">
+          <button class="nav-btn" id="prevBtn">‹</button>
+          <button class="nav-btn" id="nextBtn">›</button>
+        </div>
+        <div class="carousel-indicators" id="indicators"></div>
       </div>
 
       <!-- 分组快捷入口 -->
@@ -475,17 +530,18 @@
 
     let currentIndex = 0;
     const totalCards = tools.length;
-    const visibleCards = 3; // 可见卡片数量（中心1个 + 两侧各1个）
 
-    // 初始化轮播
+    // 初始化堆叠轮播
     function initCarousel() {
-      const track = document.getElementById('carouselTrack');
+      const stack = document.getElementById('carouselStack');
       const indicators = document.getElementById('indicators');
 
       // 创建卡片
       tools.forEach((tool, index) => {
         const card = document.createElement('div');
         card.className = 'tool-card';
+        card.dataset.index = index;
+        card.dataset.originalIndex = index;
         if (index === 0) card.classList.add('active');
         card.innerHTML = `
           <div class="tool-icon">${tool.icon}</div>
@@ -493,7 +549,19 @@
           <div class="tool-desc">${tool.desc}</div>
           <a class="btn" href="${tool.href}">打开工具</a>
         `;
-        track.appendChild(card);
+        
+        // 点击后面的卡片 - 切换到前面
+        card.addEventListener('click', (e) => {
+          if (!card.classList.contains('active')) {
+            const clickedIndex = parseInt(card.dataset.originalIndex);
+            goToIndex(clickedIndex);
+          } else {
+            // 点击最前面的卡片 - 进入页面（通过按钮）
+            // 按钮已经有链接，这里不需要额外处理
+          }
+        });
+        
+        stack.appendChild(card);
 
         // 创建指示器
         const indicator = document.createElement('div');
@@ -506,22 +574,29 @@
       updateCarousel();
     }
 
-    // 更新轮播位置
+    // 更新堆叠位置
     function updateCarousel() {
-      const track = document.getElementById('carouselTrack');
       const cards = document.querySelectorAll('.tool-card');
       const indicators = document.querySelectorAll('.indicator');
-      const cardWidth = 300; // 卡片宽度
-      const gap = 20; // 卡片间距
-      const offset = -(currentIndex * (cardWidth + gap));
 
-      // 移动轨道
-      track.style.transform = `translateX(${offset}px)`;
-
-      // 更新卡片状态
       cards.forEach((card, index) => {
+        const originalIndex = parseInt(card.dataset.originalIndex);
+        const relativeIndex = originalIndex - currentIndex;
+        
+        // 处理循环索引
+        let normalizedIndex = relativeIndex;
+        if (normalizedIndex > totalCards / 2) {
+          normalizedIndex -= totalCards;
+        } else if (normalizedIndex < -totalCards / 2) {
+          normalizedIndex += totalCards;
+        }
+
+        // 更新 data-index 用于 CSS 定位
+        card.dataset.index = normalizedIndex;
+        
+        // 更新 active 状态
         card.classList.remove('active');
-        if (index === currentIndex) {
+        if (normalizedIndex === 0) {
           card.classList.add('active');
         }
       });
@@ -535,24 +610,20 @@
       });
 
       // 更新导航按钮
-      document.getElementById('prevBtn').disabled = currentIndex === 0;
-      document.getElementById('nextBtn').disabled = currentIndex === totalCards - 1;
+      document.getElementById('prevBtn').disabled = false;
+      document.getElementById('nextBtn').disabled = false;
     }
 
     // 上一张
     function prevCard() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateCarousel();
-      }
+      currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+      updateCarousel();
     }
 
     // 下一张
     function nextCard() {
-      if (currentIndex < totalCards - 1) {
-        currentIndex++;
-        updateCarousel();
-      }
+      currentIndex = (currentIndex + 1) % totalCards;
+      updateCarousel();
     }
 
     // 跳转到指定索引
@@ -569,38 +640,11 @@
       if (e.key === 'ArrowRight') nextCard();
     });
 
-    // 自动播放（可选）
-    let autoPlayInterval = null;
-    function startAutoPlay() {
-      autoPlayInterval = setInterval(() => {
-        if (currentIndex < totalCards - 1) {
-          nextCard();
-        } else {
-          goToIndex(0);
-        }
-      }, 5000);
-    }
-
-    function stopAutoPlay() {
-      if (autoPlayInterval) {
-        clearInterval(autoPlayInterval);
-        autoPlayInterval = null;
-      }
-    }
-
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       initCarousel();
       document.getElementById('prevBtn').addEventListener('click', prevCard);
       document.getElementById('nextBtn').addEventListener('click', nextCard);
-
-      // 鼠标悬停时暂停自动播放
-      const carouselSection = document.querySelector('.carousel-section');
-      carouselSection.addEventListener('mouseenter', stopAutoPlay);
-      carouselSection.addEventListener('mouseleave', startAutoPlay);
-
-      // 开始自动播放
-      startAutoPlay();
     });
   </script>
 </body>
