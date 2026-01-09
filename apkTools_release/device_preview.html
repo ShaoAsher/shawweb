@@ -559,19 +559,41 @@
       setInterval(updateData, 300000);
     }
 
-    // 处理搜索
+    // 处理搜索（支持中英文模糊搜索）
     function handleSearch(e) {
-      const keyword = e.target.value.trim().toLowerCase();
+      const keyword = e.target.value.trim();
 
       if (!keyword) {
         filteredData = [...deviceData];
       } else {
+        // 支持中英文模糊搜索
+        const lowerKeyword = keyword.toLowerCase();
         filteredData = deviceData.filter(device => {
-          return device.brand.toLowerCase().includes(keyword) ||
-            device.name.toLowerCase().includes(keyword) ||
-            device.model.toLowerCase().includes(keyword) ||
-            device.size.toLowerCase().includes(keyword) ||
-            device.resolution.toLowerCase().includes(keyword);
+          // 搜索品牌（中英文）
+          const brandMatch = device.brand.toLowerCase().includes(lowerKeyword) ||
+                            device.brand.includes(keyword);
+          
+          // 搜索机型名称（中英文）
+          const nameMatch = device.name.toLowerCase().includes(lowerKeyword) ||
+                           device.name.includes(keyword);
+          
+          // 搜索型号
+          const modelMatch = device.model.toLowerCase().includes(lowerKeyword) ||
+                            device.model.includes(keyword);
+          
+          // 搜索尺寸
+          const sizeMatch = device.size.toLowerCase().includes(lowerKeyword) ||
+                           device.size.includes(keyword);
+          
+          // 搜索分辨率
+          const resolutionMatch = device.resolution.toLowerCase().includes(lowerKeyword) ||
+                                 device.resolution.includes(keyword);
+          
+          // 搜索上市时间
+          const dateMatch = device.releaseDate.toLowerCase().includes(lowerKeyword) ||
+                           device.releaseDate.includes(keyword);
+
+          return brandMatch || nameMatch || modelMatch || sizeMatch || resolutionMatch || dateMatch;
         });
       }
 
