@@ -568,7 +568,7 @@
           <input type="text" class="url-input" id="httpUrl" placeholder='接口路径, "/"起始'>
           <div class="toolbar-buttons">
             <button class="btn btn-primary" id="sendBtn">发送</button>
-            <button class="btn btn-secondary" id="saveBtn">保存</button>
+            <button class="btn btn-secondary" id="historyBtn">历史</button>
           </div>
         </div>
 
@@ -577,11 +577,6 @@
             <button class="main-tab active" data-tab="params">Params</button>
             <button class="main-tab" data-tab="body">Body</button>
             <button class="main-tab" data-tab="headers">Headers</button>
-            <button class="main-tab" data-tab="cookies">Cookies</button>
-            <button class="main-tab" data-tab="auth">Auth</button>
-            <button class="main-tab" data-tab="pre-script">前置操作</button>
-            <button class="main-tab" data-tab="post-script">后置操作</button>
-            <button class="main-tab" data-tab="settings">设置</button>
           </div>
         </div>
 
@@ -731,22 +726,6 @@
           </div>
         </div>
 
-        <!-- 其他标签页 -->
-        <div class="tab-panel" id="cookiesPanel">
-          <p style="color: #6c757d; padding: 40px; text-align: center;">Cookies 功能开发中...</p>
-        </div>
-        <div class="tab-panel" id="authPanel">
-          <p style="color: #6c757d; padding: 40px; text-align: center;">Auth 功能开发中...</p>
-        </div>
-        <div class="tab-panel" id="pre-scriptPanel">
-          <p style="color: #6c757d; padding: 40px; text-align: center;">前置操作功能开发中...</p>
-        </div>
-        <div class="tab-panel" id="post-scriptPanel">
-          <p style="color: #6c757d; padding: 40px; text-align: center;">后置操作功能开发中...</p>
-        </div>
-        <div class="tab-panel" id="settingsPanel">
-          <p style="color: #6c757d; padding: 40px; text-align: center;">设置功能开发中...</p>
-        </div>
       </div>
 
       <!-- 响应区域 -->
@@ -807,28 +786,47 @@
         document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
-        document.getElementById(tabName + 'Panel').classList.add('active');
+        const panel = document.getElementById(tabName + 'Panel');
+        if (panel) {
+          panel.classList.add('active');
+        }
+
+        // 如果是 body 标签页，确保显示 body 内容
+        if (tabName === 'body') {
+          showBodyContent(currentBodyType);
+        }
       });
     });
+
+    function showBodyContent(bodyType) {
+      document.querySelectorAll('[id^="body"]').forEach(el => {
+        if (el.id === 'bodyContent') return;
+        el.style.display = 'none';
+      });
+
+      if (bodyType === 'none') {
+        const bodyNone = document.getElementById('bodyNone');
+        if (bodyNone) bodyNone.style.display = 'block';
+      } else if (bodyType === 'form-data') {
+        const bodyFormData = document.getElementById('bodyFormData');
+        if (bodyFormData) bodyFormData.style.display = 'block';
+      } else if (bodyType === 'json') {
+        const bodyJson = document.getElementById('bodyJson');
+        if (bodyJson) bodyJson.style.display = 'block';
+      } else if (bodyType === 'text') {
+        const bodyText = document.getElementById('bodyText');
+        if (bodyText) bodyText.style.display = 'block';
+      }
+    }
 
     // Body 类型切换
     document.querySelectorAll('.body-type-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         const bodyType = tab.dataset.bodyType;
         document.querySelectorAll('.body-type-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('[id^="body"]').forEach(p => p.style.display = 'none');
         tab.classList.add('active');
         currentBodyType = bodyType;
-
-        if (bodyType === 'none') {
-          document.getElementById('bodyNone').style.display = 'block';
-        } else if (bodyType === 'form-data') {
-          document.getElementById('bodyFormData').style.display = 'block';
-        } else if (bodyType === 'json') {
-          document.getElementById('bodyJson').style.display = 'block';
-        } else if (bodyType === 'text') {
-          document.getElementById('bodyText').style.display = 'block';
-        }
+        showBodyContent(bodyType);
       });
     });
 
@@ -1128,16 +1126,87 @@
       }
     });
 
+    // 历史记录
+    let requestHistory = JSON.parse(localStorage.getItem('apiDebuggerHistory') || '[]');
+    
+    document.getElementById('historyBtn').addEventListener('click', () => {
+      showHistoryModal();
+    });
+    
+    function showHistoryModal() {
+      const modal = document.createElement('div');
+      modal.className = 'modal active';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 800px;">
+          <div class="modal-header">
+            <h3>历史记录</h3>
+            <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+          </div>
+          <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+            ${requestHistory.length === 0 ? '<p style="text-align: center; color: #6c757d; padding: 40px;">暂无历史记录</p>' : ''}
+            ${requestHistory.map((item, index) => `
+              <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #667eea; cursor: pointer;" onclick="loadHistoryItem(${index})">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="display: inline-block; padding: 4px 12px; background: ${getMethodColor(item.method)}; color: #fff; border-radius: 4px; font-size: 12px; font-weight: 600;">${item.method}</span>
+                  <span style="font-size: 11px; color: #6c757d;">${new Date(item.timestamp).toLocaleString()}</span>
+                </div>
+                <div style="font-size: 13px; color: #495057; margin-bottom: 5px;">${item.url}</div>
+                <div style="font-size: 12px; color: #6c757d;">状态: ${item.status} ${item.statusText || ''}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="clearHistory()">清空历史</button>
+            <button class="btn btn-primary" onclick="this.closest('.modal').remove()">关闭</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
+    
+    function getMethodColor(method) {
+      const colors = {
+        'GET': '#07C160',
+        'POST': '#1677FF',
+        'PUT': '#FFA500',
+        'DELETE': '#FF0050',
+        'PATCH': '#FFA500'
+      };
+      return colors[method] || '#6c757d';
+    }
+    
+    function loadHistoryItem(index) {
+      const item = requestHistory[index];
+      document.getElementById('httpMethod').value = item.method;
+      document.getElementById('httpUrl').value = item.url;
+      document.querySelector('.modal.active')?.remove();
+    }
+    
+    function clearHistory() {
+      if (confirm('确定要清空所有历史记录吗？')) {
+        requestHistory = [];
+        localStorage.setItem('apiDebuggerHistory', JSON.stringify(requestHistory));
+        document.querySelector('.modal.active')?.remove();
+        showHistoryModal();
+      }
+    }
+
     // 发送请求
     document.getElementById('sendBtn').addEventListener('click', async () => {
       const method = document.getElementById('httpMethod').value;
-      const url = document.getElementById('httpUrl').value.trim();
+      let url = document.getElementById('httpUrl').value.trim();
 
       if (!url) {
         alert('请输入接口路径');
         return;
       }
 
+      // Headers 是必须的，始终获取
       const headers = {};
       document.querySelectorAll('#headersTableBody tr').forEach(row => {
         const checkbox = row.querySelector('.param-checkbox');
@@ -1154,64 +1223,97 @@
         headers: headers
       };
 
-      // 处理 Body
-      if (currentBodyType === 'form-data') {
-        const formData = new FormData();
-        document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+      // 判断当前选中的标签页
+      const activeTab = document.querySelector('.main-tab.active').dataset.tab;
+      
+      // 如果选中的是 Body 标签页，处理 Body
+      if (activeTab === 'body') {
+        if (currentBodyType === 'form-data') {
+          const formData = new FormData();
+          document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+            const checkbox = row.querySelector('.param-checkbox');
+            if (!checkbox.checked) return;
+            const key = row.querySelector('.param-key').value.trim();
+            const type = row.querySelector('.param-type').value;
+            if (!key) return;
+
+            if (type === 'file') {
+              const fileInput = row.querySelector('.param-file');
+              if (fileInput && fileInput.files.length > 0) {
+                formData.append(key, fileInput.files[0]);
+              }
+            } else {
+              const value = row.querySelector('.param-value').value.trim();
+              formData.append(key, value);
+            }
+          });
+          requestConfig.body = formData;
+          delete requestConfig.headers['Content-Type'];
+        } else if (currentBodyType === 'json') {
+          const jsonBody = document.getElementById('jsonBody').value.trim();
+          if (jsonBody) {
+            try {
+              JSON.parse(jsonBody);
+              requestConfig.body = jsonBody;
+            } catch (e) {
+              alert('JSON 格式错误：' + e.message);
+              return;
+            }
+          }
+        } else if (currentBodyType === 'text') {
+          const textBody = document.getElementById('textBody').value.trim();
+          if (textBody) {
+            requestConfig.body = textBody;
+          }
+        } else if (currentBodyType === 'x-www-form-urlencoded') {
+          const formData = new URLSearchParams();
+          document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+            const checkbox = row.querySelector('.param-checkbox');
+            if (!checkbox.checked) return;
+            const key = row.querySelector('.param-key').value.trim();
+            const value = row.querySelector('.param-value').value.trim();
+            if (key && value) {
+              formData.append(key, value);
+            }
+          });
+          requestConfig.body = formData.toString();
+          if (!requestConfig.headers['Content-Type']) {
+            requestConfig.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+          }
+        }
+      }
+      
+      // 如果选中的是 Params 标签页，处理 Query 参数
+      if (activeTab === 'params') {
+        const urlObj = new URL(url.startsWith('http') ? url : 'https://example.com' + url);
+        document.querySelectorAll('#paramsTableBody tr').forEach(row => {
           const checkbox = row.querySelector('.param-checkbox');
           if (!checkbox.checked) return;
           const key = row.querySelector('.param-key').value.trim();
-          const type = row.querySelector('.param-type').value;
-          if (!key) return;
-
-          if (type === 'file') {
-            const fileInput = row.querySelector('.param-file');
-            if (fileInput && fileInput.files.length > 0) {
-              formData.append(key, fileInput.files[0]);
-            }
-          } else {
-            const value = row.querySelector('.param-value').value.trim();
-            formData.append(key, value);
+          const value = row.querySelector('.param-value').value.trim();
+          if (key && value) {
+            urlObj.searchParams.append(key, value);
           }
         });
-        requestConfig.body = formData;
-        delete requestConfig.headers['Content-Type'];
-      } else if (currentBodyType === 'json') {
-        const jsonBody = document.getElementById('jsonBody').value.trim();
-        if (jsonBody) {
-          try {
-            JSON.parse(jsonBody);
-            requestConfig.body = jsonBody;
-          } catch (e) {
-            alert('JSON 格式错误：' + e.message);
-            return;
-          }
-        }
-      } else if (currentBodyType === 'text') {
-        const textBody = document.getElementById('textBody').value.trim();
-        if (textBody) {
-          requestConfig.body = textBody;
-        }
+        url = url.startsWith('http') ? urlObj.toString() : urlObj.pathname + urlObj.search;
       }
-
-      // 处理 Query 参数
-      const urlObj = new URL(url.startsWith('http') ? url : 'https://example.com' + url);
-      document.querySelectorAll('#paramsTableBody tr').forEach(row => {
-        const checkbox = row.querySelector('.param-checkbox');
-        if (!checkbox.checked) return;
-        const key = row.querySelector('.param-key').value.trim();
-        const value = row.querySelector('.param-value').value.trim();
-        if (key && value) {
-          urlObj.searchParams.append(key, value);
-        }
-      });
-
-      const finalUrl = url.startsWith('http') ? urlObj.toString() : urlObj.pathname + urlObj.search;
 
       try {
         const startTime = Date.now();
-        const response = await fetch(finalUrl, requestConfig);
+        const response = await fetch(url.startsWith('http') ? url : 'https://' + url, requestConfig);
         const duration = Date.now() - startTime;
+
+        // 保存到历史
+        const historyItem = {
+          method,
+          url: url,
+          timestamp: new Date().toISOString(),
+          status: response.status,
+          statusText: response.statusText
+        };
+        requestHistory.unshift(historyItem);
+        if (requestHistory.length > 50) requestHistory.pop();
+        localStorage.setItem('apiDebuggerHistory', JSON.stringify(requestHistory));
 
         const responseHeaders = {};
         response.headers.forEach((value, key) => {
@@ -1233,7 +1335,8 @@
 
         displayResponse(response.status, response.statusText, responseHeaders, responseBody, duration);
       } catch (error) {
-        displayResponse(0, 'Error', {}, '请求失败：' + error.message, 0);
+        const duration = Date.now() - startTime;
+        displayResponse(0, 'Error', {}, '请求失败：' + error.message + '\n\n错误详情：\n' + (error.stack || ''), duration);
       }
     });
 
@@ -1244,30 +1347,38 @@
       if (status >= 200 && status < 300) {
         statusBadge.className = 'status-badge status-success';
         statusBadge.textContent = `成功 (${status})`;
+        responseBody.style.color = '';
       } else if (status >= 400) {
         statusBadge.className = 'status-badge';
         statusBadge.style.background = '#f8d7da';
         statusBadge.style.color = '#721c24';
         statusBadge.textContent = `错误 (${status})`;
+        responseBody.style.color = '#dc3545';
+      } else if (status === 0) {
+        statusBadge.className = 'status-badge';
+        statusBadge.style.background = '#f8d7da';
+        statusBadge.style.color = '#721c24';
+        statusBadge.textContent = 'Error';
+        responseBody.style.color = '#dc3545';
       } else {
         statusBadge.className = 'status-badge';
         statusBadge.style.background = '#e2e3e5';
         statusBadge.style.color = '#383d41';
         statusBadge.textContent = status ? `${status} ${statusText}` : 'Error';
+        responseBody.style.color = '';
       }
 
       let html = '';
       if (Object.keys(headers).length > 0) {
-        html += '<div style="margin-bottom: 15px;"><strong>响应头：</strong><br>';
+        html += '<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;"><strong style="font-size: 14px; color: #495057;">响应头：</strong><br>';
         Object.entries(headers).forEach(([key, value]) => {
           html += `<div style="font-size: 12px; color: #6c757d; margin: 5px 0;">${key}: ${value}</div>`;
         });
         html += '</div>';
       }
-      html += `<div>${body || '(无响应体)'}</div>`;
+      html += `<div style="margin-top: 15px;">${body ? body.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '(无响应体)'}</div>`;
 
       responseBody.innerHTML = html;
-      responseBody.style.color = status >= 400 ? '#dc3545' : '';
     }
   </script>
 </body>
