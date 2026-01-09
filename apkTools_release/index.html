@@ -708,7 +708,7 @@
         // 根据速度和距离决定切换
         const threshold = 100; // 最小滑动距离
         const velocityThreshold = 0.3; // 速度阈值
-        
+
         if (Math.abs(deltaX) > threshold || Math.abs(velocity) > velocityThreshold) {
           if (deltaX > 0) {
             // 向右滑动，显示下一张（卡片向左移动，显示右侧的卡片）
