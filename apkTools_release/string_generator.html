@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多种字符串生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .generator-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .generator-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px
+    }
+
+    .form-group {
+      margin-bottom: 18px
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color .3s
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px
+    }
+
+    .result-section {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px
+    }
+
+    .result-section h3 {
+      font-size: 16px;
+      color: #495057;
+      margin-bottom: 15px
+    }
+
+    .result-box {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 60px;
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #495057;
+      position: relative
+    }
+
+    .result-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef
+    }
+
+    .result-item:last-child {
+      border-bottom: none
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #667eea;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .3s
+    }
+
+    .copy-btn:hover {
+      background: #5568d3
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #fff;
+      text-decoration: none;
+      opacity: .9;
+      transition: opacity .3s
+    }
+
+    .back-link:hover {
+      opacity: 1
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="./index.html" class="back-link">← 返回首页</a>
+      <h1>🔧 多种字符串生成器</h1>
+      <p>生成标准银行卡号、UDID、包名等常用字符串</p>
+    </div>
+    <div class="content">
+      <!-- 银行卡号生成器 -->
+      <div class="generator-section">
+        <h2>标准银行卡卡号生成器</h2>
+        <div class="form-group">
+          <label>生成数量</label>
+          <input type="number" id="cardCount" value="1" min="1" max="100" placeholder="输入生成数量">
+        </div>
+        <div class="form-group">
+          <label>卡号前缀（可选，如：6217, 6228）</label>
+          <input type="text" id="cardPrefix" placeholder="留空则随机生成" maxlength="6">
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="generateCardNumbers()">生成银行卡号</button>
+          <button class="btn" onclick="clearResult('cardResult')">清空</button>
+        </div>
+        <div class="result-section" id="cardResult" style="display: none;">
+          <h3>生成结果</h3>
+          <div class="result-box" id="cardResultBox"></div>
+        </div>
+      </div>
+
+      <!-- UDID 生成器 -->
+      <div class="generator-section">
+        <h2>UDID 生成器</h2>
+        <div class="form-group">
+          <label>生成数量</label>
+          <input type="number" id="udidCount" value="1" min="1" max="100" placeholder="输入生成数量">
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="generateUDIDs()">生成 UDID</button>
+          <button class="btn" onclick="clearResult('udidResult')">清空</button>
+        </div>
+        <div class="result-section" id="udidResult" style="display: none;">
+          <h3>生成结果</h3>
+          <div class="result-box" id="udidResultBox"></div>
+        </div>
+      </div>
+
+      <!-- 包名生成器 -->
+      <div class="generator-section">
+        <h2>包名生成器</h2>
+        <div class="form-group">
+          <label>生成数量</label>
+          <input type="number" id="packageCount" value="1" min="1" max="100" placeholder="输入生成数量">
+        </div>
+        <div class="controls-grid">
+          <div class="form-group">
+            <label>包名层级（2-4）</label>
+            <input type="number" id="packageLevel" value="3" min="2" max="4">
+          </div>
+          <div class="form-group">
+            <label>每段长度（3-10）</label>
+            <input type="number" id="packageLength" value="6" min="3" max="10">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="generatePackages()">生成包名</button>
+          <button class="btn" onclick="clearResult('packageResult')">清空</button>
+        </div>
+        <div class="result-section" id="packageResult" style="display: none;">
+          <h3>生成结果</h3>
+          <div class="result-box" id="packageResultBox"></div>
+        </div>
+      </div>
+
+      <!-- 其他生成器 -->
+      <div class="generator-section">
+        <h2>其他常用生成器</h2>
+        <div class="controls-grid">
+          <div class="form-group">
+            <label>生成器类型</label>
+            <select id="otherType">
+              <option value="uuid">UUID</option>
+              <option value="randomString">随机字符串</option>
+              <option value="randomNumber">随机数字</option>
+              <option value="macAddress">MAC 地址</option>
+              <option value="ipAddress">IP 地址</option>
+              <option value="email">邮箱地址</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>生成数量</label>
+            <input type="number" id="otherCount" value="1" min="1" max="100">
+          </div>
+        </div>
+        <div class="form-group" id="randomStringLengthGroup" style="display: none;">
+          <label>字符串长度</label>
+          <input type="number" id="randomStringLength" value="16" min="1" max="100">
+        </div>
+        <div class="form-group" id="randomNumberRangeGroup" style="display: none;">
+          <label>数字范围（格式：最小值-最大值，如：1000-9999）</label>
+          <input type="text" id="randomNumberRange" placeholder="1000-9999">
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="generateOther()">生成</button>
+          <button class="btn" onclick="clearResult('otherResult')">清空</button>
+        </div>
+        <div class="result-section" id="otherResult" style="display: none;">
+          <h3>生成结果</h3>
+          <div class="result-box" id="otherResultBox"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Luhn 算法校验和
+    function luhnChecksum(cardNumber) {
+      let sum = 0;
+      let isEven = false;
+      for (let i = cardNumber.length - 1; i >= 0; i--) {
+        let digit = parseInt(cardNumber[i]);
+        if (isEven) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+        isEven = !isEven;
+      }
+      return (10 - (sum % 10)) % 10;
+    }
+
+    // 生成银行卡号
+    function generateCardNumbers() {
+      const count = parseInt(document.getElementById('cardCount').value) || 1;
+      const prefix = document.getElementById('cardPrefix').value.trim();
+      const results = [];
+
+      for (let i = 0; i < count; i++) {
+        let cardNumber;
+        if (prefix) {
+          // 如果有前缀，补齐到15位，然后计算校验位
+          cardNumber = prefix.padEnd(15, Math.floor(Math.random() * 10).toString());
+        } else {
+          // 随机生成15位数字
+          cardNumber = '';
+          for (let j = 0; j < 15; j++) {
+            cardNumber += Math.floor(Math.random() * 10).toString();
+          }
+        }
+        // 计算校验位
+        const checksum = luhnChecksum(cardNumber);
+        cardNumber += checksum;
+        results.push(cardNumber);
+      }
+
+      displayResult('cardResult', 'cardResultBox', results);
+    }
+
+    // 生成 UDID
+    function generateUDIDs() {
+      const count = parseInt(document.getElementById('udidCount').value) || 1;
+      const results = [];
+      const chars = '0123456789ABCDEF';
+
+      for (let i = 0; i < count; i++) {
+        let udid = '';
+        for (let j = 0; j < 32; j++) {
+          udid += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        results.push(udid.toUpperCase());
+      }
+
+      displayResult('udidResult', 'udidResultBox', results);
+    }
+
+    // 生成包名
+    function generatePackages() {
+      const count = parseInt(document.getElementById('packageCount').value) || 1;
+      const level = parseInt(document.getElementById('packageLevel').value) || 3;
+      const length = parseInt(document.getElementById('packageLength').value) || 6;
+      const results = [];
+      const chars = 'abcdefghijklmnopqrstuvwxyz';
+
+      for (let i = 0; i < count; i++) {
+        let packageName = '';
+        for (let j = 0; j < level; j++) {
+          if (j > 0) packageName += '.';
+          let segment = '';
+          // 首字符必须是字母
+          segment += chars.charAt(Math.floor(Math.random() * chars.length));
+          // 其余字符可以是字母或数字
+          for (let k = 1; k < length; k++) {
+            const charSet = chars + '0123456789';
+            segment += charSet.charAt(Math.floor(Math.random() * charSet.length));
+          }
+          packageName += segment;
+        }
+        results.push(packageName);
+      }
+
+      displayResult('packageResult', 'packageResultBox', results);
+    }
+
+    // 生成其他类型
+    function generateOther() {
+      const type = document.getElementById('otherType').value;
+      const count = parseInt(document.getElementById('otherCount').value) || 1;
+      const results = [];
+
+      for (let i = 0; i < count; i++) {
+        switch (type) {
+          case 'uuid':
+            results.push(generateUUID());
+            break;
+          case 'randomString':
+            const length = parseInt(document.getElementById('randomStringLength').value) || 16;
+            results.push(generateRandomString(length));
+            break;
+          case 'randomNumber':
+            const range = document.getElementById('randomNumberRange').value || '1000-9999';
+            const [min, max] = range.split('-').map(n => parseInt(n.trim()));
+            if (min && max) {
+              results.push(Math.floor(Math.random() * (max - min + 1)) + min);
+            } else {
+              results.push(Math.floor(Math.random() * 10000));
+            }
+            break;
+          case 'macAddress':
+            results.push(generateMACAddress());
+            break;
+          case 'ipAddress':
+            results.push(generateIPAddress());
+            break;
+          case 'email':
+            results.push(generateEmail());
+            break;
+        }
+      }
+
+      displayResult('otherResult', 'otherResultBox', results);
+    }
+
+    // 生成 UUID
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16).toUpperCase();
+      });
+    }
+
+    // 生成随机字符串
+    function generateRandomString(length) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    // 生成 MAC 地址
+    function generateMACAddress() {
+      const hex = '0123456789ABCDEF';
+      let mac = '';
+      for (let i = 0; i < 6; i++) {
+        if (i > 0) mac += ':';
+        mac += hex.charAt(Math.floor(Math.random() * hex.length));
+        mac += hex.charAt(Math.floor(Math.random() * hex.length));
+      }
+      return mac;
+    }
+
+    // 生成 IP 地址
+    function generateIPAddress() {
+      return `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+    }
+
+    // 生成邮箱地址
+    function generateEmail() {
+      const domains = ['gmail.com', 'yahoo.com', 'outlook.com', '163.com', 'qq.com', 'example.com'];
+      const username = generateRandomString(8).toLowerCase();
+      const domain = domains[Math.floor(Math.random() * domains.length)];
+      return `${username}@${domain}`;
+    }
+
+    // 显示结果
+    function displayResult(sectionId, boxId, results) {
+      const section = document.getElementById(sectionId);
+      const box = document.getElementById(boxId);
+      box.innerHTML = '';
+
+      results.forEach((result, index) => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>${index + 1}. ${result}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${result}')">复制</button>
+          </div>
+        `;
+        box.appendChild(item);
+      });
+
+      section.style.display = 'block';
+    }
+
+    // 清空结果
+    function clearResult(sectionId) {
+      document.getElementById(sectionId).style.display = 'none';
+    }
+
+    // 复制到剪贴板
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('已复制到剪贴板！');
+      }).catch(() => {
+        // 备用方法
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('已复制到剪贴板！');
+      });
+    }
+
+    // 根据选择的类型显示/隐藏相关选项
+    document.getElementById('otherType').addEventListener('change', function () {
+      const type = this.value;
+      document.getElementById('randomStringLengthGroup').style.display = type === 'randomString' ? 'block' : 'none';
+      document.getElementById('randomNumberRangeGroup').style.display = type === 'randomNumber' ? 'block' : 'none';
+    });
+  </script>
+</body>
+
+</html>
