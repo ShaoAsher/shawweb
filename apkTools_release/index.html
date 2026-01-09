@@ -55,7 +55,9 @@
     /* 卡片堆叠容器 */
     .carousel-section {
       margin-bottom: 80px;
-      padding: 60px 0
+      padding: 60px 0;
+      user-select: none;
+      -webkit-user-select: none
     }
 
     .carousel-container {
@@ -66,7 +68,13 @@
       align-items: center;
       justify-content: center;
       perspective: 1200px;
-      overflow: visible
+      overflow: hidden;
+      touch-action: pan-y pinch-zoom;
+      cursor: grab
+    }
+
+    .carousel-container:active {
+      cursor: grabbing
     }
 
     .carousel-stack {
@@ -101,7 +109,8 @@
       opacity: 0.7;
       z-index: 1;
       filter: blur(2px);
-      pointer-events: auto
+      pointer-events: auto;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1)
     }
 
     /* 最前面的卡片 */
@@ -112,7 +121,8 @@
       filter: blur(0);
       border-color: #667eea;
       box-shadow: 0 30px 80px rgba(102, 126, 234, .4);
-      pointer-events: auto
+      pointer-events: auto;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1)
     }
 
     /* 后面的卡片位置调整 */
@@ -146,11 +156,47 @@
       z-index: 1
     }
 
-    .tool-card:hover:not(.active) {
-      transform: scale(0.95) translateX(var(--hover-x, 0)) translateY(10px) !important;
+    /* 修复悬停效果 */
+    .tool-card[data-index="1"]:not(.active):hover {
+      transform: scale(0.95) translateX(-280px) translateY(20px) !important;
       opacity: 0.9;
       filter: blur(1px);
       z-index: 5 !important
+    }
+
+    .tool-card[data-index="2"]:not(.active):hover {
+      transform: scale(0.9) translateX(-240px) translateY(30px) !important;
+      opacity: 0.85;
+      filter: blur(1px);
+      z-index: 4 !important
+    }
+
+    .tool-card[data-index="3"]:not(.active):hover {
+      transform: scale(0.85) translateX(-200px) translateY(40px) !important;
+      opacity: 0.8;
+      filter: blur(1px);
+      z-index: 3 !important
+    }
+
+    .tool-card[data-index="-1"]:not(.active):hover {
+      transform: scale(0.95) translateX(280px) translateY(20px) !important;
+      opacity: 0.9;
+      filter: blur(1px);
+      z-index: 5 !important
+    }
+
+    .tool-card[data-index="-2"]:not(.active):hover {
+      transform: scale(0.9) translateX(240px) translateY(30px) !important;
+      opacity: 0.85;
+      filter: blur(1px);
+      z-index: 4 !important
+    }
+
+    .tool-card[data-index="-3"]:not(.active):hover {
+      transform: scale(0.85) translateX(200px) translateY(40px) !important;
+      opacity: 0.8;
+      filter: blur(1px);
+      z-index: 3 !important
     }
 
     .tool-card.active:hover {
@@ -530,11 +576,24 @@
 
     let currentIndex = 0;
     const totalCards = tools.length;
+    
+    // 滑动相关变量
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let startTime = 0;
+    let velocity = 0;
+    let lastX = 0;
+    let lastTime = 0;
+    let animationFrame = null;
 
     // 初始化堆叠轮播
     function initCarousel() {
       const stack = document.getElementById('carouselStack');
       const indicators = document.getElementById('indicators');
+      const container = document.querySelector('.carousel-container');
 
       // 创建卡片
       tools.forEach((tool, index) => {
@@ -552,12 +611,15 @@
         
         // 点击后面的卡片 - 切换到前面
         card.addEventListener('click', (e) => {
+          // 如果正在拖拽，不触发点击
+          if (isDragging) {
+            e.preventDefault();
+            return;
+          }
+          
           if (!card.classList.contains('active')) {
             const clickedIndex = parseInt(card.dataset.originalIndex);
             goToIndex(clickedIndex);
-          } else {
-            // 点击最前面的卡片 - 进入页面（通过按钮）
-            // 按钮已经有链接，这里不需要额外处理
           }
         });
         
@@ -571,7 +633,94 @@
         indicators.appendChild(indicator);
       });
 
+      // 鼠标事件
+      container.addEventListener('mousedown', handleStart);
+      container.addEventListener('mousemove', handleMove);
+      container.addEventListener('mouseup', handleEnd);
+      container.addEventListener('mouseleave', handleEnd);
+
+      // 触摸事件
+      container.addEventListener('touchstart', handleStart, { passive: true });
+      container.addEventListener('touchmove', handleMove, { passive: false });
+      container.addEventListener('touchend', handleEnd);
+
       updateCarousel();
+    }
+
+    // 开始拖拽
+    function handleStart(e) {
+      isDragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      startX = clientX;
+      startY = clientY;
+      currentX = clientX;
+      currentY = clientY;
+      startTime = Date.now();
+      lastX = clientX;
+      lastTime = startTime;
+      velocity = 0;
+
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    }
+
+    // 拖拽中
+    function handleMove(e) {
+      if (!isDragging) return;
+
+      e.preventDefault();
+      
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      currentX = clientX;
+      currentY = clientY;
+      
+      const now = Date.now();
+      const deltaX = clientX - lastX;
+      const deltaTime = now - lastTime;
+      
+      if (deltaTime > 0) {
+        velocity = deltaX / deltaTime;
+      }
+      
+      lastX = clientX;
+      lastTime = now;
+    }
+
+    // 结束拖拽
+    function handleEnd(e) {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
+      const deltaTime = Date.now() - startTime;
+      
+      // 判断是否为滑动（水平距离大于垂直距离，且距离足够）
+      const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30;
+      
+      if (isSwipe) {
+        // 根据速度和距离决定切换
+        const threshold = 100; // 最小滑动距离
+        const velocityThreshold = 0.3; // 速度阈值
+        
+        if (Math.abs(deltaX) > threshold || Math.abs(velocity) > velocityThreshold) {
+          if (deltaX > 0) {
+            // 向右滑动，显示上一张
+            prevCard();
+          } else {
+            // 向左滑动，显示下一张
+            nextCard();
+          }
+        }
+      }
+      
+      velocity = 0;
     }
 
     // 更新堆叠位置
@@ -582,7 +731,7 @@
       cards.forEach((card, index) => {
         const originalIndex = parseInt(card.dataset.originalIndex);
         const relativeIndex = originalIndex - currentIndex;
-        
+
         // 处理循环索引
         let normalizedIndex = relativeIndex;
         if (normalizedIndex > totalCards / 2) {
@@ -593,7 +742,7 @@
 
         // 更新 data-index 用于 CSS 定位
         card.dataset.index = normalizedIndex;
-        
+
         // 更新 active 状态
         card.classList.remove('active');
         if (normalizedIndex === 0) {
