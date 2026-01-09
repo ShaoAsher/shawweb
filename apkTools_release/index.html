@@ -495,8 +495,8 @@
           <div class="carousel-stack" id="carouselStack"></div>
         </div>
         <div class="carousel-nav">
-          <button class="nav-btn" id="prevBtn">›</button>
-          <button class="nav-btn" id="nextBtn">‹</button>
+          <button class="nav-btn" id="prevBtn">‹</button>
+          <button class="nav-btn" id="nextBtn">›</button>
         </div>
         <div class="carousel-indicators" id="indicators"></div>
       </div>
@@ -711,11 +711,11 @@
 
         if (Math.abs(deltaX) > threshold || Math.abs(velocity) > velocityThreshold) {
           if (deltaX > 0) {
-            // 向右滑动，显示下一张（卡片向左移动，显示右侧的卡片）
-            nextCard();
-          } else {
-            // 向左滑动，显示上一张（卡片向右移动，显示左侧的卡片）
+            // 向右滑动，显示上一张（标准轮播逻辑）
             prevCard();
+          } else {
+            // 向左滑动，显示下一张（标准轮播逻辑）
+            nextCard();
           }
         }
       }
@@ -792,9 +792,9 @@
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       initCarousel();
-      // 左箭头显示下一张，右箭头显示上一张（与滑动方向一致）
-      document.getElementById('prevBtn').addEventListener('click', nextCard);
-      document.getElementById('nextBtn').addEventListener('click', prevCard);
+      // 标准轮播逻辑：左箭头上一张，右箭头下一张
+      document.getElementById('prevBtn').addEventListener('click', prevCard);
+      document.getElementById('nextBtn').addEventListener('click', nextCard);
     });
   </script>
 </body>
