@@ -659,15 +659,19 @@
                     <td>
                       <div class="file-input-wrapper">
                         <input type="text" placeholder="参数值" class="param-value">
-                        <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
+                        <button class="file-select-btn" onclick="selectFile(this)" style="display: none;">选择文件</button>
                         <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
                         <span class="file-name"></span>
                       </div>
                     </td>
                     <td>
-                      <select class="param-type">
-                        <option value="text">Text</option>
-                        <option value="file">File</option>
+                      <select class="param-type" onchange="handleFormDataTypeChange(this)">
+                        <option value="string">string</option>
+                        <option value="integer">integer</option>
+                        <option value="boolean">boolean</option>
+                        <option value="number">number</option>
+                        <option value="file">file</option>
+                        <option value="array">array</option>
                       </select>
                     </td>
                     <td><input type="text" placeholder="说明" class="param-desc"></td>
@@ -678,6 +682,46 @@
               <div class="action-buttons">
                 <button class="add-param-btn" onclick="addFormDataRow()">添加参数</button>
                 <button class="batch-edit-btn" onclick="openBatchEditModal('form-data')">
+                  <span>⋯</span>
+                  <span>批量编辑</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="bodyXForm" style="display: none;">
+              <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">x-www-form-urlencoded</h3>
+              <table class="params-table">
+                <thead>
+                  <tr>
+                    <th style="width: 30px;"></th>
+                    <th>参数名</th>
+                    <th>参数值</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                    <th style="width: 80px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="xFormTableBody">
+                  <tr>
+                    <td><input type="checkbox" class="param-checkbox" checked></td>
+                    <td><input type="text" placeholder="参数名" class="param-key"></td>
+                    <td><input type="text" placeholder="参数值" class="param-value"></td>
+                    <td>
+                      <select class="param-type">
+                        <option value="string">string</option>
+                        <option value="integer">integer</option>
+                        <option value="boolean">boolean</option>
+                        <option value="number">number</option>
+                      </select>
+                    </td>
+                    <td><input type="text" placeholder="说明" class="param-desc"></td>
+                    <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="action-buttons">
+                <button class="add-param-btn" onclick="addXFormRow()">添加参数</button>
+                <button class="batch-edit-btn" onclick="openBatchEditModal('x-form')">
                   <span>⋯</span>
                   <span>批量编辑</span>
                 </button>
@@ -803,7 +847,7 @@
         const panel = document.getElementById(tabName + 'Panel');
         if (panel) {
           panel.classList.add('active');
-          
+
           // 如果是 body 标签页，确保显示 body 内容
           if (tabName === 'body') {
             // 使用 setTimeout 确保 DOM 更新后再显示内容
@@ -819,20 +863,24 @@
       // 隐藏所有 body 内容
       const bodyNone = document.getElementById('bodyNone');
       const bodyFormData = document.getElementById('bodyFormData');
+      const bodyXForm = document.getElementById('bodyXForm');
       const bodyJson = document.getElementById('bodyJson');
       const bodyText = document.getElementById('bodyText');
-      
+
       // 隐藏所有
       if (bodyNone) bodyNone.style.display = 'none';
       if (bodyFormData) bodyFormData.style.display = 'none';
+      if (bodyXForm) bodyXForm.style.display = 'none';
       if (bodyJson) bodyJson.style.display = 'none';
       if (bodyText) bodyText.style.display = 'none';
 
       // 显示对应的 body 内容
       if (bodyType === 'none') {
         if (bodyNone) bodyNone.style.display = 'block';
-      } else if (bodyType === 'form-data' || bodyType === 'x-www-form-urlencoded') {
+      } else if (bodyType === 'form-data') {
         if (bodyFormData) bodyFormData.style.display = 'block';
+      } else if (bodyType === 'x-www-form-urlencoded') {
+        if (bodyXForm) bodyXForm.style.display = 'block';
       } else if (bodyType === 'json') {
         if (bodyJson) bodyJson.style.display = 'block';
       } else if (bodyType === 'text' || bodyType === 'xml' || bodyType === 'binary' || bodyType === 'graphql' || bodyType === 'msgpack') {
@@ -906,21 +954,82 @@
         <td>
           <div class="file-input-wrapper">
             <input type="text" placeholder="参数值" class="param-value">
-            <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
+            <button class="file-select-btn" onclick="selectFile(this)" style="display: none;">选择文件</button>
             <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
             <span class="file-name"></span>
           </div>
         </td>
         <td>
-          <select class="param-type" onchange="handleTypeChange(this)">
-            <option value="text">Text</option>
-            <option value="file">File</option>
+          <select class="param-type" onchange="handleFormDataTypeChange(this)">
+            <option value="string">string</option>
+            <option value="integer">integer</option>
+            <option value="boolean">boolean</option>
+            <option value="number">number</option>
+            <option value="file">file</option>
+            <option value="array">array</option>
           </select>
         </td>
         <td><input type="text" placeholder="说明" class="param-desc"></td>
         <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
       `;
       return tr;
+    }
+
+    function addXFormRow() {
+      const tbody = document.getElementById('xFormTableBody');
+      const row = createXFormRow();
+      tbody.appendChild(row);
+    }
+
+    function createXFormRow() {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="param-checkbox" checked></td>
+        <td><input type="text" placeholder="参数名" class="param-key"></td>
+        <td><input type="text" placeholder="参数值" class="param-value"></td>
+        <td>
+          <select class="param-type">
+            <option value="string">string</option>
+            <option value="integer">integer</option>
+            <option value="boolean">boolean</option>
+            <option value="number">number</option>
+          </select>
+        </td>
+        <td><input type="text" placeholder="说明" class="param-desc"></td>
+        <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
+      `;
+      return tr;
+    }
+
+    function handleFormDataTypeChange(select) {
+      const row = select.closest('tr');
+      const valueCell = row.querySelector('td:nth-child(3)');
+      const wrapper = valueCell.querySelector('.file-input-wrapper');
+      const fileBtn = wrapper?.querySelector('.file-select-btn');
+
+      if (select.value === 'file') {
+        if (fileBtn) {
+          fileBtn.style.display = 'inline-block';
+        } else {
+          valueCell.innerHTML = `
+            <div class="file-input-wrapper">
+              <input type="text" placeholder="参数值" class="param-value" readonly>
+              <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
+              <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
+              <span class="file-name"></span>
+            </div>
+          `;
+        }
+      } else {
+        if (fileBtn) {
+          fileBtn.style.display = 'none';
+          const valueInput = wrapper.querySelector('.param-value');
+          if (valueInput) {
+            valueInput.readOnly = false;
+            valueInput.placeholder = '参数值';
+          }
+        }
+      }
     }
 
     function removeParamRow(btn) {
@@ -946,27 +1055,6 @@
       }
     }
 
-    function handleTypeChange(select) {
-      const row = select.closest('tr');
-      const valueCell = row.querySelector('td:nth-child(3)');
-      if (select.value === 'file') {
-        if (!valueCell.querySelector('.file-select-btn')) {
-          valueCell.innerHTML = `
-            <div class="file-input-wrapper">
-              <input type="text" placeholder="参数值" class="param-value" readonly>
-              <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
-              <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
-              <span class="file-name"></span>
-            </div>
-          `;
-        }
-      } else {
-        const valueInput = valueCell.querySelector('.param-value');
-        if (valueInput) {
-          valueCell.innerHTML = `<input type="text" placeholder="参数值" class="param-value">`;
-        }
-      }
-    }
 
     // 请求头管理
     function addHeaderRow() {
@@ -1016,6 +1104,18 @@
         });
       } else if (currentBatchType === 'form-data') {
         document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+          const checkbox = row.querySelector('.param-checkbox');
+          const key = row.querySelector('.param-key').value.trim();
+          const valueInput = row.querySelector('.param-value');
+          const value = valueInput ? valueInput.value.trim() : '';
+          const type = row.querySelector('.param-type').value;
+          const desc = row.querySelector('.param-desc').value.trim();
+          if (key) {
+            lines.push(`${checkbox.checked ? '1' : '0'},${key},${value},${type},,${desc}`);
+          }
+        });
+      } else if (currentBatchType === 'x-form') {
+        document.querySelectorAll('#xFormTableBody tr').forEach(row => {
           const checkbox = row.querySelector('.param-checkbox');
           const key = row.querySelector('.param-key').value.trim();
           const value = row.querySelector('.param-value').value.trim();
@@ -1088,7 +1188,7 @@
               row.querySelector('.param-value').value = parts[2] || '';
               if (parts[3]) {
                 row.querySelector('.param-type').value = parts[3];
-                handleTypeChange(row.querySelector('.param-type'));
+                handleFormDataTypeChange(row.querySelector('.param-type'));
               }
               if (parts[6]) row.querySelector('.param-desc').value = parts[6];
               tbody.appendChild(row);
@@ -1097,6 +1197,31 @@
             const [key, value] = line.split(':').map(s => s.trim());
             if (key && value) {
               const row = createFormDataRow();
+              row.querySelector('.param-key').value = key;
+              row.querySelector('.param-value').value = value;
+              tbody.appendChild(row);
+            }
+          }
+        });
+      } else if (currentBatchType === 'x-form') {
+        const tbody = document.getElementById('xFormTableBody');
+        tbody.innerHTML = '';
+        lines.forEach(line => {
+          if (mode === 'comma') {
+            const parts = line.split(',');
+            if (parts.length >= 3) {
+              const row = createXFormRow();
+              row.querySelector('.param-checkbox').checked = parts[0] === '1';
+              row.querySelector('.param-key').value = parts[1] || '';
+              row.querySelector('.param-value').value = parts[2] || '';
+              if (parts[3]) row.querySelector('.param-type').value = parts[3];
+              if (parts[6]) row.querySelector('.param-desc').value = parts[6];
+              tbody.appendChild(row);
+            }
+          } else {
+            const [key, value] = line.split(':').map(s => s.trim());
+            if (key && value) {
+              const row = createXFormRow();
               row.querySelector('.param-key').value = key;
               row.querySelector('.param-value').value = value;
               tbody.appendChild(row);
@@ -1309,7 +1434,7 @@
           }
         } else if (currentBodyType === 'x-www-form-urlencoded') {
           const formData = new URLSearchParams();
-          document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+          document.querySelectorAll('#xFormTableBody tr').forEach(row => {
             const checkbox = row.querySelector('.param-checkbox');
             if (!checkbox.checked) return;
             const key = row.querySelector('.param-key').value.trim();
