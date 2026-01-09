@@ -281,8 +281,9 @@
         </div>
         <div class="controls-grid">
           <div class="form-group">
-            <label>包名层级（2-4）</label>
+            <label>包名层级（2-4，包含 com）</label>
             <input type="number" id="packageLevel" value="3" min="2" max="4">
+            <small style="color: #6c757d; font-size: 12px;">包名以 com. 开头，此数值为总层级数</small>
           </div>
           <div class="form-group">
             <label>每段长度（3-10）</label>
@@ -432,9 +433,11 @@
       const chars = 'abcdefghijklmnopqrstuvwxyz';
 
       for (let i = 0; i < count; i++) {
-        let packageName = '';
-        for (let j = 0; j < level; j++) {
-          if (j > 0) packageName += '.';
+        // 包名必须以 com. 开头
+        let packageName = 'com';
+        // 生成剩余的层级（level - 1，因为 com 已经占了一层）
+        for (let j = 0; j < level - 1; j++) {
+          packageName += '.';
           let segment = '';
           // 首字符必须是字母
           segment += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -534,6 +537,11 @@
       return `${username}@${domain}`;
     }
 
+    // 格式化银行卡号（每4位加空格）
+    function formatCardNumber(cardNumber) {
+      return cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ');
+    }
+
     // 显示结果
     function displayResult(sectionId, boxId, results) {
       const section = document.getElementById(sectionId);
@@ -543,10 +551,18 @@
       results.forEach((result, index) => {
         const item = document.createElement('div');
         item.className = 'result-item';
+
+        // 如果是银行卡号，格式化显示但复制原始值
+        let displayText = result;
+        let copyText = result;
+        if (sectionId === 'cardResult') {
+          displayText = formatCardNumber(result);
+        }
+
         item.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span>${index + 1}. ${result}</span>
-            <button class="copy-btn" onclick="copyToClipboard('${result}')">复制</button>
+            <span>${index + 1}. ${displayText}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${copyText}')">复制</button>
           </div>
         `;
         box.appendChild(item);

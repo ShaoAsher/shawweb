@@ -153,7 +153,7 @@
       padding-left: 10px;
     }
 
-    .json-collapsible.collapsed + .json-children {
+    .json-collapsible.collapsed+.json-children {
       display: none;
     }
 
@@ -274,7 +274,6 @@
     <div class="content">
       <div class="btn-group">
         <button class="btn" onclick="formatJSON()">格式化</button>
-        <button class="btn btn-success" onclick="minifyJSON()">压缩</button>
         <button class="btn btn-secondary" onclick="validateJSON()">验证</button>
         <button class="btn" onclick="copyJSON()">复制结果</button>
         <button class="btn btn-danger" onclick="clearJSON()">清空</button>
@@ -286,7 +285,8 @@
             <span>编辑区域</span>
             <span class="status" id="editStatus">未验证</span>
           </h2>
-          <textarea id="jsonInput" placeholder='请输入 JSON 内容，例如：&#10;{&#10;  "name": "示例",&#10;  "age": 25,&#10;  "items": [1, 2, 3]&#10;}'></textarea>
+          <textarea id="jsonInput"
+            placeholder='请输入 JSON 内容，例如：&#10;{&#10;  "name": "示例",&#10;  "age": 25,&#10;  "items": [1, 2, 3]&#10;}'></textarea>
           <div class="stats" id="inputStats"></div>
         </div>
 
@@ -382,7 +382,7 @@
       jsonPreview.innerHTML = html;
       previewStatus.textContent = '已格式化';
       previewStatus.className = 'status valid';
-      
+
       // 绑定折叠展开事件
       setTimeout(() => {
         bindCollapseEvents();
