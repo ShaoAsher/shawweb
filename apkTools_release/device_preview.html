@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机型预览信息工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+      position: relative
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .search-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 15px
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 50px 14px 20px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color .3s
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+      font-size: 20px
+    }
+
+    .stats-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 15px
+    }
+
+    .stat-item {
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      font-size: 14px;
+      color: #495057
+    }
+
+    .stat-item strong {
+      color: #667eea;
+      margin-right: 5px
+    }
+
+    .device-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px
+    }
+
+    .device-card {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all .3s;
+      cursor: pointer
+    }
+
+    .device-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 5px 20px rgba(102, 126, 234, .2);
+      transform: translateY(-2px)
+    }
+
+    .device-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e9ecef
+    }
+
+    .brand-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      object-fit: contain;
+      background: #f8f9fa;
+      padding: 8px;
+      border: 1px solid #dee2e6
+    }
+
+    .device-title {
+      flex: 1
+    }
+
+    .device-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #212529;
+      margin-bottom: 5px
+    }
+
+    .device-model {
+      font-size: 13px;
+      color: #6c757d
+    }
+
+    .device-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: #6c757d;
+      margin-bottom: 4px
+    }
+
+    .info-value {
+      font-size: 14px;
+      color: #212529;
+      font-weight: 500
+    }
+
+    .info-value.full-width {
+      grid-column: 1 / -1
+    }
+
+    .brand-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 5px
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: .5
+    }
+
+    .empty-state-text {
+      font-size: 16px
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d
+    }
+
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .update-time {
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 20px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
+      <h1>📱 机型预览信息工具</h1>
+      <p>查看主流手机机型详细信息，支持实时更新和模糊搜索</p>
+    </div>
+    <div class="content">
+      <div class="search-section">
+        <div class="search-box">
+          <input type="text" id="searchInput" class="search-input" placeholder="搜索机型、品牌、型号...">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="stats-info">
+          <div class="stat-item">
+            <strong>总机型数:</strong> <span id="totalCount">0</span>
+          </div>
+          <div class="stat-item">
+            <strong>显示数量:</strong> <span id="displayCount">0</span>
+          </div>
+          <div class="stat-item">
+            <strong>最后更新:</strong> <span id="lastUpdate">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="deviceList" class="device-list">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <div>正在加载机型数据...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 品牌图标映射（使用在线图标资源）
+    const brandIcons = {
+      'Apple': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/apple.svg',
+      'Samsung': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/samsung.svg',
+      'Huawei': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/huawei.svg',
+      'Xiaomi': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/xiaomi.svg',
+      'OPPO': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/oppo.svg',
+      'vivo': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/vivo.svg',
+      'OnePlus': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/oneplus.svg',
+      'Realme': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/realme.svg',
+      'Honor': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/honor.svg',
+      'Google': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/google.svg',
+      'Sony': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/sony.svg',
+      'LG': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/lg.svg',
+      'Motorola': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/motorola.svg',
+      'Nokia': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/nokia.svg',
+      'Redmi': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/xiaomi.svg',
+      'Meizu': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/meizu.svg',
+      'Lenovo': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/lenovo.svg',
+      'ZTE': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/zte.svg',
+      'ASUS': 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/asus.svg'
+    };
+
+    // 默认机型数据（可以从API获取）
+    let deviceData = [
+      // Apple
+      { brand: 'Apple', name: 'iPhone 15 Pro Max', model: 'A3101', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2023-09' },
+      { brand: 'Apple', name: 'iPhone 15 Pro', model: 'A3102', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2023-09' },
+      { brand: 'Apple', name: 'iPhone 15', model: 'A3103', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2023-09' },
+      { brand: 'Apple', name: 'iPhone 15 Plus', model: 'A3104', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2023-09' },
+      { brand: 'Apple', name: 'iPhone 14 Pro Max', model: 'A2896', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2022-09' },
+      { brand: 'Apple', name: 'iPhone 14 Pro', model: 'A2892', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2022-09' },
+      { brand: 'Apple', name: 'iPhone 14', model: 'A2882', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2022-09' },
+      { brand: 'Apple', name: 'iPhone 13 Pro Max', model: 'A2643', size: '6.7英寸', resolution: '2778×1284', releaseDate: '2021-09' },
+      { brand: 'Apple', name: 'iPhone 13 Pro', model: 'A2639', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2021-09' },
+      { brand: 'Apple', name: 'iPhone 13', model: 'A2634', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2021-09' },
+      { brand: 'Apple', name: 'iPhone 12 Pro Max', model: 'A2412', size: '6.7英寸', resolution: '2778×1284', releaseDate: '2020-10' },
+      { brand: 'Apple', name: 'iPhone 12 Pro', model: 'A2408', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2020-10' },
+      { brand: 'Apple', name: 'iPhone 12', model: 'A2404', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2020-10' },
+      { brand: 'Apple', name: 'iPhone SE (第三代)', model: 'A2785', size: '4.7英寸', resolution: '1334×750', releaseDate: '2022-03' },
+
+      // Samsung
+      { brand: 'Samsung', name: 'Galaxy S24 Ultra', model: 'SM-S928', size: '6.8英寸', resolution: '3120×1440', releaseDate: '2024-01' },
+      { brand: 'Samsung', name: 'Galaxy S24+', model: 'SM-S926', size: '6.7英寸', resolution: '2340×1080', releaseDate: '2024-01' },
+      { brand: 'Samsung', name: 'Galaxy S24', model: 'SM-S921', size: '6.2英寸', resolution: '2340×1080', releaseDate: '2024-01' },
+      { brand: 'Samsung', name: 'Galaxy S23 Ultra', model: 'SM-S918', size: '6.8英寸', resolution: '3088×1440', releaseDate: '2023-02' },
+      { brand: 'Samsung', name: 'Galaxy S23+', model: 'SM-S916', size: '6.6英寸', resolution: '2340×1080', releaseDate: '2023-02' },
+      { brand: 'Samsung', name: 'Galaxy S23', model: 'SM-S911', size: '6.1英寸', resolution: '2340×1080', releaseDate: '2023-02' },
+      { brand: 'Samsung', name: 'Galaxy Z Fold5', model: 'SM-F946', size: '7.6英寸', resolution: '2176×1812', releaseDate: '2023-08' },
+      { brand: 'Samsung', name: 'Galaxy Z Flip5', model: 'SM-F731', size: '6.7英寸', resolution: '2640×1080', releaseDate: '2023-08' },
+      { brand: 'Samsung', name: 'Galaxy Note20 Ultra', model: 'SM-N986', size: '6.9英寸', resolution: '3088×1440', releaseDate: '2020-08' },
+      { brand: 'Samsung', name: 'Galaxy A54', model: 'SM-A546', size: '6.4英寸', resolution: '2340×1080', releaseDate: '2023-03' },
+
+      // Huawei
+      { brand: 'Huawei', name: 'Mate 60 Pro+', model: 'ALN-AL10', size: '6.82英寸', resolution: '2720×1260', releaseDate: '2023-09' },
+      { brand: 'Huawei', name: 'Mate 60 Pro', model: 'ALN-AL00', size: '6.82英寸', resolution: '2720×1260', releaseDate: '2023-08' },
+      { brand: 'Huawei', name: 'Mate 60', model: 'BRA-AL00', size: '6.69英寸', resolution: '2688×1216', releaseDate: '2023-08' },
+      { brand: 'Huawei', name: 'P60 Pro', model: 'ALN-AL00', size: '6.67英寸', resolution: '2700×1220', releaseDate: '2023-03' },
+      { brand: 'Huawei', name: 'P60', model: 'LNA-AL00', size: '6.67英寸', resolution: '2700×1220', releaseDate: '2023-03' },
+      { brand: 'Huawei', name: 'Mate 50 Pro', model: 'DCO-AL00', size: '6.74英寸', resolution: '2616×1212', releaseDate: '2022-09' },
+      { brand: 'Huawei', name: 'Mate 50', model: 'CET-AL00', size: '6.7英寸', resolution: '2700×1224', releaseDate: '2022-09' },
+      { brand: 'Huawei', name: 'nova 12 Pro', model: 'BON-AL00', size: '6.76英寸', resolution: '2776×1224', releaseDate: '2023-12' },
+
+      // Xiaomi
+      { brand: 'Xiaomi', name: 'Xiaomi 14 Ultra', model: '24030PN60G', size: '6.73英寸', resolution: '3200×1440', releaseDate: '2024-02' },
+      { brand: 'Xiaomi', name: 'Xiaomi 14 Pro', model: '23127PN0CC', size: '6.73英寸', resolution: '3200×1440', releaseDate: '2023-10' },
+      { brand: 'Xiaomi', name: 'Xiaomi 14', model: '23127PN0CG', size: '6.36英寸', resolution: '2670×1200', releaseDate: '2023-10' },
+      { brand: 'Xiaomi', name: 'Xiaomi 13 Ultra', model: '2304FPN6DC', size: '6.73英寸', resolution: '3200×1440', releaseDate: '2023-04' },
+      { brand: 'Xiaomi', name: 'Xiaomi 13 Pro', model: '2210132C', size: '6.73英寸', resolution: '3200×1440', releaseDate: '2022-12' },
+      { brand: 'Xiaomi', name: 'Xiaomi 13', model: '2211133C', size: '6.36英寸', resolution: '2400×1080', releaseDate: '2022-12' },
+      { brand: 'Xiaomi', name: 'Xiaomi 12S Ultra', model: '2203121C', size: '6.73英寸', resolution: '3200×1440', releaseDate: '2022-07' },
+      { brand: 'Xiaomi', name: 'Xiaomi 12 Pro', model: '2201122C', size: '6.73英寸', resolution: '3200×1440', releaseDate: '2021-12' },
+
+      // Redmi
+      { brand: 'Redmi', name: 'Redmi K70 Pro', model: '2311DRK48C', size: '6.67英寸', resolution: '3200×1440', releaseDate: '2023-11' },
+      { brand: 'Redmi', name: 'Redmi K70', model: '2311DRK48C', size: '6.67英寸', resolution: '3200×1440', releaseDate: '2023-11' },
+      { brand: 'Redmi', name: 'Redmi K60 Ultra', model: '23078PND5C', size: '6.67英寸', resolution: '2712×1220', releaseDate: '2023-08' },
+      { brand: 'Redmi', name: 'Redmi Note 13 Pro+', model: '23090RA98C', size: '6.67英寸', resolution: '2712×1220', releaseDate: '2023-09' },
+      { brand: 'Redmi', name: 'Redmi Note 12 Pro', model: '22101316C', size: '6.67英寸', resolution: '2400×1080', releaseDate: '2022-10' },
+
+      // OPPO
+      { brand: 'OPPO', name: 'Find X7 Ultra', model: 'CPH2609', size: '6.82英寸', resolution: '3168×1440', releaseDate: '2024-01' },
+      { brand: 'OPPO', name: 'Find X7', model: 'CPH2607', size: '6.78英寸', resolution: '2780×1264', releaseDate: '2024-01' },
+      { brand: 'OPPO', name: 'Find X6 Pro', model: 'CPH2305', size: '6.82英寸', resolution: '3168×1440', releaseDate: '2023-03' },
+      { brand: 'OPPO', name: 'Find X6', model: 'CPH2303', size: '6.74英寸', resolution: '2772×1240', releaseDate: '2023-03' },
+      { brand: 'OPPO', name: 'Find X5 Pro', model: 'CPH2305', size: '6.7英寸', resolution: '3216×1440', releaseDate: '2022-02' },
+      { brand: 'OPPO', name: 'Reno11 Pro', model: 'CPH2521', size: '6.74英寸', resolution: '2772×1240', releaseDate: '2023-11' },
+      { brand: 'OPPO', name: 'Reno10 Pro+', model: 'CPH2451', size: '6.74英寸', resolution: '2772×1240', releaseDate: '2023-05' },
+
+      // vivo
+      { brand: 'vivo', name: 'X100 Pro', model: 'V2309A', size: '6.78英寸', resolution: '2800×1260', releaseDate: '2023-11' },
+      { brand: 'vivo', name: 'X100', model: 'V2309A', size: '6.78英寸', resolution: '2800×1260', releaseDate: '2023-11' },
+      { brand: 'vivo', name: 'X90 Pro+', model: 'V2227A', size: '6.78英寸', resolution: '3200×1440', releaseDate: '2022-11' },
+      { brand: 'vivo', name: 'X90 Pro', model: 'V2242A', size: '6.78英寸', resolution: '2800×1260', releaseDate: '2022-11' },
+      { brand: 'vivo', name: 'X90', model: 'V2241A', size: '6.78英寸', resolution: '2800×1260', releaseDate: '2022-11' },
+      { brand: 'vivo', name: 'S18 Pro', model: 'V2323A', size: '6.78英寸', resolution: '2800×1260', releaseDate: '2023-12' },
+      { brand: 'vivo', name: 'iQOO 12 Pro', model: 'V2329A', size: '6.78英寸', resolution: '3200×1440', releaseDate: '2023-11' },
+      { brand: 'vivo', name: 'iQOO 12', model: 'V2327A', size: '6.78英寸', resolution: '2800×1260', releaseDate: '2023-11' },
+
+      // OnePlus
+      { brand: 'OnePlus', name: 'OnePlus 12', model: 'CPH2581', size: '6.82英寸', resolution: '3168×1440', releaseDate: '2024-01' },
+      { brand: 'OnePlus', name: 'OnePlus 11', model: 'CPH2449', size: '6.7英寸', resolution: '3216×1440', releaseDate: '2023-01' },
+      { brand: 'OnePlus', name: 'OnePlus 10 Pro', model: 'NE2210', size: '6.7英寸', resolution: '3216×1440', releaseDate: '2022-01' },
+      { brand: 'OnePlus', name: 'OnePlus 9 Pro', model: 'LE2120', size: '6.7英寸', resolution: '3216×1440', releaseDate: '2021-03' },
+      { brand: 'OnePlus', name: 'OnePlus Ace 2 Pro', model: 'PJA110', size: '6.74英寸', resolution: '2772×1240', releaseDate: '2023-08' },
+
+      // Honor
+      { brand: 'Honor', name: 'Magic6 Pro', model: 'BVL-AN16', size: '6.8英寸', resolution: '2800×1280', releaseDate: '2024-01' },
+      { brand: 'Honor', name: 'Magic6', model: 'BVL-AN00', size: '6.78英寸', resolution: '2800×1280', releaseDate: '2024-01' },
+      { brand: 'Honor', name: 'Magic5 Pro', model: 'PGT-AN20', size: '6.81英寸', resolution: '2848×1312', releaseDate: '2023-02' },
+      { brand: 'Honor', name: 'Magic5', model: 'PGT-AN00', size: '6.73英寸', resolution: '2688×1224', releaseDate: '2023-02' },
+      { brand: 'Honor', name: '100 Pro', model: 'MAA-AN00', size: '6.78英寸', resolution: '2700×1224', releaseDate: '2023-11' },
+      { brand: 'Honor', name: '90 Pro', model: 'REA-AN00', size: '6.78英寸', resolution: '2700×1224', releaseDate: '2023-05' },
+
+      // Google
+      { brand: 'Google', name: 'Pixel 8 Pro', model: 'GE9DP', size: '6.7英寸', resolution: '2992×1344', releaseDate: '2023-10' },
+      { brand: 'Google', name: 'Pixel 8', model: 'G9BQD', size: '6.2英寸', resolution: '2400×1080', releaseDate: '2023-10' },
+      { brand: 'Google', name: 'Pixel 7 Pro', model: 'GE9DP', size: '6.7英寸', resolution: '3120×1440', releaseDate: '2022-10' },
+      { brand: 'Google', name: 'Pixel 7', model: 'GVU6C', size: '6.3英寸', resolution: '2400×1080', releaseDate: '2022-10' },
+      { brand: 'Google', name: 'Pixel 6 Pro', model: 'GLU0G', size: '6.7英寸', resolution: '3120×1440', releaseDate: '2021-10' },
+
+      // Realme
+      { brand: 'Realme', name: 'GT5 Pro', model: 'RMX3888', size: '6.78英寸', resolution: '2780×1264', releaseDate: '2023-12' },
+      { brand: 'Realme', name: 'GT5', model: 'RMX3820', size: '6.74英寸', resolution: '2772×1240', releaseDate: '2023-08' },
+      { brand: 'Realme', name: 'GT Neo6', model: 'RMX3851', size: '6.78英寸', resolution: '2780×1264', releaseDate: '2024-05' },
+      { brand: 'Realme', name: '12 Pro+', model: 'RMX3842', size: '6.7英寸', resolution: '2412×1080', releaseDate: '2024-01' },
+
+      // Sony
+      { brand: 'Sony', name: 'Xperia 1 V', model: 'XQ-DQ72', size: '6.5英寸', resolution: '3840×1644', releaseDate: '2023-05' },
+      { brand: 'Sony', name: 'Xperia 5 V', model: 'XQ-DE72', size: '6.1英寸', resolution: '2520×1080', releaseDate: '2023-09' },
+      { brand: 'Sony', name: 'Xperia 1 IV', model: 'XQ-CT72', size: '6.5英寸', resolution: '3840×1644', releaseDate: '2022-05' },
+
+      // ASUS
+      { brand: 'ASUS', name: 'ROG Phone 8 Pro', model: 'AI2401', size: '6.78英寸', resolution: '2448×1080', releaseDate: '2024-01' },
+      { brand: 'ASUS', name: 'ROG Phone 7', model: 'AI2205', size: '6.78英寸', resolution: '2448×1080', releaseDate: '2023-04' },
+      { brand: 'ASUS', name: 'ZenFone 10', model: 'AI2202', size: '5.92英寸', resolution: '2400×1080', releaseDate: '2023-06' }
+    ];
+
+    let filteredData = [...deviceData];
+    let lastUpdateTime = new Date().toLocaleString('zh-CN');
+
+    // 初始化
+    function init() {
+      updateStats();
+      renderDevices(filteredData);
+      updateLastUpdateTime();
+
+      // 搜索功能
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', handleSearch);
+
+      // 定期更新数据（可以改为从API获取）
+      setInterval(updateData, 60000); // 每分钟检查一次更新
+    }
+
+    // 处理搜索
+    function handleSearch(e) {
+      const keyword = e.target.value.trim().toLowerCase();
+
+      if (!keyword) {
+        filteredData = [...deviceData];
+      } else {
+        filteredData = deviceData.filter(device => {
+          return device.brand.toLowerCase().includes(keyword) ||
+            device.name.toLowerCase().includes(keyword) ||
+            device.model.toLowerCase().includes(keyword) ||
+            device.size.toLowerCase().includes(keyword) ||
+            device.resolution.toLowerCase().includes(keyword);
+        });
+      }
+
+      renderDevices(filteredData);
+      updateStats();
+    }
+
+    // 渲染设备列表
+    function renderDevices(devices) {
+      const deviceList = document.getElementById('deviceList');
+
+      if (devices.length === 0) {
+        deviceList.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state-icon">📱</div>
+            <div class="empty-state-text">未找到匹配的机型</div>
+          </div>
+        `;
+        return;
+      }
+
+      deviceList.innerHTML = devices.map(device => {
+        const brandIcon = brandIcons[device.brand] || 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/android.svg';
+
+        return `
+          <div class="device-card">
+            <div class="device-header">
+              <img src="${brandIcon}" alt="${device.brand}" class="brand-icon" onerror="this.src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/android.svg'">
+              <div class="device-title">
+                <div class="device-name">${device.name}</div>
+                <div class="device-model">${device.model}</div>
+                <span class="brand-badge">${device.brand}</span>
+              </div>
+            </div>
+            <div class="device-info">
+              <div class="info-item">
+                <span class="info-label">屏幕尺寸</span>
+                <span class="info-value">${device.size}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">分辨率</span>
+                <span class="info-value">${device.resolution}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">上市时间</span>
+                <span class="info-value full-width">${device.releaseDate}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 更新统计信息
+    function updateStats() {
+      document.getElementById('totalCount').textContent = deviceData.length;
+      document.getElementById('displayCount').textContent = filteredData.length;
+    }
+
+    // 更新最后更新时间
+    function updateLastUpdateTime() {
+      document.getElementById('lastUpdate').textContent = lastUpdateTime;
+    }
+
+    // 更新数据（可以从API获取）
+    async function updateData() {
+      try {
+        // 这里可以调用API获取最新数据
+        // const response = await fetch('https://api.example.com/devices');
+        // const newData = await response.json();
+        // deviceData = newData;
+
+        // 目前使用本地数据，但更新时间戳
+        lastUpdateTime = new Date().toLocaleString('zh-CN');
+        updateLastUpdateTime();
+
+        // 如果有搜索关键词，重新过滤
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput.value.trim()) {
+          handleSearch({ target: searchInput });
+        } else {
+          filteredData = [...deviceData];
+          renderDevices(filteredData);
+          updateStats();
+        }
+      } catch (error) {
+        console.error('更新数据失败:', error);
+      }
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>
