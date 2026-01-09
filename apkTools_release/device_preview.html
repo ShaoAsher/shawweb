@@ -553,7 +553,7 @@
     <div class="header">
       <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>📱 机型预览信息工具</h1>
-      <p>查看主流手机机型详细信息，支持实时更新和模糊搜索</p>
+      <p>查看主流手机机型详细信息，支持模糊搜索（包含最新iPhone 17系列）</p>
     </div>
     <div class="content">
       <div class="search-section">
@@ -569,7 +569,7 @@
             <strong>显示数量:</strong> <span id="displayCount">0</span>
           </div>
           <div class="stat-item">
-            <strong>最后更新:</strong> <span id="lastUpdate">-</span>
+            <strong>数据版本:</strong> <span id="lastUpdate">2025-09</span>
           </div>
         </div>
       </div>
@@ -683,86 +683,87 @@
 
     // 默认机型数据（硬编码，包含最新iPhone 17系列）
     let deviceData = [
-      // Apple - iPhone 17系列（最新）
-      { brand: 'Apple', name: 'iPhone 17 Pro Max', model: 'A3525', size: '6.9英寸', resolution: '3200×1440', releaseDate: '2025-09', internalModel: 'iPhone18,2' },
-      { brand: 'Apple', name: 'iPhone 17 Pro', model: 'A3521', size: '6.3英寸', resolution: '2796×1290', releaseDate: '2025-09', internalModel: 'iPhone18,1' },
-      { brand: 'Apple', name: 'iPhone 17 Plus', model: 'A3514', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2025-09', internalModel: 'iPhone17,4' },
-      { brand: 'Apple', name: 'iPhone 17', model: 'A3513', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2025-09', internalModel: 'iPhone17,3' },
-      { brand: 'Apple', name: 'iPhone Air', model: 'A3260', size: '6.5英寸', resolution: '2796×1290', releaseDate: '2025-09', internalModel: 'iPhone18,4' },
-      
+      // Apple - iPhone 17系列（最新，2025年9月发布）
+      { brand: 'Apple', name: 'iPhone 17 Pro Max', model: 'A3526', internalModel: 'iPhone18,2', size: '6.9英寸', resolution: '3200×1440', releaseDate: '2025-09' },
+      { brand: 'Apple', name: 'iPhone 17 Pro', model: 'A3521', internalModel: 'iPhone18,1', size: '6.3英寸', resolution: '2800×1260', releaseDate: '2025-09' },
+      { brand: 'Apple', name: 'iPhone 17', model: 'A3520', internalModel: 'iPhone18,3', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2025-09' },
+      { brand: 'Apple', name: 'iPhone 17 Plus', model: 'A3522', internalModel: 'iPhone17,4', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2025-09' },
+      { brand: 'Apple', name: 'iPhone Air', model: 'A3517', internalModel: 'iPhone18,4', size: '6.5英寸', resolution: '2778×1284', releaseDate: '2025-09' },
+
       // Apple - iPhone 16系列
-      { brand: 'Apple', name: 'iPhone 16 Pro Max', model: 'A3101', size: '6.9英寸', resolution: '3200×1440', releaseDate: '2024-09', internalModel: 'iPhone17,2' },
-      { brand: 'Apple', name: 'iPhone 16 Pro', model: 'A3102', size: '6.3英寸', resolution: '2796×1290', releaseDate: '2024-09', internalModel: 'iPhone17,1' },
-      { brand: 'Apple', name: 'iPhone 16 Plus', model: 'A3104', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2024-09', internalModel: 'iPhone16,2' },
-      { brand: 'Apple', name: 'iPhone 16', model: 'A3103', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2024-09', internalModel: 'iPhone16,1' },
-      
+      { brand: 'Apple', name: 'iPhone 16 Pro Max', model: 'A2901', internalModel: 'iPhone17,2', size: '6.9英寸', resolution: '3200×1440', releaseDate: '2024-09' },
+      { brand: 'Apple', name: 'iPhone 16 Pro', model: 'A2895', internalModel: 'iPhone17,1', size: '6.3英寸', resolution: '2800×1260', releaseDate: '2024-09' },
+      { brand: 'Apple', name: 'iPhone 16', model: 'A2893', internalModel: 'iPhone17,3', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2024-09' },
+      { brand: 'Apple', name: 'iPhone 16 Plus', model: 'A2894', internalModel: 'iPhone17,4', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2024-09' },
+      { brand: 'Apple', name: 'iPhone 16e', model: 'A2897', internalModel: 'iPhone17,5', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2024-09' },
+
       // Apple - iPhone 15系列
       { brand: 'Apple', name: 'iPhone 15 Pro Max', model: 'A3101', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2023-09', internalModel: 'iPhone16,2' },
       { brand: 'Apple', name: 'iPhone 15 Pro', model: 'A3102', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2023-09', internalModel: 'iPhone16,1' },
       { brand: 'Apple', name: 'iPhone 15 Plus', model: 'A3104', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2023-09', internalModel: 'iPhone15,5' },
       { brand: 'Apple', name: 'iPhone 15', model: 'A3103', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2023-09', internalModel: 'iPhone15,4' },
-      
+
       // Apple - iPhone 14系列
       { brand: 'Apple', name: 'iPhone 14 Pro Max', model: 'A2896', size: '6.7英寸', resolution: '2796×1290', releaseDate: '2022-09', internalModel: 'iPhone15,3' },
       { brand: 'Apple', name: 'iPhone 14 Pro', model: 'A2892', size: '6.1英寸', resolution: '2556×1179', releaseDate: '2022-09', internalModel: 'iPhone15,2' },
       { brand: 'Apple', name: 'iPhone 14 Plus', model: 'A2888', size: '6.7英寸', resolution: '2778×1284', releaseDate: '2022-09', internalModel: 'iPhone14,8' },
       { brand: 'Apple', name: 'iPhone 14', model: 'A2882', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2022-09', internalModel: 'iPhone14,7' },
-      
+
       // Apple - iPhone 13系列
       { brand: 'Apple', name: 'iPhone 13 Pro Max', model: 'A2643', size: '6.7英寸', resolution: '2778×1284', releaseDate: '2021-09', internalModel: 'iPhone14,3' },
       { brand: 'Apple', name: 'iPhone 13 Pro', model: 'A2639', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2021-09', internalModel: 'iPhone14,2' },
       { brand: 'Apple', name: 'iPhone 13 mini', model: 'A2629', size: '5.4英寸', resolution: '2340×1080', releaseDate: '2021-09', internalModel: 'iPhone14,4' },
       { brand: 'Apple', name: 'iPhone 13', model: 'A2634', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2021-09', internalModel: 'iPhone14,5' },
-      
+
       // Apple - iPhone 12系列
       { brand: 'Apple', name: 'iPhone 12 Pro Max', model: 'A2412', size: '6.7英寸', resolution: '2778×1284', releaseDate: '2020-10', internalModel: 'iPhone13,4' },
       { brand: 'Apple', name: 'iPhone 12 Pro', model: 'A2408', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2020-10', internalModel: 'iPhone13,3' },
       { brand: 'Apple', name: 'iPhone 12 mini', model: 'A2399', size: '5.4英寸', resolution: '2340×1080', releaseDate: '2020-10', internalModel: 'iPhone13,1' },
       { brand: 'Apple', name: 'iPhone 12', model: 'A2404', size: '6.1英寸', resolution: '2532×1170', releaseDate: '2020-10', internalModel: 'iPhone13,2' },
-      
+
       // Apple - iPhone SE系列
       { brand: 'Apple', name: 'iPhone SE (第三代)', model: 'A2785', size: '4.7英寸', resolution: '1334×750', releaseDate: '2022-03', internalModel: 'iPhone14,6' },
       { brand: 'Apple', name: 'iPhone SE (第二代)', model: 'A2275', size: '4.7英寸', resolution: '1334×750', releaseDate: '2020-04', internalModel: 'iPhone12,8' },
-      
+
       // Apple - iPhone 11系列
       { brand: 'Apple', name: 'iPhone 11 Pro Max', model: 'A2161', size: '6.5英寸', resolution: '2688×1242', releaseDate: '2019-09', internalModel: 'iPhone12,5' },
       { brand: 'Apple', name: 'iPhone 11 Pro', model: 'A2160', size: '5.8英寸', resolution: '2436×1125', releaseDate: '2019-09', internalModel: 'iPhone12,3' },
       { brand: 'Apple', name: 'iPhone 11', model: 'A2221', size: '6.1英寸', resolution: '1792×828', releaseDate: '2019-09', internalModel: 'iPhone12,1' },
-      
+
       // Apple - iPhone X系列
       { brand: 'Apple', name: 'iPhone XS Max', model: 'A1921', size: '6.5英寸', resolution: '2688×1242', releaseDate: '2018-09', internalModel: 'iPhone11,6' },
       { brand: 'Apple', name: 'iPhone XS', model: 'A1920', size: '5.8英寸', resolution: '2436×1125', releaseDate: '2018-09', internalModel: 'iPhone11,2' },
       { brand: 'Apple', name: 'iPhone XR', model: 'A1984', size: '6.1英寸', resolution: '1792×828', releaseDate: '2018-10', internalModel: 'iPhone11,8' },
       { brand: 'Apple', name: 'iPhone X', model: 'A1865', size: '5.8英寸', resolution: '2436×1125', releaseDate: '2017-11', internalModel: 'iPhone10,3' },
-      
+
       // Apple - iPhone 8系列
       { brand: 'Apple', name: 'iPhone 8 Plus', model: 'A1864', size: '5.5英寸', resolution: '1920×1080', releaseDate: '2017-09', internalModel: 'iPhone10,5' },
       { brand: 'Apple', name: 'iPhone 8', model: 'A1863', size: '4.7英寸', resolution: '1334×750', releaseDate: '2017-09', internalModel: 'iPhone10,4' },
-      
+
       // Apple - iPhone 7系列
       { brand: 'Apple', name: 'iPhone 7 Plus', model: 'A1661', size: '5.5英寸', resolution: '1920×1080', releaseDate: '2016-09', internalModel: 'iPhone9,4' },
       { brand: 'Apple', name: 'iPhone 7', model: 'A1660', size: '4.7英寸', resolution: '1334×750', releaseDate: '2016-09', internalModel: 'iPhone9,3' },
-      
+
       // Apple - iPhone 6系列
       { brand: 'Apple', name: 'iPhone 6S Plus', model: 'A1634', size: '5.5英寸', resolution: '1920×1080', releaseDate: '2015-09', internalModel: 'iPhone8,2' },
       { brand: 'Apple', name: 'iPhone 6S', model: 'A1633', size: '4.7英寸', resolution: '1334×750', releaseDate: '2015-09', internalModel: 'iPhone8,1' },
       { brand: 'Apple', name: 'iPhone 6 Plus', model: 'A1522', size: '5.5英寸', resolution: '1920×1080', releaseDate: '2014-09', internalModel: 'iPhone7,1' },
       { brand: 'Apple', name: 'iPhone 6', model: 'A1549', size: '4.7英寸', resolution: '1334×750', releaseDate: '2014-09', internalModel: 'iPhone7,2' },
-      
+
       // Apple - iPhone 5系列
       { brand: 'Apple', name: 'iPhone SE (第一代)', model: 'A1723', size: '4.0英寸', resolution: '1136×640', releaseDate: '2016-03', internalModel: 'iPhone8,4' },
       { brand: 'Apple', name: 'iPhone 5S', model: 'A1530', size: '4.0英寸', resolution: '1136×640', releaseDate: '2013-09', internalModel: 'iPhone6,2' },
       { brand: 'Apple', name: 'iPhone 5C', model: 'A1529', size: '4.0英寸', resolution: '1136×640', releaseDate: '2013-09', internalModel: 'iPhone5,4' },
       { brand: 'Apple', name: 'iPhone 5', model: 'A1428', size: '4.0英寸', resolution: '1136×640', releaseDate: '2012-09', internalModel: 'iPhone5,2' },
-      
+
       // Apple - iPhone 4系列
       { brand: 'Apple', name: 'iPhone 4S', model: 'A1387', size: '3.5英寸', resolution: '960×640', releaseDate: '2011-10', internalModel: 'iPhone4,1' },
       { brand: 'Apple', name: 'iPhone 4', model: 'A1332', size: '3.5英寸', resolution: '960×640', releaseDate: '2010-06', internalModel: 'iPhone3,1' },
-      
+
       // Apple - iPhone 3系列
       { brand: 'Apple', name: 'iPhone 3GS', model: 'A1303', size: '3.5英寸', resolution: '480×320', releaseDate: '2009-06', internalModel: 'iPhone2,1' },
       { brand: 'Apple', name: 'iPhone 3G', model: 'A1241', size: '3.5英寸', resolution: '480×320', releaseDate: '2008-06', internalModel: 'iPhone1,2' },
-      
+
       // Apple - iPhone 原始系列
       { brand: 'Apple', name: 'iPhone (第一代)', model: 'A1203', size: '3.5英寸', resolution: '480×320', releaseDate: '2007-01', internalModel: 'iPhone1,1' },
 
@@ -864,19 +865,10 @@
     ];
 
     let filteredData = [...deviceData];
-    let lastUpdateTime = new Date().toLocaleString('zh-CN');
+    let lastUpdateTime = '2025-09（包含iPhone 17系列）';
 
     // 初始化
-    async function init() {
-      // 显示加载状态
-      const deviceList = document.getElementById('deviceList');
-      deviceList.innerHTML = `
-        <div class="loading" style="grid-column: 1 / -1;">
-          <div class="loading-spinner"></div>
-          <div>正在加载机型数据...</div>
-        </div>
-      `;
-
+    function init() {
       // 使用本地硬编码数据
       filteredData = [...deviceData];
       renderDevices(filteredData);
@@ -886,8 +878,6 @@
       // 搜索功能
       const searchInput = document.getElementById('searchInput');
       searchInput.addEventListener('input', handleSearch);
-
-      // 数据已硬编码，无需定期更新
     }
 
     // 处理搜索（支持中英文模糊搜索）
