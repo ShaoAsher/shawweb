@@ -1006,30 +1006,28 @@
       document.getElementById('lastUpdate').textContent = lastUpdateTime;
     }
 
-    // 从GitHub获取Apple设备数据
+    // 从EveryMac.com获取Apple设备数据
     async function fetchAppleDeviceData() {
       try {
-        // 从GitHub获取Apple设备型号列表
-        const response = await fetch('https://raw.githubusercontent.com/pluwen/apple-device-model-list/main/README.md', {
+        // 使用CORS代理获取EveryMac.com数据
+        const proxyUrl = 'https://api.allorigins.win/get?url=';
+        const targetUrl = 'https://everymac.com/systems/apple/iphone/index-iphone-specs.html';
+        const fullUrl = proxyUrl + encodeURIComponent(targetUrl);
+
+        const response = await fetch(fullUrl, {
           method: 'GET',
           headers: {
-            'Accept': 'text/plain'
+            'Accept': 'text/html'
           },
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(10000)
         });
 
         if (response.ok) {
-          const text = await response.text();
-          const appleDevices = parseAppleDeviceList(text);
+          const data = await response.json();
+          const html = data.contents;
+          const appleDevices = parseEveryMacData(html);
 
           if (appleDevices.length > 0) {
-            // 合并到现有数据，更新Apple设备
-            const existingKeys = new Set(deviceData.map(d => `${d.brand}-${d.model}`));
-            const newAppleDevices = appleDevices.filter(d => {
-              const key = `${d.brand}-${d.model}`;
-              return !existingKeys.has(key);
-            });
-
             // 移除旧的Apple设备，添加新的
             deviceData = deviceData.filter(d => d.brand !== 'Apple');
             deviceData = [...deviceData, ...appleDevices];
@@ -1045,13 +1043,157 @@
           }
         }
       } catch (e) {
-        console.warn('获取Apple设备数据失败:', e);
+        console.warn('获取EveryMac.com数据失败，尝试备用方案:', e);
+        // 备用方案：使用GitHub数据源
+        return await fetchAppleDeviceDataFromGitHub();
       }
       return false;
     }
 
-    // 解析Apple设备列表（从README.md格式解析）
-    function parseAppleDeviceList(text) {
+    // 备用方案：从GitHub获取Apple设备数据
+    async function fetchAppleDeviceDataFromGitHub() {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/pluwen/apple-device-model-list/main/README.md', {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/plain'
+          },
+          signal: AbortSignal.timeout(5000)
+        });
+
+        if (response.ok) {
+          const text = await response.text();
+          const appleDevices = parseAppleDeviceListFromGitHub(text);
+
+          if (appleDevices.length > 0) {
+            deviceData = deviceData.filter(d => d.brand !== 'Apple');
+            deviceData = [...deviceData, ...appleDevices];
+            deviceData.sort((a, b) => {
+              if (!a.releaseDate) return 1;
+              if (!b.releaseDate) return -1;
+              return b.releaseDate.localeCompare(a.releaseDate);
+            });
+            return true;
+          }
+        }
+      } catch (e) {
+        console.warn('获取GitHub数据失败:', e);
+      }
+      return false;
+    }
+
+    // 解析EveryMac.com的HTML数据
+    function parseEveryMacData(html) {
+      const devices = [];
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // 查找所有iPhone设备行
+      const rows = doc.querySelectorAll('tr');
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 2) return;
+
+        // 查找设备名称链接
+        const nameLink = cells[0]?.querySelector('a');
+        if (!nameLink || !nameLink.textContent.includes('iPhone')) return;
+
+        const deviceName = nameLink.textContent.trim();
+
+        // 提取显示尺寸
+        const displayCell = cells[0];
+        const displayText = displayCell?.textContent || '';
+        const sizeMatch = displayText.match(/(\d+\.?\d*)"\s*(?:Color|Retina|Super Retina)/);
+        const size = sizeMatch ? `${sizeMatch[1]}英寸` : '-';
+
+        // 提取内部ID
+        let internalModel = '';
+        const idLink = row.querySelector('a[href*="identify="]');
+        if (idLink) {
+          const href = idLink.getAttribute('href');
+          const idMatch = href.match(/identify=([^&]+)/);
+          if (idMatch && idMatch[1].startsWith('iPhone')) {
+            internalModel = decodeURIComponent(idMatch[1]);
+          }
+        }
+
+        // 提取型号（Model）
+        let model = '';
+        const modelLinks = row.querySelectorAll('a[href*="identify="]');
+        modelLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          const modelMatch = href.match(/identify=([A-Z]\d+)/);
+          if (modelMatch) {
+            model = modelMatch[1];
+          }
+        });
+
+        // 提取上市时间
+        let releaseDate = '';
+        const introCell = Array.from(cells).find(cell => {
+          const text = cell.textContent;
+          return text.includes('Intro.') || text.match(/\d{4}/);
+        });
+        if (introCell) {
+          const dateMatch = introCell.textContent.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d+),\s+(\d{4})/);
+          if (dateMatch) {
+            const monthMap = {
+              'January': '01', 'February': '02', 'March': '03', 'April': '04',
+              'May': '05', 'June': '06', 'July': '07', 'August': '08',
+              'September': '09', 'October': '10', 'November': '11', 'December': '12'
+            };
+            const month = monthMap[dateMatch[1]] || '01';
+            const day = dateMatch[2].padStart(2, '0');
+            const year = dateMatch[3];
+            releaseDate = `${year}-${month}`;
+          }
+        }
+
+        // 提取分辨率（从显示文本中）
+        let resolution = '-';
+        if (displayText.includes('Retina')) {
+          // 根据型号推断分辨率
+          if (deviceName.includes('Pro Max') || deviceName.includes('Plus')) {
+            resolution = '2796×1290';
+          } else if (deviceName.includes('Pro')) {
+            resolution = '2556×1179';
+          } else if (deviceName.includes('SE')) {
+            resolution = '1334×750';
+          } else {
+            resolution = '2532×1170';
+          }
+        }
+
+        if (deviceName && deviceName.includes('iPhone')) {
+          devices.push({
+            brand: 'Apple',
+            name: deviceName,
+            model: model || internalModel || '-',
+            internalModel: internalModel,
+            size: size,
+            resolution: resolution,
+            releaseDate: releaseDate || getReleaseDateFromName(deviceName)
+          });
+        }
+      });
+
+      // 去重（基于设备名称）
+      const uniqueDevices = [];
+      const seenNames = new Set();
+      devices.forEach(device => {
+        const key = device.name;
+        if (!seenNames.has(key)) {
+          seenNames.add(key);
+          uniqueDevices.push(device);
+        }
+      });
+
+      return uniqueDevices;
+    }
+
+    // 解析GitHub README格式（备用方案）
+    function parseAppleDeviceListFromGitHub(text) {
       const devices = [];
       const lines = text.split('\n');
       let inIPhoneSection = false;
@@ -1059,25 +1201,21 @@
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
 
-        // 检测iPhone部分
         if (line.includes('## iPhone') || line.includes('##iPhone')) {
           inIPhoneSection = true;
           continue;
         }
 
-        // 检测其他部分，停止解析iPhone
         if (inIPhoneSection && (line.startsWith('##') || line.startsWith('# '))) {
           break;
         }
 
         if (inIPhoneSection && line.includes('iPhone')) {
-          // 解析格式: "iPhone15,2": iPhone 14 Pro 或 "iPhone15,2", "iPhone15,3": iPhone 14 Pro
           const match = line.match(/"([^"]+)"(?:\s*,\s*"[^"]+")*:\s*(.+)/);
           if (match) {
             const internalModel = match[1];
             const deviceName = match[2].trim();
 
-            // 提取型号和上市时间（从现有数据中匹配或使用默认值）
             const existingDevice = deviceData.find(d =>
               d.brand === 'Apple' && d.name === deviceName
             );
@@ -1100,16 +1238,28 @@
 
     // 从设备名称推断上市时间
     function getReleaseDateFromName(name) {
-      // 简单的年份推断逻辑
+      if (name.includes('17')) return '2025-09';
       if (name.includes('16')) return '2024-09';
       if (name.includes('15')) return '2023-09';
       if (name.includes('14')) return '2022-09';
       if (name.includes('13')) return '2021-09';
       if (name.includes('12')) return '2020-10';
       if (name.includes('11')) return '2019-09';
+      if (name.includes('X')) return '2017-11';
+      if (name.includes('8')) return '2017-09';
+      if (name.includes('7')) return '2016-09';
+      if (name.includes('6S')) return '2015-09';
+      if (name.includes('6')) return '2014-09';
+      if (name.includes('5S')) return '2013-09';
+      if (name.includes('5')) return '2012-09';
+      if (name.includes('4S')) return '2011-10';
+      if (name.includes('4')) return '2010-06';
+      if (name.includes('3GS')) return '2009-06';
+      if (name.includes('3G')) return '2008-06';
       if (name.includes('SE 3') || name.includes('SE 第三代')) return '2022-03';
       if (name.includes('SE 2') || name.includes('SE 第二代')) return '2020-04';
       if (name.includes('SE')) return '2016-03';
+      if (name.includes('Original') || name.includes('1st Gen')) return '2007-01';
       return '';
     }
 
