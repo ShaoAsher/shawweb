@@ -52,6 +52,121 @@
       padding: 40px 30px
     }
 
+    /* 搜索框 */
+    .search-container {
+      margin-bottom: 30px;
+      position: relative
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 16px 50px 16px 20px;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .05)
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, .2)
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #adb5bd;
+      pointer-events: none
+    }
+
+    .search-box:focus + .search-icon {
+      color: #667eea
+    }
+
+    .search-results-info {
+      margin-top: 12px;
+      color: #718096;
+      font-size: 14px;
+      display: none
+    }
+
+    .search-results-info.show {
+      display: block
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: #a0aec0;
+      display: none
+    }
+
+    .no-results.show {
+      display: block
+    }
+
+    .no-results-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5
+    }
+
+    /* 快捷入口 */
+    .quick-access {
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 2px solid #e9ecef
+    }
+
+    .quick-access-title {
+      font-size: 24px;
+      color: #2d3748;
+      margin-bottom: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px
+    }
+
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 24px;
+      color: #495057;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+      border: 2px solid transparent
+    }
+
+    .quick-link:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
+      border-color: transparent
+    }
+
+    .quick-link-icon {
+      font-size: 18px
+    }
+
     /* 工具卡片网格 */
     .tools-grid {
       display: grid;
@@ -280,26 +395,49 @@
       <p>统一入口，快速访问常用页面</p>
     </div>
     <div class="content">
+      <!-- 搜索框 -->
+      <div class="search-container">
+        <input type="text" class="search-box" id="searchInput" placeholder="🔍 搜索工具...">
+        <span class="search-icon">🔍</span>
+        <div class="search-results-info" id="searchResultsInfo"></div>
+      </div>
+
       <!-- 开发工具 -->
-      <div class="section-title">
+      <div class="section-title" id="devSection">
         <span class="section-icon">💻</span>
         <span>开发工具</span>
       </div>
       <div class="tools-grid" id="devTools"></div>
 
       <!-- 图片工具 -->
-      <div class="section-title">
+      <div class="section-title" id="imageSection">
         <span class="section-icon">🖼️</span>
         <span>图片工具</span>
       </div>
       <div class="tools-grid" id="imageTools"></div>
 
       <!-- 文字/编码工具 -->
-      <div class="section-title">
+      <div class="section-title" id="textSection">
         <span class="section-icon">📝</span>
         <span>文字/编码工具</span>
       </div>
       <div class="tools-grid" id="textTools"></div>
+
+      <!-- 无结果提示 -->
+      <div class="no-results" id="noResults">
+        <div class="no-results-icon">🔍</div>
+        <div style="font-size: 18px; margin-bottom: 8px;">未找到相关工具</div>
+        <div>试试其他关键词吧</div>
+      </div>
+
+      <!-- 快捷入口 -->
+      <div class="quick-access">
+        <div class="quick-access-title">
+          <span>⚡</span>
+          <span>快捷入口</span>
+        </div>
+        <div class="quick-links" id="quickLinks"></div>
+      </div>
     </div>
   </div>
 
@@ -320,7 +458,7 @@
       { icon: '🎨', title: '图标工厂', desc: '上传一个图标，一键生成 iOS 与 Android 标准尺寸及文件夹结构，包含标准命名。', href: './icon_factory.html', category: 'image', rating: 5 },
       { icon: '🔄', title: 'SVG 互转 PNG/JPG/JPEG', desc: '支持 SVG 与位图的双向转换，设置尺寸与比例并下载。', href: './svg_converter.html', category: 'image', rating: 4 },
       { icon: '✍️', title: '文字图片生成工具', desc: '输入文本快速生成图片素材，适用于占位图、标签图等场景。', href: './text_image_generator.html', category: 'image', rating: 4 },
-      { icon: '📱', title: '二维码/条形码生成工具', desc: '支持自定义样式、颜色和中心图标，生成高质量二维码和多种格式条形码。', href: './qrcode_generator.html', category: 'image', rating: 4 },
+      { icon: '📷', title: '二维码/条形码生成工具', desc: '支持自定义样式、颜色和中心图标，生成高质量二维码和多种格式条形码。', href: './qrcode_generator.html', category: 'image', rating: 4 },
       { icon: '🎨', title: 'RGB 颜色互转工具', desc: '支持 RGB、HEX、HSL 颜色格式互转，提供主流颜色预设卡片，条状展示。', href: './color_converter.html', category: 'image', rating: 4 },
 
       // 文字/编码工具
@@ -371,25 +509,144 @@
     }
 
     // 渲染工具
-    function renderTools() {
+    function renderTools(filteredTools = null) {
       const devTools = document.getElementById('devTools');
       const imageTools = document.getElementById('imageTools');
       const textTools = document.getElementById('textTools');
+      const noResults = document.getElementById('noResults');
+      const searchResultsInfo = document.getElementById('searchResultsInfo');
 
-      tools.forEach(tool => {
+      // 清空现有内容
+      devTools.innerHTML = '';
+      imageTools.innerHTML = '';
+      textTools.innerHTML = '';
+
+      const toolsToRender = filteredTools || tools;
+      let hasResults = false;
+
+      toolsToRender.forEach(tool => {
         const card = createCard(tool);
         if (tool.category === 'dev') {
           devTools.innerHTML += card;
+          hasResults = true;
         } else if (tool.category === 'image') {
           imageTools.innerHTML += card;
+          hasResults = true;
         } else if (tool.category === 'text') {
           textTools.innerHTML += card;
+          hasResults = true;
         }
+      });
+
+      // 显示/隐藏分类标题
+      const devSection = document.getElementById('devSection');
+      const imageSection = document.getElementById('imageSection');
+      const textSection = document.getElementById('textSection');
+
+      if (filteredTools) {
+        const hasDev = toolsToRender.some(t => t.category === 'dev');
+        const hasImage = toolsToRender.some(t => t.category === 'image');
+        const hasText = toolsToRender.some(t => t.category === 'text');
+
+        devSection.style.display = hasDev ? 'flex' : 'none';
+        imageSection.style.display = hasImage ? 'flex' : 'none';
+        textSection.style.display = hasText ? 'flex' : 'none';
+
+        // 显示搜索结果信息
+        if (filteredTools.length > 0) {
+          searchResultsInfo.textContent = `找到 ${filteredTools.length} 个工具`;
+          searchResultsInfo.classList.add('show');
+        } else {
+          searchResultsInfo.classList.remove('show');
+        }
+
+        // 显示/隐藏无结果提示
+        noResults.classList.toggle('show', !hasResults);
+      } else {
+        devSection.style.display = 'flex';
+        imageSection.style.display = 'flex';
+        textSection.style.display = 'flex';
+        searchResultsInfo.classList.remove('show');
+        noResults.classList.remove('show');
+      }
+    }
+
+    // 模糊搜索
+    function fuzzySearch(query) {
+      if (!query || query.trim() === '') {
+        return tools;
+      }
+
+      const lowerQuery = query.toLowerCase().trim();
+      return tools.filter(tool => {
+        const title = tool.title.toLowerCase();
+        const desc = tool.desc.toLowerCase();
+        const category = tool.category === 'dev' ? '开发' : tool.category === 'image' ? '图片' : '文字';
+        
+        // 检查标题、描述、分类是否包含关键词
+        return title.includes(lowerQuery) || 
+               desc.includes(lowerQuery) || 
+               category.includes(lowerQuery) ||
+               // 支持拼音首字母搜索（简单实现）
+               tool.title.match(/[\u4e00-\u9fa5]/g)?.some(char => {
+                 const pinyin = getPinyinInitial(char);
+                 return pinyin && pinyin.toLowerCase().includes(lowerQuery);
+               });
       });
     }
 
-    // 初始化
-    document.addEventListener('DOMContentLoaded', renderTools);
+    // 获取中文拼音首字母（简化版）
+    function getPinyinInitial(char) {
+      const pinyinMap = {
+        '安': 'a', '签': 'q', '名': 'm', '文': 'w', '件': 'j', '生': 's', '成': 'c', '工': 'g', '具': 'j',
+        '信': 'x', '息': 'x', '提': 't', '取': 'q', '调': 'd', '试': 's', '格': 'g', '式': 's', '化': 'h',
+        '转': 'z', '模': 'm', '型': 'x', '预': 'y', '览': 'l', '压': 'y', '缩': 's', '启': 'q', '动': 'd',
+        '图': 't', '标': 'b', '工': 'g', '厂': 'c', '互': 'h', '字': 'z', '串': 'c', '加': 'j', '解': 'j',
+        '密': 'm', '时': 's', '间': 'j', '戳': 'c', '多': 'd', '种': 'z', '颜': 'y', '色': 's', '码': 'm',
+        '条': 't', '形': 'x', '码': 'm'
+      };
+      return pinyinMap[char] || '';
+    }
+
+    // 初始化快捷入口
+    function initQuickLinks() {
+      const quickLinks = document.getElementById('quickLinks');
+      // 选择评分5星的热门工具作为快捷入口
+      const popularTools = tools.filter(t => t.rating === 5).slice(0, 8);
+      
+      popularTools.forEach(tool => {
+        const link = document.createElement('a');
+        link.href = tool.href;
+        link.className = 'quick-link';
+        link.innerHTML = `<span class="quick-link-icon">${tool.icon}</span><span>${tool.title}</span>`;
+        quickLinks.appendChild(link);
+      });
+    }
+
+    // 搜索事件监听
+    let searchTimeout;
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTools();
+      initQuickLinks();
+
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const query = e.target.value;
+          const results = fuzzySearch(query);
+          renderTools(results);
+        }, 300);
+      });
+
+      // 支持键盘快捷键 Ctrl/Cmd + K 聚焦搜索框
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      });
+    });
   </script>
 </body>
 
