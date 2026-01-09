@@ -318,7 +318,7 @@
     <div class="header">
       <a href="./index.html" class="home-btn">🏠</a>
       <h1>🔄 JSON 转 Model 工具</h1>
-      <p>支持多语言模型类生成：Swift、OC、Vue、Dart、Kotlin、Java 等</p>
+      <p>支持多语言模型类生成：Swift、OC、Vue、Dart、Kotlin、Java、PHP、Go 等</p>
     </div>
     <div class="content">
       <div class="form-section">
@@ -332,6 +332,8 @@
           <div class="language-option" data-lang="vue">Vue (TypeScript)</div>
           <div class="language-option" data-lang="typescript">TypeScript</div>
           <div class="language-option" data-lang="python">Python</div>
+          <div class="language-option" data-lang="php">PHP</div>
+          <div class="language-option" data-lang="go">Go</div>
         </div>
       </div>
 
@@ -487,7 +489,9 @@
         java: 'Java',
         vue: 'Vue/TypeScript',
         typescript: 'TypeScript',
-        python: 'Python'
+        python: 'Python',
+        php: 'PHP',
+        go: 'Go'
       };
       return names[lang] || lang;
     }
@@ -502,7 +506,9 @@
         java: generateJava,
         vue: generateVue,
         typescript: generateTypeScript,
-        python: generatePython
+        python: generatePython,
+        php: generatePHP,
+        go: generateGo
       };
       return generators[lang] || generateSwift;
     }
@@ -791,6 +797,105 @@
       }
 
       code += properties.join('\n\n');
+      return code;
+    }
+
+    // 生成 PHP Model
+    function generatePHP(obj, className, options) {
+      const { useCamelCase, addComments } = options;
+      const phpClassName = toPascalCase(className);
+      let code = `<?php\n\n`;
+      if (addComments) {
+        code += `/**\n * ${phpClassName} Model\n */\n`;
+      }
+      code += `class ${phpClassName}\n{\n`;
+
+      const properties = [];
+      const getters = [];
+      const setters = [];
+      const fromArrayBody = [];
+      const toArrayBody = [];
+
+      for (const [key, value] of Object.entries(obj)) {
+        const propName = toCamelCase(key, useCamelCase);
+        let type = 'string';
+        let docType = 'string';
+        if (typeof value === 'number') {
+          type = Number.isInteger(value) ? 'int' : 'float';
+          docType = type;
+        }
+        if (typeof value === 'boolean') {
+          type = 'bool';
+          docType = 'bool';
+        }
+        if (Array.isArray(value)) {
+          type = 'array';
+          docType = 'array';
+        }
+        if (typeof value === 'object' && value !== null) {
+          type = 'array';
+          docType = 'array';
+        }
+
+        if (addComments) {
+          properties.push(`    /**\n     * ${key}\n     * @var ${docType}\n     */\n    private $${propName};`);
+        } else {
+          properties.push(`    private $${propName};`);
+        }
+
+        const getterName = 'get' + toPascalCase(propName);
+        const setterName = 'set' + toPascalCase(propName);
+        getters.push(`    /**\n     * @return ${docType}\n     */\n    public function ${getterName}(): ${type}\n    {\n        return $this->${propName};\n    }`);
+        setters.push(`    /**\n     * @param ${docType} $${propName}\n     * @return $this\n     */\n    public function ${setterName}($${propName}): self\n    {\n        $this->${propName} = $${propName};\n        return $this;\n    }`);
+        fromArrayBody.push(`        $this->${propName} = $data['${key}'] ?? null;`);
+        toArrayBody.push(`            '${key}' => $this->${propName},`);
+      }
+
+      code += properties.join('\n\n');
+      code += '\n\n';
+      code += getters.join('\n\n');
+      code += '\n\n';
+      code += setters.join('\n\n');
+      code += '\n\n';
+      code += `    /**\n     * 从数组创建对象\n     * @param array $data\n     * @return ${phpClassName}\n     */\n    public static function fromArray(array $data): self\n    {\n        $instance = new self();\n${fromArrayBody.join('\n')}\n        return $instance;\n    }\n\n`;
+      code += `    /**\n     * 转换为数组\n     * @return array\n     */\n    public function toArray(): array\n    {\n        return [\n${toArrayBody.join('\n')}\n        ];\n    }\n`;
+      code += '}\n';
+      return code;
+    }
+
+    // 生成 Go Model
+    function generateGo(obj, className, options) {
+      const { useCamelCase, addComments } = options;
+      const goStructName = toPascalCase(className);
+      let code = `package model\n\n`;
+      if (addComments) {
+        code += `// ${goStructName} Model\n`;
+      }
+      code += `type ${goStructName} struct {\n`;
+
+      const properties = [];
+      const jsonTags = [];
+      
+      for (const [key, value] of Object.entries(obj)) {
+        const propName = toPascalCase(toCamelCase(key, useCamelCase));
+        let type = 'string';
+        if (typeof value === 'number') type = Number.isInteger(value) ? 'int' : 'float64';
+        if (typeof value === 'boolean') type = 'bool';
+        if (Array.isArray(value)) {
+          const itemType = value.length > 0 ? (typeof value[0] === 'string' ? 'string' : typeof value[0] === 'number' ? 'interface{}' : 'interface{}') : 'interface{}';
+          type = `[]${itemType}`;
+        }
+        if (typeof value === 'object' && value !== null) type = 'map[string]interface{}';
+
+        if (addComments) {
+          properties.push(`    // ${key}\n    ${propName} ${type} \`json:"${key}"\``);
+        } else {
+          properties.push(`    ${propName} ${type} \`json:"${key}"\``);
+        }
+      }
+
+      code += properties.join('\n\n');
+      code += '\n}';
       return code;
     }
   </script>
