@@ -49,7 +49,7 @@
     }
 
     .content {
-      padding: 40px 30px
+      padding: 30px 24px
     }
 
     /* 搜索框 */
@@ -85,7 +85,7 @@
       pointer-events: none
     }
 
-    .search-box:focus + .search-icon {
+    .search-box:focus+.search-icon {
       color: #667eea
     }
 
@@ -170,15 +170,15 @@
     /* 工具卡片网格 */
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 30px
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px
     }
 
     .tool-card {
       background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 12px;
+      padding: 16px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
@@ -200,8 +200,8 @@
     }
 
     .tool-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(102, 126, 234, .25);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, .25);
       border-color: #667eea
     }
 
@@ -212,19 +212,19 @@
     .tool-card-header {
       display: flex;
       align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 16px
+      gap: 12px;
+      margin-bottom: 12px
     }
 
     .tool-icon-wrapper {
-      width: 64px;
-      height: 64px;
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 24px;
       flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
       transition: transform 0.3s
@@ -243,12 +243,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 8px
+      gap: 6px;
+      margin-bottom: 6px
     }
 
     .tool-title {
-      font-size: 18px;
+      font-size: 15px;
       color: #2d3748;
       font-weight: 700;
       line-height: 1.3;
@@ -263,7 +263,7 @@
 
     .star {
       color: #ffd700;
-      font-size: 14px;
+      font-size: 12px;
       text-shadow: 0 1px 2px rgba(0, 0, 0, .1)
     }
 
@@ -273,13 +273,13 @@
 
     .tool-category {
       display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 12px
+      margin-bottom: 10px
     }
 
     .category-dev {
@@ -298,10 +298,10 @@
     }
 
     .tool-desc {
-      font-size: 14px;
+      font-size: 12px;
       color: #718096;
-      line-height: 1.6;
-      margin-bottom: 16px;
+      line-height: 1.5;
+      margin-bottom: 12px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -312,7 +312,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 16px;
+      padding-top: 12px;
       border-top: 1px solid #e9ecef
     }
 
@@ -320,7 +320,7 @@
       color: #667eea;
       text-decoration: none;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -343,15 +343,15 @@
 
     /* 分类标题 */
     .section-title {
-      font-size: 24px;
+      font-size: 20px;
       color: #2d3748;
-      margin: 40px 0 20px 0;
+      margin: 32px 0 16px 0;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding-bottom: 12px;
-      border-bottom: 3px solid #e9ecef
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9ecef
     }
 
     .section-title:first-child {
@@ -359,21 +359,21 @@
     }
 
     .section-icon {
-      font-size: 28px
+      font-size: 24px
     }
 
     /* 响应式 */
     @media (max-width: 1024px) {
       .tools-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px
       }
     }
 
     @media (max-width: 768px) {
       .tools-grid {
         grid-template-columns: 1fr;
-        gap: 16px
+        gap: 12px
       }
 
       .content {
@@ -582,16 +582,16 @@
         const title = tool.title.toLowerCase();
         const desc = tool.desc.toLowerCase();
         const category = tool.category === 'dev' ? '开发' : tool.category === 'image' ? '图片' : '文字';
-        
+
         // 检查标题、描述、分类是否包含关键词
-        return title.includes(lowerQuery) || 
-               desc.includes(lowerQuery) || 
-               category.includes(lowerQuery) ||
-               // 支持拼音首字母搜索（简单实现）
-               tool.title.match(/[\u4e00-\u9fa5]/g)?.some(char => {
-                 const pinyin = getPinyinInitial(char);
-                 return pinyin && pinyin.toLowerCase().includes(lowerQuery);
-               });
+        return title.includes(lowerQuery) ||
+          desc.includes(lowerQuery) ||
+          category.includes(lowerQuery) ||
+          // 支持拼音首字母搜索（简单实现）
+          tool.title.match(/[\u4e00-\u9fa5]/g)?.some(char => {
+            const pinyin = getPinyinInitial(char);
+            return pinyin && pinyin.toLowerCase().includes(lowerQuery);
+          });
       });
     }
 
@@ -613,7 +613,7 @@
       const quickLinks = document.getElementById('quickLinks');
       // 选择评分5星的热门工具作为快捷入口
       const popularTools = tools.filter(t => t.rating === 5).slice(0, 8);
-      
+
       popularTools.forEach(tool => {
         const link = document.createElement('a');
         link.href = tool.href;
