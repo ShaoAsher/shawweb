@@ -1021,7 +1021,7 @@
         if (response.ok) {
           const text = await response.text();
           const appleDevices = parseAppleDeviceList(text);
-          
+
           if (appleDevices.length > 0) {
             // 合并到现有数据，更新Apple设备
             const existingKeys = new Set(deviceData.map(d => `${d.brand}-${d.model}`));
@@ -1033,14 +1033,14 @@
             // 移除旧的Apple设备，添加新的
             deviceData = deviceData.filter(d => d.brand !== 'Apple');
             deviceData = [...deviceData, ...appleDevices];
-            
+
             // 按上市时间排序
             deviceData.sort((a, b) => {
               if (!a.releaseDate) return 1;
               if (!b.releaseDate) return -1;
               return b.releaseDate.localeCompare(a.releaseDate);
             });
-            
+
             return true;
           }
         }
@@ -1055,33 +1055,33 @@
       const devices = [];
       const lines = text.split('\n');
       let inIPhoneSection = false;
-      
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
-        
+
         // 检测iPhone部分
         if (line.includes('## iPhone') || line.includes('##iPhone')) {
           inIPhoneSection = true;
           continue;
         }
-        
+
         // 检测其他部分，停止解析iPhone
         if (inIPhoneSection && (line.startsWith('##') || line.startsWith('# '))) {
           break;
         }
-        
+
         if (inIPhoneSection && line.includes('iPhone')) {
           // 解析格式: "iPhone15,2": iPhone 14 Pro
           const match = line.match(/"([^"]+)":\s*(.+)/);
           if (match) {
             const internalModel = match[1];
             const deviceName = match[2].trim();
-            
+
             // 提取型号和上市时间（从现有数据中匹配或使用默认值）
-            const existingDevice = deviceData.find(d => 
+            const existingDevice = deviceData.find(d =>
               d.brand === 'Apple' && d.name === deviceName
             );
-            
+
             devices.push({
               brand: 'Apple',
               name: deviceName,
@@ -1094,7 +1094,7 @@
           }
         }
       }
-      
+
       return devices;
     }
 
@@ -1137,7 +1137,7 @@
         // 即使失败也更新时间戳
         lastUpdateTime = new Date().toLocaleString('zh-CN');
         updateLastUpdateTime();
-        
+
         // 确保显示本地数据
         if (filteredData.length === 0) {
           filteredData = [...deviceData];
@@ -1166,12 +1166,10 @@
         <span>${device.name}</span>
       `;
 
-      // 获取设备详细信息（可以从API获取或使用默认数据）
+      // 获取设备图片（使用品牌图片）
       const deviceImage = getDeviceImageUrl(device);
-      const cameraInfo = getCameraInfo(device);
-      const specs = getDeviceSpecs(device);
 
-      // 构建弹窗内容
+      // 构建弹窗内容（只保留基本信息）
       modalBody.innerHTML = `
         <div class="device-image-section">
           <img src="${deviceImage}" alt="${device.name}" class="device-image" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x600/667eea/ffffff?text=${encodeURIComponent(device.name)}'">
@@ -1200,26 +1198,12 @@
               <span class="detail-label">上市时间</span>
               <span class="detail-value">${device.releaseDate || '-'}</span>
             </div>
-          </div>
-
-          <div class="detail-section">
-            <div class="detail-section-title">摄像头参数</div>
-            ${cameraInfo.map(item => `
-              <div class="detail-item">
-                <span class="detail-label">${item.label}</span>
-                <span class="detail-value">${item.value}</span>
-              </div>
-            `).join('')}
-          </div>
-
-          <div class="detail-section">
-            <div class="detail-section-title">其他规格</div>
-            ${specs.map(item => `
-              <div class="detail-item">
-                <span class="detail-label">${item.label}</span>
-                <span class="detail-value">${item.value}</span>
-              </div>
-            `).join('')}
+            ${device.internalModel ? `
+            <div class="detail-item">
+              <span class="detail-label">内部型号</span>
+              <span class="detail-value">${device.internalModel}</span>
+            </div>
+            ` : ''}
           </div>
         </div>
 
