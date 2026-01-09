@@ -335,27 +335,6 @@
       }
     }
 
-    // 压缩 JSON
-    function minifyJSON() {
-      const input = jsonInput.value.trim();
-      if (!input) {
-        alert('请输入 JSON 内容');
-        return;
-      }
-
-      try {
-        const parsed = JSON.parse(input);
-        const minified = JSON.stringify(parsed);
-        jsonInput.value = minified;
-        displayPreview(parsed);
-        updateStatus(true);
-        updateStats(input, minified);
-      } catch (e) {
-        showError(e.message);
-        updateStatus(false);
-      }
-    }
-
     // 验证 JSON
     function validateJSON() {
       const input = jsonInput.value.trim();
