@@ -122,38 +122,6 @@
       cursor: pointer
     }
 
-    .file-upload-area {
-      border: 3px dashed #667eea;
-      border-radius: 12px;
-      padding: 30px;
-      text-align: center;
-      background: #f8f9ff;
-      cursor: pointer;
-      transition: all .3s
-    }
-
-    .file-upload-area:hover {
-      background: #f0f2ff;
-      border-color: #5568d3
-    }
-
-    .file-upload-area.dragover {
-      background: #e8ebff;
-      border-color: #4456c3
-    }
-
-    .file-upload-area input[type="file"] {
-      display: none
-    }
-
-    .icon-preview {
-      max-width: 100px;
-      max-height: 100px;
-      margin: 15px auto;
-      display: block;
-      border-radius: 8px;
-      border: 2px solid #dee2e6
-    }
 
     .btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -346,21 +314,6 @@
               <div class="style-preset" data-style="purple">紫色</div>
               <div class="style-preset" data-style="gradient">渐变</div>
             </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h2>中心图标</h2>
-          <div class="file-upload-area" id="iconUploadArea">
-            <input type="file" id="iconFile" accept="image/*">
-            <p>📷 点击或拖拽上传图标</p>
-            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">支持 PNG、JPG、SVG 格式</p>
-            <img id="iconPreview" class="icon-preview" style="display: none;">
-          </div>
-          <div class="form-group" style="margin-top: 15px;">
-            <label for="iconSize">图标大小 (%)</label>
-            <input type="range" id="iconSize" min="10" max="30" value="20" step="1">
-            <span id="iconSizeValue">20%</span>
           </div>
         </div>
 
@@ -603,7 +556,7 @@
               setTimeout(() => {
                 // 重新获取 context 确保 willReadFrequently 设置正确
                 const finalCtx = canvas.getContext('2d', { willReadFrequently: true });
-                applyStyleAndIcon(canvas, finalCtx, size, color, bgColor, style);
+                applyStyle(canvas, finalCtx, size, color, bgColor, style);
               }, 50);
             });
           }
@@ -614,18 +567,15 @@
       }, 50);
     }
 
-    // 应用样式和图标
-    function applyStyleAndIcon(canvas, ctx, size, color, bgColor, style) {
-      console.log('开始应用样式和图标', { style, hasIcon: !!iconImage, size });
+    // 应用样式
+    function applyStyle(canvas, ctx, size, color, bgColor, style) {
+      console.log('开始应用样式', { style, size });
 
       // 应用样式：重新绘制二维码点
-      let imageData = null;
-      let data = null;
-      
       if (style !== 'square') {
         // 只有在需要重新绘制时才读取原始数据
-        imageData = ctx.getImageData(0, 0, size, size);
-        data = imageData.data;
+        const imageData = ctx.getImageData(0, 0, size, size);
+        const data = imageData.data;
         console.log('应用非方形样式:', style);
         // 更准确地检测模块大小：扫描二维码找到定位点（三个角落的大方块）
         // 定位点的大小通常是 7x7 模块，周围有 1 模块的白色边框，所以总大小是 9x9 模块
@@ -735,71 +685,9 @@
         }
       }
 
-      // 添加图标（在样式应用后再添加，无论样式是否为 square）
-      if (iconImage) {
-        console.log('添加图标，大小:', iconSize.value);
-        const iconSizePercent = parseInt(iconSize.value) / 100;
-        const iconSizePx = Math.floor(size * iconSizePercent);
-        const iconX = Math.floor((size - iconSizePx) / 2);
-        const iconY = Math.floor((size - iconSizePx) / 2);
-
-        const img = new Image();
-        img.onload = () => {
-          console.log('图标加载成功，尺寸:', iconSizePx, '位置:', iconX, iconY);
-          
-          // 绘制白色/背景色圆角矩形作为图标背景（遮挡二维码中心部分）
-          const bgPadding = Math.floor(iconSizePx * 0.1);
-          const bgX = iconX - bgPadding;
-          const bgY = iconY - bgPadding;
-          const bgSize = iconSizePx + bgPadding * 2;
-
-          ctx.fillStyle = bgColor;
-          drawRoundedRect(ctx, bgX, bgY, bgSize, bgSize, bgSize * 0.15);
-          ctx.fill();
-
-          // 绘制图标（圆形裁剪）
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(
-            iconX + iconSizePx / 2,
-            iconY + iconSizePx / 2,
-            iconSizePx / 2,
-            0,
-            Math.PI * 2
-          );
-          ctx.clip();
-
-          // 使用高质量图像渲染
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, iconX, iconY, iconSizePx, iconSizePx);
-          ctx.restore();
-
-          console.log('图标绘制完成，位置:', iconX, iconY, '尺寸:', iconSizePx);
-          
-          // 确保预览区域显示
-          document.getElementById('qrcodePreview').style.display = 'block';
-          
-          // 验证图标是否真的绘制了（可选，用于调试）
-          const verifyPixel = ctx.getImageData(Math.floor(iconX + iconSizePx / 2), Math.floor(iconY + iconSizePx / 2), 1, 1).data;
-          console.log('图标中心像素值:', verifyPixel[0], verifyPixel[1], verifyPixel[2], verifyPixel[3]);
-        };
-        img.onerror = (e) => {
-          console.error('图标加载失败:', iconImage, e);
-          document.getElementById('qrcodePreview').style.display = 'block';
-        };
-        
-        // 如果 iconImage 是 base64，直接使用；如果是 URL，需要设置 crossOrigin
-        if (iconImage.startsWith('data:')) {
-          img.src = iconImage;
-        } else {
-          img.crossOrigin = 'anonymous';
-          img.src = iconImage;
-        }
-      } else {
-        console.log('没有图标，直接显示预览');
-        document.getElementById('qrcodePreview').style.display = 'block';
-      }
+      // 显示预览
+      document.getElementById('qrcodePreview').style.display = 'block';
+      console.log('样式应用完成');
     }
 
     // 绘制圆角矩形的辅助函数
