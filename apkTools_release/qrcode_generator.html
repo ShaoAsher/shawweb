@@ -570,34 +570,164 @@
         correctLevel: QRCode.CorrectLevel[errorLevel]
       });
 
-      // 添加图标
-      if (iconImage) {
-        setTimeout(() => {
-          const canvas = qrcodeDiv.querySelector('canvas');
-          if (canvas) {
-            const ctx = canvas.getContext('2d');
+      // 等待二维码生成完成后应用样式和图标
+      const checkCanvas = setInterval(() => {
+        const canvas = qrcodeDiv.querySelector('canvas');
+        if (canvas && canvas.width > 0 && canvas.height > 0) {
+          clearInterval(checkCanvas);
+
+          const ctx = canvas.getContext('2d');
+          const imageData = ctx.getImageData(0, 0, size, size);
+          const data = imageData.data;
+
+          // 应用样式：重新绘制二维码点
+          if (style !== 'square') {
+            // 检测模块大小：通过查找颜色变化来确定模块边界
+            let moduleSize = Math.floor(size / 25); // 默认假设25x25模块
+            for (let i = 2; i < size / 2; i++) {
+              let found = true;
+              // 检查多个位置是否有规律的颜色变化
+              for (let j = 0; j < 5; j++) {
+                const x1 = j * i;
+                const x2 = (j + 1) * i;
+                if (x2 >= size) break;
+                const index1 = (size / 2 * size + x1) * 4;
+                const index2 = (size / 2 * size + x2) * 4;
+                const r1 = data[index1];
+                const r2 = data[index2];
+                if (Math.abs(r1 - r2) < 50) {
+                  found = false;
+                  break;
+                }
+              }
+              if (found && i > 3) {
+                moduleSize = i;
+                break;
+              }
+            }
+
+            // 清除画布
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, size, size);
+
+            // 重新绘制每个模块
+            const modules = Math.floor(size / moduleSize);
+            for (let y = 0; y < modules; y++) {
+              for (let x = 0; x < modules; x++) {
+                // 计算原图中对应模块中心位置的颜色
+                const px = Math.floor((x + 0.5) * moduleSize);
+                const py = Math.floor((y + 0.5) * moduleSize);
+                if (px >= size || py >= size) continue;
+                
+                const index = (py * size + px) * 4;
+                if (index >= data.length) continue;
+
+                // 判断是否为前景色（深色）
+                const r = data[index];
+                const g = data[index + 1];
+                const b = data[index + 2];
+                const avg = (r + g + b) / 3;
+                const isDark = avg < 128;
+
+                if (isDark) {
+                  ctx.fillStyle = color;
+                  const moduleX = x * moduleSize;
+                  const moduleY = y * moduleSize;
+
+                  if (style === 'dots') {
+                    // 圆点样式
+                    ctx.beginPath();
+                    ctx.arc(
+                      moduleX + moduleSize / 2,
+                      moduleY + moduleSize / 2,
+                      moduleSize / 2 * 0.75,
+                      0,
+                      Math.PI * 2
+                    );
+                    ctx.fill();
+                  } else if (style === 'rounded') {
+                    // 圆角矩形样式
+                    const radius = moduleSize * 0.25;
+                    drawRoundedRect(ctx, moduleX, moduleY, moduleSize, moduleSize, radius);
+                    ctx.fill();
+                  }
+                }
+              }
+            }
+          }
+
+          // 添加图标（在样式应用后再添加）
+          if (iconImage) {
             const iconSizePercent = parseInt(iconSize.value) / 100;
-            const iconSizePx = size * iconSizePercent;
+            const iconSizePx = Math.floor(size * iconSizePercent);
             const iconX = (size - iconSizePx) / 2;
             const iconY = (size - iconSizePx) / 2;
 
             const img = new Image();
             img.onload = () => {
-              // 绘制白色背景
+              // 绘制白色/背景色圆角矩形作为图标背景
+              const bgPadding = Math.floor(iconSizePx * 0.1);
+              const bgX = iconX - bgPadding;
+              const bgY = iconY - bgPadding;
+              const bgSize = iconSizePx + bgPadding * 2;
+
               ctx.fillStyle = bgColor;
-              ctx.fillRect(iconX - 5, iconY - 5, iconSizePx + 10, iconSizePx + 10);
-              // 绘制图标
+              drawRoundedRect(ctx, bgX, bgY, bgSize, bgSize, bgSize * 0.15);
+              ctx.fill();
+
+              // 绘制图标（圆形裁剪）
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(
+                iconX + iconSizePx / 2,
+                iconY + iconSizePx / 2,
+                iconSizePx / 2,
+                0,
+                Math.PI * 2
+              );
+              ctx.clip();
+              
+              // 使用高质量图像渲染
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
               ctx.drawImage(img, iconX, iconY, iconSizePx, iconSizePx);
+              ctx.restore();
             };
-            img.src = iconImage;
+            img.onerror = () => {
+              console.error('图标加载失败:', iconImage);
+            };
+            // 如果 iconImage 是 base64，直接使用；如果是 URL，需要设置 crossOrigin
+            if (iconImage.startsWith('data:')) {
+              img.src = iconImage;
+            } else {
+              img.crossOrigin = 'anonymous';
+              img.src = iconImage;
+            }
           }
-        }, 100);
-      }
 
-      // 样式会在生成时自动应用（通过 CSS 或重新绘制）
-      // 注意：qrcode.js 库本身不支持自定义样式，这里保持默认方形样式
+          document.getElementById('qrcodePreview').style.display = 'block';
+        }
+      }, 50);
 
-      document.getElementById('qrcodePreview').style.display = 'block';
+      // 超时保护
+      setTimeout(() => {
+        clearInterval(checkCanvas);
+      }, 2000);
+    }
+
+    // 绘制圆角矩形的辅助函数
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
     }
 
 
