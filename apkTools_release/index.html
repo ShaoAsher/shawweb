@@ -576,7 +576,7 @@
 
     let currentIndex = 0;
     const totalCards = tools.length;
-    
+
     // 滑动相关变量
     let isDragging = false;
     let startX = 0;
@@ -608,7 +608,7 @@
           <div class="tool-desc">${tool.desc}</div>
           <a class="btn" href="${tool.href}">打开工具</a>
         `;
-        
+
         // 点击后面的卡片 - 切换到前面
         card.addEventListener('click', (e) => {
           // 如果正在拖拽，不触发点击
@@ -616,13 +616,13 @@
             e.preventDefault();
             return;
           }
-          
+
           if (!card.classList.contains('active')) {
             const clickedIndex = parseInt(card.dataset.originalIndex);
             goToIndex(clickedIndex);
           }
         });
-        
+
         stack.appendChild(card);
 
         // 创建指示器
@@ -652,7 +652,7 @@
       isDragging = true;
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      
+
       startX = clientX;
       startY = clientY;
       currentX = clientX;
@@ -672,21 +672,21 @@
       if (!isDragging) return;
 
       e.preventDefault();
-      
+
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      
+
       currentX = clientX;
       currentY = clientY;
-      
+
       const now = Date.now();
       const deltaX = clientX - lastX;
       const deltaTime = now - lastTime;
-      
+
       if (deltaTime > 0) {
         velocity = deltaX / deltaTime;
       }
-      
+
       lastX = clientX;
       lastTime = now;
     }
@@ -694,16 +694,16 @@
     // 结束拖拽
     function handleEnd(e) {
       if (!isDragging) return;
-      
+
       isDragging = false;
-      
+
       const deltaX = currentX - startX;
       const deltaY = currentY - startY;
       const deltaTime = Date.now() - startTime;
-      
+
       // 判断是否为滑动（水平距离大于垂直距离，且距离足够）
       const isSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30;
-      
+
       if (isSwipe) {
         // 根据速度和距离决定切换
         const threshold = 100; // 最小滑动距离
@@ -711,15 +711,15 @@
         
         if (Math.abs(deltaX) > threshold || Math.abs(velocity) > velocityThreshold) {
           if (deltaX > 0) {
-            // 向右滑动，显示上一张
-            prevCard();
-          } else {
-            // 向左滑动，显示下一张
+            // 向右滑动，显示下一张（卡片向左移动，显示右侧的卡片）
             nextCard();
+          } else {
+            // 向左滑动，显示上一张（卡片向右移动，显示左侧的卡片）
+            prevCard();
           }
         }
       }
-      
+
       velocity = 0;
     }
 
