@@ -915,6 +915,21 @@
 
       // 绑定折叠事件
       bindToggleEvents();
+
+      // 绑定卡片点击事件
+      bindCardClickEvents();
+    }
+
+    // 绑定卡片点击事件
+    function bindCardClickEvents() {
+      document.querySelectorAll('.device-card').forEach(card => {
+        card.addEventListener('click', function () {
+          const deviceId = this.dataset.deviceId;
+          if (deviceId && window.deviceDataMap && window.deviceDataMap[deviceId]) {
+            showDeviceDetail(window.deviceDataMap[deviceId]);
+          }
+        });
+      });
     }
 
     // 切换品牌组折叠状态
@@ -1170,7 +1185,7 @@
     document.addEventListener('DOMContentLoaded', init);
 
     // ESC键关闭弹窗
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
         closeModal();
       }
