@@ -469,42 +469,10 @@
         correctLevel: QRCode.CorrectLevel[errorLevel]
       });
 
-      // 等待二维码生成完成后应用样式和图标
-      // 使用多重检测：首先等待 canvas 出现，然后等待内容绘制完成
-      let attempts = 0;
-      const maxAttempts = 60; // 最多等待 3 秒 (60 * 50ms)
-
-      const checkCanvas = setInterval(() => {
-        attempts++;
-        const canvas = qrcodeDiv.querySelector('canvas');
-
-        if (canvas && canvas.width > 0 && canvas.height > 0) {
-          // 检查 canvas 是否有内容：只检查一个关键位置，避免多次 getImageData
-          let hasContent = false;
-          try {
-            // 先获取一次 context，设置 willReadFrequently
-            const checkCtx = canvas.getContext('2d', { willReadFrequently: true });
-            // 只检查中心位置，减少 getImageData 调用次数
-            const testPixel = checkCtx.getImageData(Math.floor(size / 2), Math.floor(size / 2), 1, 1).data;
-            // 检查是否为前景色（深色，通常是黑色或接近黑色）
-            const avg = (testPixel[0] + testPixel[1] + testPixel[2]) / 3;
-            if (avg < 200) { // 不是纯白色或接近白色
-              hasContent = true;
-            }
-          } catch (e) {
-            // 如果获取失败，继续尝试
-          }
-
-          if (hasContent || attempts >= maxAttempts) {
-            clearInterval(checkCanvas);
-            // 二维码生成完成，直接显示
-            document.getElementById('qrcodePreview').style.display = 'block';
-          }
-        } else if (attempts >= maxAttempts) {
-          clearInterval(checkCanvas);
-          console.error('二维码生成超时：canvas 未找到或尺寸为0');
-        }
-      }, 50);
+      // 二维码生成完成后直接显示
+      setTimeout(() => {
+        document.getElementById('qrcodePreview').style.display = 'block';
+      }, 100);
     }
 
 
