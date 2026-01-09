@@ -571,148 +571,200 @@
       });
 
       // 等待二维码生成完成后应用样式和图标
+      // 使用更可靠的检测方式：等待 canvas 内容被实际绘制
+      let attempts = 0;
+      const maxAttempts = 40; // 最多等待 2 秒 (40 * 50ms)
+
       const checkCanvas = setInterval(() => {
+        attempts++;
         const canvas = qrcodeDiv.querySelector('canvas');
+
         if (canvas && canvas.width > 0 && canvas.height > 0) {
-          clearInterval(checkCanvas);
-
+          // 验证 canvas 是否已经绘制内容（检查是否有非背景色的像素）
           const ctx = canvas.getContext('2d');
-          const imageData = ctx.getImageData(0, 0, size, size);
-          const data = imageData.data;
+          const testPixel = ctx.getImageData(size / 2, size / 2, 1, 1).data;
+          const hasContent = testPixel[0] !== 255 || testPixel[1] !== 255 || testPixel[2] !== 255;
 
-          // 应用样式：重新绘制二维码点
-          if (style !== 'square') {
-            // 检测模块大小：通过查找颜色变化来确定模块边界
-            let moduleSize = Math.floor(size / 25); // 默认假设25x25模块
-            for (let i = 2; i < size / 2; i++) {
-              let found = true;
-              // 检查多个位置是否有规律的颜色变化
-              for (let j = 0; j < 5; j++) {
-                const x1 = j * i;
-                const x2 = (j + 1) * i;
-                if (x2 >= size) break;
-                const index1 = (size / 2 * size + x1) * 4;
-                const index2 = (size / 2 * size + x2) * 4;
-                const r1 = data[index1];
-                const r2 = data[index2];
-                if (Math.abs(r1 - r2) < 50) {
-                  found = false;
+          if (hasContent || attempts >= maxAttempts) {
+            clearInterval(checkCanvas);
+            applyStyleAndIcon(canvas, ctx, size, color, bgColor, style);
+          }
+        } else if (attempts >= maxAttempts) {
+          clearInterval(checkCanvas);
+          console.error('二维码生成超时');
+        }
+      }, 50);
+    }
+
+    // 应用样式和图标
+    function applyStyleAndIcon(canvas, ctx, size, color, bgColor, style) {
+      // 读取原始二维码数据
+      const imageData = ctx.getImageData(0, 0, size, size);
+      const data = imageData.data;
+
+      // 应用样式：重新绘制二维码点
+      if (style !== 'square') {
+        // 更准确地检测模块大小：扫描二维码找到定位点（三个角落的大方块）
+        // 定位点的大小通常是 7x7 模块，周围有 1 模块的白色边框，所以总大小是 9x9 模块
+        // 通过检测这个模式来确定模块大小
+        let moduleSize = Math.floor(size / 25); // 默认假设25x25模块
+
+        // 改进的模块大小检测：查找定位点的特征
+        for (let testSize = 4; testSize < size / 10; testSize++) {
+          // 检查左上角定位点区域（应该是 7x7 模块的大方块）
+          const checkX = testSize * 3;
+          const checkY = testSize * 3;
+          if (checkX >= size || checkY >= size) break;
+
+          const index = (checkY * size + checkX) * 4;
+          if (index >= data.length) break;
+
+          // 检查这个区域是否形成定位点的模式（7x7 黑色方块）
+          let isPattern = true;
+          for (let dy = 0; dy < 7 && isPattern; dy++) {
+            for (let dx = 0; dx < 7 && dx + checkX < size && dy + checkY < size; dx++) {
+              const idx = ((checkY + dy) * size + (checkX + dx)) * 4;
+              if (idx < data.length) {
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+                const avg = (r + g + b) / 3;
+                // 定位点内部应该是黑色
+                if (dx > 0 && dx < 6 && dy > 0 && dy < 6 && avg > 128) {
+                  isPattern = false;
                   break;
                 }
               }
-              if (found && i > 3) {
-                moduleSize = i;
-                break;
-              }
-            }
-
-            // 清除画布
-            ctx.fillStyle = bgColor;
-            ctx.fillRect(0, 0, size, size);
-
-            // 重新绘制每个模块
-            const modules = Math.floor(size / moduleSize);
-            for (let y = 0; y < modules; y++) {
-              for (let x = 0; x < modules; x++) {
-                // 计算原图中对应模块中心位置的颜色
-                const px = Math.floor((x + 0.5) * moduleSize);
-                const py = Math.floor((y + 0.5) * moduleSize);
-                if (px >= size || py >= size) continue;
-                
-                const index = (py * size + px) * 4;
-                if (index >= data.length) continue;
-
-                // 判断是否为前景色（深色）
-                const r = data[index];
-                const g = data[index + 1];
-                const b = data[index + 2];
-                const avg = (r + g + b) / 3;
-                const isDark = avg < 128;
-
-                if (isDark) {
-                  ctx.fillStyle = color;
-                  const moduleX = x * moduleSize;
-                  const moduleY = y * moduleSize;
-
-                  if (style === 'dots') {
-                    // 圆点样式
-                    ctx.beginPath();
-                    ctx.arc(
-                      moduleX + moduleSize / 2,
-                      moduleY + moduleSize / 2,
-                      moduleSize / 2 * 0.75,
-                      0,
-                      Math.PI * 2
-                    );
-                    ctx.fill();
-                  } else if (style === 'rounded') {
-                    // 圆角矩形样式
-                    const radius = moduleSize * 0.25;
-                    drawRoundedRect(ctx, moduleX, moduleY, moduleSize, moduleSize, radius);
-                    ctx.fill();
-                  }
-                }
-              }
             }
           }
 
-          // 添加图标（在样式应用后再添加）
-          if (iconImage) {
-            const iconSizePercent = parseInt(iconSize.value) / 100;
-            const iconSizePx = Math.floor(size * iconSizePercent);
-            const iconX = (size - iconSizePx) / 2;
-            const iconY = (size - iconSizePx) / 2;
+          if (isPattern) {
+            moduleSize = testSize;
+            break;
+          }
+        }
 
-            const img = new Image();
-            img.onload = () => {
-              // 绘制白色/背景色圆角矩形作为图标背景
-              const bgPadding = Math.floor(iconSizePx * 0.1);
-              const bgX = iconX - bgPadding;
-              const bgY = iconY - bgPadding;
-              const bgSize = iconSizePx + bgPadding * 2;
-
-              ctx.fillStyle = bgColor;
-              drawRoundedRect(ctx, bgX, bgY, bgSize, bgSize, bgSize * 0.15);
-              ctx.fill();
-
-              // 绘制图标（圆形裁剪）
-              ctx.save();
-              ctx.beginPath();
-              ctx.arc(
-                iconX + iconSizePx / 2,
-                iconY + iconSizePx / 2,
-                iconSizePx / 2,
-                0,
-                Math.PI * 2
-              );
-              ctx.clip();
-              
-              // 使用高质量图像渲染
-              ctx.imageSmoothingEnabled = true;
-              ctx.imageSmoothingQuality = 'high';
-              ctx.drawImage(img, iconX, iconY, iconSizePx, iconSizePx);
-              ctx.restore();
-            };
-            img.onerror = () => {
-              console.error('图标加载失败:', iconImage);
-            };
-            // 如果 iconImage 是 base64，直接使用；如果是 URL，需要设置 crossOrigin
-            if (iconImage.startsWith('data:')) {
-              img.src = iconImage;
-            } else {
-              img.crossOrigin = 'anonymous';
-              img.src = iconImage;
+        // 如果检测失败，使用默认值（根据二维码版本，通常是 25x25 或 33x33 模块）
+        if (moduleSize < 3 || moduleSize > size / 10) {
+          // 尝试其他常见尺寸
+          const commonModules = [25, 33, 29, 21, 17, 13];
+          for (const mod of commonModules) {
+            const testSize = Math.floor(size / mod);
+            if (testSize >= 3 && testSize <= size / 10) {
+              moduleSize = testSize;
+              break;
             }
           }
+          // 如果还是失败，使用默认值
+          if (moduleSize < 3 || moduleSize > size / 10) {
+            moduleSize = Math.floor(size / 25);
+          }
+        }
+
+        console.log('检测到的模块大小:', moduleSize, '二维码尺寸:', size);
+
+        // 清除画布并重新绘制背景
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, size, size);
+
+        // 重新绘制每个模块
+        const modules = Math.floor(size / moduleSize);
+        for (let y = 0; y < modules; y++) {
+          for (let x = 0; x < modules; x++) {
+            // 计算原图中对应模块中心位置的颜色
+            const px = Math.min(Math.floor((x + 0.5) * moduleSize), size - 1);
+            const py = Math.min(Math.floor((y + 0.5) * moduleSize), size - 1);
+
+            const index = (py * size + px) * 4;
+            if (index >= data.length) continue;
+
+            // 判断是否为前景色（深色）
+            const r = data[index];
+            const g = data[index + 1];
+            const b = data[index + 2];
+            const avg = (r + g + b) / 3;
+            const isDark = avg < 128;
+
+            if (isDark) {
+              ctx.fillStyle = color;
+              const moduleX = x * moduleSize;
+              const moduleY = y * moduleSize;
+
+              if (style === 'dots') {
+                // 圆点样式
+                ctx.beginPath();
+                ctx.arc(
+                  moduleX + moduleSize / 2,
+                  moduleY + moduleSize / 2,
+                  moduleSize / 2 * 0.75,
+                  0,
+                  Math.PI * 2
+                );
+                ctx.fill();
+              } else if (style === 'rounded') {
+                // 圆角矩形样式
+                const radius = moduleSize * 0.25;
+                drawRoundedRect(ctx, moduleX, moduleY, moduleSize, moduleSize, radius);
+                ctx.fill();
+              }
+            }
+          }
+        }
+      }
+
+      // 添加图标（在样式应用后再添加）
+      if (iconImage) {
+        const iconSizePercent = parseInt(iconSize.value) / 100;
+        const iconSizePx = Math.floor(size * iconSizePercent);
+        const iconX = (size - iconSizePx) / 2;
+        const iconY = (size - iconSizePx) / 2;
+
+        const img = new Image();
+        img.onload = () => {
+          // 绘制白色/背景色圆角矩形作为图标背景
+          const bgPadding = Math.floor(iconSizePx * 0.1);
+          const bgX = iconX - bgPadding;
+          const bgY = iconY - bgPadding;
+          const bgSize = iconSizePx + bgPadding * 2;
+
+          ctx.fillStyle = bgColor;
+          drawRoundedRect(ctx, bgX, bgY, bgSize, bgSize, bgSize * 0.15);
+          ctx.fill();
+
+          // 绘制图标（圆形裁剪）
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(
+            iconX + iconSizePx / 2,
+            iconY + iconSizePx / 2,
+            iconSizePx / 2,
+            0,
+            Math.PI * 2
+          );
+          ctx.clip();
+
+          // 使用高质量图像渲染
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, iconX, iconY, iconSizePx, iconSizePx);
+          ctx.restore();
 
           document.getElementById('qrcodePreview').style.display = 'block';
+        };
+        img.onerror = () => {
+          console.error('图标加载失败:', iconImage);
+          document.getElementById('qrcodePreview').style.display = 'block';
+        };
+        // 如果 iconImage 是 base64，直接使用；如果是 URL，需要设置 crossOrigin
+        if (iconImage.startsWith('data:')) {
+          img.src = iconImage;
+        } else {
+          img.crossOrigin = 'anonymous';
+          img.src = iconImage;
         }
-      }, 50);
-
-      // 超时保护
-      setTimeout(() => {
-        clearInterval(checkCanvas);
-      }, 2000);
+      } else {
+        document.getElementById('qrcodePreview').style.display = 'block';
+      }
     }
 
     // 绘制圆角矩形的辅助函数
