@@ -16,14 +16,15 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px
+      padding: 20px;
+      overflow-x: hidden
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1400px;
       margin: 0 auto;
       background: #fff;
-      border-radius: 16px;
+      border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
       overflow: hidden
     }
@@ -31,100 +32,261 @@
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
-      padding: 30px;
-      text-align: center
+      padding: 40px 30px;
+      text-align: center;
+      position: relative
     }
 
     .header h1 {
-      font-size: 28px;
-      margin-bottom: 10px
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .2)
     }
 
     .header p {
-      opacity: .9;
-      font-size: 14px
+      opacity: .95;
+      font-size: 15px
     }
 
     .content {
-      padding: 30px
+      padding: 40px 30px
     }
 
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px
+    /* 环绕卡片容器 */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      perspective: 1200px;
+      margin: 40px 0;
+      overflow: visible
+    }
+
+    .carousel-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)
     }
 
     .tool-card {
-      background: #fff;
-      border: 2px solid #dee2e6;
-      border-radius: 12px;
-      padding: 18px;
-      transition: all .2s;
+      position: absolute;
+      width: 280px;
+      height: 380px;
+      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .15);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
       display: flex;
-      flex-direction: column
+      flex-direction: column;
+      backface-visibility: hidden;
+      border: 2px solid transparent
     }
 
     .tool-card:hover {
+      transform: translateY(-15px) scale(1.05) !important;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, .4);
       border-color: #667eea;
-      box-shadow: 0 6px 18px rgba(102, 126, 234, .2);
-      transform: translateY(-2px)
+      z-index: 10 !important
+    }
+
+    .tool-card.active {
+      border-color: #667eea;
+      box-shadow: 0 15px 50px rgba(102, 126, 234, .3)
     }
 
     .tool-icon {
-      font-size: 28px;
-      margin-bottom: 8px
+      font-size: 48px;
+      margin-bottom: 15px;
+      text-align: center;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .1));
+      transition: transform 0.3s
+    }
+
+    .tool-card:hover .tool-icon {
+      transform: scale(1.1) rotate(5deg)
     }
 
     .tool-title {
       font-size: 18px;
-      color: #343a40;
+      color: #2d3748;
       font-weight: 700;
-      margin-bottom: 6px
+      margin-bottom: 10px;
+      text-align: center;
+      line-height: 1.4
     }
 
     .tool-desc {
       font-size: 13px;
-      color: #6c757d;
-      line-height: 1.6;
-      margin-bottom: 14px;
-      flex: 1
+      color: #718096;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      flex: 1;
+      text-align: center
     }
 
     .btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
       border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
+      padding: 14px 20px;
+      border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform .2s;
-      width: 100%
+      transition: all 0.3s;
+      width: 100%;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, .3)
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+      box-shadow: 0 6px 20px rgba(102, 126, 234, .5)
     }
 
+    /* 导航按钮 */
+    .carousel-nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px
+    }
+
+    .nav-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .nav-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, .5)
+    }
+
+    .nav-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    /* 指示器 */
+    .carousel-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px
+    }
+
+    .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #cbd5e0;
+      cursor: pointer;
+      transition: all 0.3s
+    }
+
+    .indicator.active {
+      background: #667eea;
+      width: 30px;
+      border-radius: 5px
+    }
+
+    /* 快捷入口分组 */
     .quick-section {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 18px;
-      margin-top: 25px
+      margin-top: 50px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .1)
     }
 
     .quick-title {
-      font-size: 16px;
-      color: #495057;
-      margin-bottom: 12px;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 8px
+      font-size: 24px;
+      color: #2d3748;
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 15px
     }
 
-    .quick-links {
+    .quick-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px
+    }
+
+    .quick-groups {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px
+    }
+
+    .quick-group {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
+      transition: all 0.3s
+    }
+
+    .quick-group:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .15)
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e9ecef
+    }
+
+    .group-icon {
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      color: #fff
+    }
+
+    .group-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3748
+    }
+
+    .group-links {
       display: flex;
       flex-wrap: wrap;
       gap: 10px
@@ -132,19 +294,40 @@
 
     .link-pill {
       display: inline-block;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid #dee2e6;
+      padding: 10px 16px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
       color: #495057;
       text-decoration: none;
       font-size: 13px;
-      transition: all .2s
+      font-weight: 500;
+      transition: all 0.3s;
+      border: 2px solid transparent
     }
 
     .link-pill:hover {
-      border-color: #667eea;
-      color: #667eea;
-      background: #f8f9ff
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
+      border-color: transparent
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .carousel-container {
+        height: 400px
+      }
+
+      .tool-card {
+        width: 240px;
+        height: 320px;
+        padding: 20px
+      }
+
+      .quick-groups {
+        grid-template-columns: 1fr
+      }
     }
   </style>
   <link rel="icon" href="data:,">
@@ -157,120 +340,196 @@
       <p>统一入口，快速访问常用页面</p>
     </div>
     <div class="content">
-      <div class="card-grid">
-        <div class="tool-card">
-          <div class="tool-icon">🔐</div>
-          <div class="tool-title">Android 签名文件生成工具</div>
-          <div class="tool-desc">根据包名生成 .jks 并提取指纹与公钥信息，支持历史记录导入导出。</div>
-          <a class="btn" href="./keystore_generator.html">打开工具</a>
+      <!-- 环绕卡片式工具展示 -->
+      <div class="carousel-container">
+        <div class="carousel-wrapper" id="carouselWrapper"></div>
+        <div class="carousel-nav">
+          <button class="nav-btn" id="prevBtn">‹</button>
+          <button class="nav-btn" id="nextBtn">›</button>
         </div>
-        <div class="tool-card">
-          <div class="tool-icon">📦</div>
-          <div class="tool-title">APK 信息提取工具</div>
-          <div class="tool-desc">解析 APK，读取包名与证书指纹等信息，支持拖拽上传与结果复制。</div>
-          <a class="btn" href="./apk_analyzer.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🗜️</div>
-          <div class="tool-title">图片压缩工具</div>
-          <div class="tool-desc">智能压缩图片，保持比例与清晰度，支持预览对比与多格式导出。</div>
-          <a class="btn" href="./image_compressor.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🖊️</div>
-          <div class="tool-title">文字图片生成工具</div>
-          <div class="tool-desc">输入文本快速生成图片素材，适用于占位图、标签图等场景。</div>
-          <a class="btn" href="./text_image_generator.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🚀</div>
-          <div class="tool-title">启动图生成工具</div>
-          <div class="tool-desc">为 iOS 与 Android 批量生成多尺寸启动图，支持背景与Logo配置。</div>
-          <a class="btn" href="./launch_image_generator.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🎨</div>
-          <div class="tool-title">图标工厂</div>
-          <div class="tool-desc">上传一个图标，一键生成 iOS 与 Android 标准尺寸及文件夹结构，包含标准命名。</div>
-          <a class="btn" href="./icon_factory.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🛠️</div>
-          <div class="tool-title">SVG 互转 PNG/JPG/JPEG</div>
-          <div class="tool-desc">支持 SVG 与位图的双向转换，设置尺寸与比例并下载。</div>
-          <a class="btn" href="./svg_converter.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🔐</div>
-          <div class="tool-title">字符串加解密工具</div>
-          <div class="tool-desc">支持 Base64、URL、Hex、Unicode、摩斯密码等编码，以及 MD5、SHA、AES、凯撒密码等加解密。</div>
-          <a class="btn" href="./string_encryptor.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🎨</div>
-          <div class="tool-title">RGB 颜色互转工具</div>
-          <div class="tool-desc">支持 RGB、HEX、HSL 颜色格式互转，提供主流颜色预设卡片，条状展示。</div>
-          <a class="btn" href="./color_converter.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">⏰</div>
-          <div class="tool-title">时间戳转换工具</div>
-          <div class="tool-desc">支持秒级和毫秒级时间戳与日期时间互转，自动识别时间戳类型。</div>
-          <a class="btn" href="./timestamp_converter.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">📱</div>
-          <div class="tool-title">二维码/条形码生成工具</div>
-          <div class="tool-desc">支持自定义样式、颜色和中心图标，生成高质量二维码和多种格式条形码。</div>
-          <a class="btn" href="./qrcode_generator.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🔧</div>
-          <div class="tool-title">API 调试工具</div>
-          <div class="tool-desc">支持 HTTP 请求和 WebSocket (WSS) 连接调试，类似 APIFOX，包含请求历史记录。</div>
-          <a class="btn" href="./api_debugger.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">🔤</div>
-          <div class="tool-title">多种字符串生成器</div>
-          <div class="tool-desc">生成标准银行卡号、UDID、包名、UUID、MAC地址、IP地址、邮箱等常用字符串。</div>
-          <a class="btn" href="./string_generator.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">📄</div>
-          <div class="tool-title">JSON 格式化工具</div>
-          <div class="tool-desc">JSON 格式化、压缩、验证和可视化预览，支持语法高亮和实时验证。</div>
-          <a class="btn" href="./json_formatter.html">打开工具</a>
-        </div>
-        <div class="tool-card">
-          <div class="tool-icon">📱</div>
-          <div class="tool-title">机型预览信息工具</div>
-          <div class="tool-desc">查看主流手机机型详细信息，支持实时更新和模糊搜索，包含品牌图标。</div>
-          <a class="btn" href="./device_preview.html">打开工具</a>
-        </div>
+        <div class="carousel-indicators" id="indicators"></div>
       </div>
+
+      <!-- 分组快捷入口 -->
       <div class="quick-section">
-        <div class="quick-title">快速入口</div>
-        <div class="quick-links">
-          <a class="link-pill" href="./keystore_generator.html">签名文件生成</a>
-          <a class="link-pill" href="./apk_analyzer.html">APK 信息提取</a>
-          <a class="link-pill" href="./image_compressor.html">图片压缩</a>
-          <a class="link-pill" href="./text_image_generator.html">文字图片生成</a>
-          <a class="link-pill" href="./launch_image_generator.html">启动图生成</a>
-          <a class="link-pill" href="./icon_factory.html">图标工厂</a>
-          <a class="link-pill" href="./svg_converter.html">SVG 互转</a>
-          <a class="link-pill" href="./string_encryptor.html">字符串加解密</a>
-          <a class="link-pill" href="./color_converter.html">颜色互转</a>
-          <a class="link-pill" href="./timestamp_converter.html">时间戳转换</a>
-          <a class="link-pill" href="./qrcode_generator.html">二维码/条形码</a>
-          <a class="link-pill" href="./api_debugger.html">API 调试</a>
-          <a class="link-pill" href="./string_generator.html">字符串生成器</a>
-          <a class="link-pill" href="./json_formatter.html">JSON 格式化</a>
-          <a class="link-pill" href="./device_preview.html">机型预览</a>
+        <div class="quick-title">🚀 快速入口</div>
+        <div class="quick-groups">
+          <!-- 开发工具组 -->
+          <div class="quick-group">
+            <div class="group-header">
+              <div class="group-icon">💻</div>
+              <div class="group-title">开发工具</div>
+            </div>
+            <div class="group-links">
+              <a class="link-pill" href="./keystore_generator.html">签名文件生成</a>
+              <a class="link-pill" href="./apk_analyzer.html">APK 信息提取</a>
+              <a class="link-pill" href="./api_debugger.html">API 调试</a>
+              <a class="link-pill" href="./json_formatter.html">JSON 格式化</a>
+              <a class="link-pill" href="./device_preview.html">机型预览</a>
+            </div>
+          </div>
+
+          <!-- 图片工具组 -->
+          <div class="quick-group">
+            <div class="group-header">
+              <div class="group-icon">🖼️</div>
+              <div class="group-title">图片工具</div>
+            </div>
+            <div class="group-links">
+              <a class="link-pill" href="./image_compressor.html">图片压缩</a>
+              <a class="link-pill" href="./text_image_generator.html">文字图片生成</a>
+              <a class="link-pill" href="./launch_image_generator.html">启动图生成</a>
+              <a class="link-pill" href="./icon_factory.html">图标工厂</a>
+              <a class="link-pill" href="./svg_converter.html">SVG 互转</a>
+              <a class="link-pill" href="./qrcode_generator.html">二维码/条形码</a>
+              <a class="link-pill" href="./color_converter.html">颜色互转</a>
+            </div>
+          </div>
+
+          <!-- 文字/编码工具组 -->
+          <div class="quick-group">
+            <div class="group-header">
+              <div class="group-icon">📝</div>
+              <div class="group-title">文字/编码工具</div>
+            </div>
+            <div class="group-links">
+              <a class="link-pill" href="./string_encryptor.html">字符串加解密</a>
+              <a class="link-pill" href="./string_generator.html">字符串生成器</a>
+              <a class="link-pill" href="./timestamp_converter.html">时间戳转换</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    // 工具数据
+    const tools = [
+      { icon: '🔐', title: 'Android 签名文件生成工具', desc: '根据包名生成 .jks 并提取指纹与公钥信息，支持历史记录导入导出。', href: './keystore_generator.html' },
+      { icon: '📦', title: 'APK 信息提取工具', desc: '解析 APK，读取包名与证书指纹等信息，支持拖拽上传与结果复制。', href: './apk_analyzer.html' },
+      { icon: '🗜️', title: '图片压缩工具', desc: '智能压缩图片，保持比例与清晰度，支持预览对比与多格式导出。', href: './image_compressor.html' },
+      { icon: '🖊️', title: '文字图片生成工具', desc: '输入文本快速生成图片素材，适用于占位图、标签图等场景。', href: './text_image_generator.html' },
+      { icon: '🚀', title: '启动图生成工具', desc: '为 iOS 与 Android 批量生成多尺寸启动图，支持背景与Logo配置。', href: './launch_image_generator.html' },
+      { icon: '🎨', title: '图标工厂', desc: '上传一个图标，一键生成 iOS 与 Android 标准尺寸及文件夹结构，包含标准命名。', href: './icon_factory.html' },
+      { icon: '🛠️', title: 'SVG 互转 PNG/JPG/JPEG', desc: '支持 SVG 与位图的双向转换，设置尺寸与比例并下载。', href: './svg_converter.html' },
+      { icon: '🔐', title: '字符串加解密工具', desc: '支持 Base64、URL、Hex、Unicode、摩斯密码等编码，以及 MD5、SHA、AES、凯撒密码等加解密。', href: './string_encryptor.html' },
+      { icon: '🎨', title: 'RGB 颜色互转工具', desc: '支持 RGB、HEX、HSL 颜色格式互转，提供主流颜色预设卡片，条状展示。', href: './color_converter.html' },
+      { icon: '⏰', title: '时间戳转换工具', desc: '支持秒级和毫秒级时间戳与日期时间互转，自动识别时间戳类型。', href: './timestamp_converter.html' },
+      { icon: '📱', title: '二维码/条形码生成工具', desc: '支持自定义样式、颜色和中心图标，生成高质量二维码和多种格式条形码。', href: './qrcode_generator.html' },
+      { icon: '🔧', title: 'API 调试工具', desc: '支持 HTTP 请求和 WebSocket (WSS) 连接调试，类似 APIFOX，包含请求历史记录。', href: './api_debugger.html' },
+      { icon: '🔤', title: '多种字符串生成器', desc: '生成标准银行卡号、UDID、包名、UUID、MAC地址、IP地址、邮箱等常用字符串。', href: './string_generator.html' },
+      { icon: '📄', title: 'JSON 格式化工具', desc: 'JSON 格式化、压缩、验证和可视化预览，支持语法高亮和实时验证。', href: './json_formatter.html' },
+      { icon: '📱', title: '机型预览信息工具', desc: '查看主流手机机型详细信息，支持模糊搜索，包含最新iPhone 17系列。', href: './device_preview.html' }
+    ];
+
+    let currentIndex = 0;
+    const visibleCards = 5; // 可见卡片数量
+    const totalCards = tools.length;
+
+    // 初始化卡片
+    function initCarousel() {
+      const wrapper = document.getElementById('carouselWrapper');
+      const indicators = document.getElementById('indicators');
+
+      // 创建卡片
+      tools.forEach((tool, index) => {
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        card.innerHTML = `
+          <div class="tool-icon">${tool.icon}</div>
+          <div class="tool-title">${tool.title}</div>
+          <div class="tool-desc">${tool.desc}</div>
+          <a class="btn" href="${tool.href}">打开工具</a>
+        `;
+        wrapper.appendChild(card);
+
+        // 创建指示器
+        const indicator = document.createElement('div');
+        indicator.className = 'indicator';
+        if (index === 0) indicator.classList.add('active');
+        indicator.addEventListener('click', () => goToIndex(index));
+        indicators.appendChild(indicator);
+      });
+
+      updateCarousel();
+    }
+
+    // 更新卡片位置
+    function updateCarousel() {
+      const cards = document.querySelectorAll('.tool-card');
+      const indicators = document.querySelectorAll('.indicator');
+      const angleStep = 360 / totalCards;
+      const radius = 400; // 环绕半径
+
+      cards.forEach((card, index) => {
+        const angle = (index - currentIndex) * angleStep;
+        const radian = (angle * Math.PI) / 180;
+        const x = Math.sin(radian) * radius;
+        const z = -Math.cos(radian) * radius;
+        const opacity = Math.abs(angle) < 90 ? 1 : 0.3;
+        const scale = Math.abs(angle) < 60 ? 1 : 0.7;
+
+        card.style.transform = `translateX(${x}px) translateZ(${z}px) rotateY(${-angle}deg) scale(${scale})`;
+        card.style.opacity = opacity;
+
+        // 添加 active 类
+        if (Math.abs(angle) < 30) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+
+      // 更新指示器
+      indicators.forEach((indicator, index) => {
+        if (index === currentIndex) {
+          indicator.classList.add('active');
+        } else {
+          indicator.classList.remove('active');
+        }
+      });
+
+      // 更新导航按钮
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('nextBtn').disabled = currentIndex === totalCards - 1;
+    }
+
+    // 上一张
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      }
+    }
+
+    // 下一张
+    function nextCard() {
+      if (currentIndex < totalCards - 1) {
+        currentIndex++;
+        updateCarousel();
+      }
+    }
+
+    // 跳转到指定索引
+    function goToIndex(index) {
+      currentIndex = index;
+      updateCarousel();
+    }
+
+    // 键盘导航
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevCard();
+      if (e.key === 'ArrowRight') nextCard();
+    });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      initCarousel();
+      document.getElementById('prevBtn').addEventListener('click', prevCard);
+      document.getElementById('nextBtn').addEventListener('click', nextCard);
+    });
+  </script>
 </body>
 
 </html>
