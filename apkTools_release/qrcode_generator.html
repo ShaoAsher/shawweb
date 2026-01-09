@@ -419,51 +419,6 @@
 
     // 二维码相关变量
     let qrcodeInstance = null;
-    let iconImage = null;
-
-    // 图标上传
-    const iconUploadArea = document.getElementById('iconUploadArea');
-    const iconFile = document.getElementById('iconFile');
-    const iconPreview = document.getElementById('iconPreview');
-    const iconSize = document.getElementById('iconSize');
-    const iconSizeValue = document.getElementById('iconSizeValue');
-
-    iconUploadArea.addEventListener('click', () => iconFile.click());
-    iconUploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      iconUploadArea.classList.add('dragover');
-    });
-    iconUploadArea.addEventListener('dragleave', () => {
-      iconUploadArea.classList.remove('dragover');
-    });
-    iconUploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      iconUploadArea.classList.remove('dragover');
-      const files = e.dataTransfer.files;
-      if (files.length > 0) handleIconFile(files[0]);
-    });
-
-    iconFile.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) handleIconFile(e.target.files[0]);
-    });
-
-    iconSize.addEventListener('input', (e) => {
-      iconSizeValue.textContent = e.target.value + '%';
-    });
-
-    function handleIconFile(file) {
-      if (!file.type.startsWith('image/')) {
-        alert('请上传图片文件');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        iconImage = e.target.result;
-        iconPreview.src = iconImage;
-        iconPreview.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
 
     // 样式预设
     const stylePresets = {
