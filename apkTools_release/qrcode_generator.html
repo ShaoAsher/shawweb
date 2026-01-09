@@ -580,29 +580,20 @@
         const canvas = qrcodeDiv.querySelector('canvas');
 
         if (canvas && canvas.width > 0 && canvas.height > 0) {
-          // 设置 willReadFrequently 以优化多次 getImageData 的性能
-          const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-          // 检查 canvas 是否有内容：检查多个位置是否有非背景色的像素
+          // 检查 canvas 是否有内容：只检查一个关键位置，避免多次 getImageData
           let hasContent = false;
-          const checkPoints = [
-            [size / 2, size / 2],           // 中心
-            [size * 0.2, size * 0.2],       // 左上区域
-            [size * 0.8, size * 0.8],       // 右下区域
-          ];
-
-          for (const [x, y] of checkPoints) {
-            try {
-              const testPixel = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
-              // 检查是否为前景色（深色，通常是黑色或接近黑色）
-              const avg = (testPixel[0] + testPixel[1] + testPixel[2]) / 3;
-              if (avg < 200) { // 不是纯白色或接近白色
-                hasContent = true;
-                break;
-              }
-            } catch (e) {
-              // 如果获取失败，继续尝试
+          try {
+            // 先获取一次 context，设置 willReadFrequently
+            const checkCtx = canvas.getContext('2d', { willReadFrequently: true });
+            // 只检查中心位置，减少 getImageData 调用次数
+            const testPixel = checkCtx.getImageData(Math.floor(size / 2), Math.floor(size / 2), 1, 1).data;
+            // 检查是否为前景色（深色，通常是黑色或接近黑色）
+            const avg = (testPixel[0] + testPixel[1] + testPixel[2]) / 3;
+            if (avg < 200) { // 不是纯白色或接近白色
+              hasContent = true;
             }
+          } catch (e) {
+            // 如果获取失败，继续尝试
           }
 
           if (hasContent || attempts >= maxAttempts) {
@@ -627,12 +618,14 @@
     function applyStyleAndIcon(canvas, ctx, size, color, bgColor, style) {
       console.log('开始应用样式和图标', { style, hasIcon: !!iconImage, size });
 
-      // 读取原始二维码数据（必须先读取，因为在重新绘制时会清除）
-      const imageData = ctx.getImageData(0, 0, size, size);
-      const data = imageData.data;
-
       // 应用样式：重新绘制二维码点
+      let imageData = null;
+      let data = null;
+      
       if (style !== 'square') {
+        // 只有在需要重新绘制时才读取原始数据
+        imageData = ctx.getImageData(0, 0, size, size);
+        data = imageData.data;
         console.log('应用非方形样式:', style);
         // 更准确地检测模块大小：扫描二维码找到定位点（三个角落的大方块）
         // 定位点的大小通常是 7x7 模块，周围有 1 模块的白色边框，所以总大小是 9x9 模块
@@ -742,7 +735,7 @@
         }
       }
 
-      // 添加图标（在样式应用后再添加）
+      // 添加图标（在样式应用后再添加，无论样式是否为 square）
       if (iconImage) {
         console.log('添加图标，大小:', iconSize.value);
         const iconSizePercent = parseInt(iconSize.value) / 100;
@@ -752,8 +745,9 @@
 
         const img = new Image();
         img.onload = () => {
-          console.log('图标加载成功，尺寸:', iconSizePx);
-          // 绘制白色/背景色圆角矩形作为图标背景
+          console.log('图标加载成功，尺寸:', iconSizePx, '位置:', iconX, iconY);
+          
+          // 绘制白色/背景色圆角矩形作为图标背景（遮挡二维码中心部分）
           const bgPadding = Math.floor(iconSizePx * 0.1);
           const bgX = iconX - bgPadding;
           const bgY = iconY - bgPadding;
@@ -781,13 +775,20 @@
           ctx.drawImage(img, iconX, iconY, iconSizePx, iconSizePx);
           ctx.restore();
 
-          console.log('图标绘制完成');
+          console.log('图标绘制完成，位置:', iconX, iconY, '尺寸:', iconSizePx);
+          
+          // 确保预览区域显示
           document.getElementById('qrcodePreview').style.display = 'block';
+          
+          // 验证图标是否真的绘制了（可选，用于调试）
+          const verifyPixel = ctx.getImageData(Math.floor(iconX + iconSizePx / 2), Math.floor(iconY + iconSizePx / 2), 1, 1).data;
+          console.log('图标中心像素值:', verifyPixel[0], verifyPixel[1], verifyPixel[2], verifyPixel[3]);
         };
         img.onerror = (e) => {
           console.error('图标加载失败:', iconImage, e);
           document.getElementById('qrcodePreview').style.display = 'block';
         };
+        
         // 如果 iconImage 是 base64，直接使用；如果是 URL，需要设置 crossOrigin
         if (iconImage.startsWith('data:')) {
           img.src = iconImage;
