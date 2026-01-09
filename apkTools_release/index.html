@@ -126,74 +126,78 @@
     }
 
     /* 后面的卡片位置调整 */
+    /* data-index="1" 是下一张，应该在右边 */
     .tool-card[data-index="1"]:not(.active) {
-      transform: scale(0.9) translateX(-280px) translateY(30px);
-      z-index: 2
-    }
-
-    .tool-card[data-index="2"]:not(.active) {
-      transform: scale(0.85) translateX(-240px) translateY(40px);
-      z-index: 1
-    }
-
-    .tool-card[data-index="3"]:not(.active) {
-      transform: scale(0.8) translateX(-200px) translateY(50px);
-      z-index: 1
-    }
-
-    .tool-card[data-index="-1"]:not(.active) {
       transform: scale(0.9) translateX(280px) translateY(30px);
       z-index: 2
     }
 
-    .tool-card[data-index="-2"]:not(.active) {
+    .tool-card[data-index="2"]:not(.active) {
       transform: scale(0.85) translateX(240px) translateY(40px);
       z-index: 1
     }
 
-    .tool-card[data-index="-3"]:not(.active) {
+    .tool-card[data-index="3"]:not(.active) {
       transform: scale(0.8) translateX(200px) translateY(50px);
       z-index: 1
     }
 
+    /* data-index="-1" 是上一张，应该在左边 */
+    .tool-card[data-index="-1"]:not(.active) {
+      transform: scale(0.9) translateX(-280px) translateY(30px);
+      z-index: 2
+    }
+
+    .tool-card[data-index="-2"]:not(.active) {
+      transform: scale(0.85) translateX(-240px) translateY(40px);
+      z-index: 1
+    }
+
+    .tool-card[data-index="-3"]:not(.active) {
+      transform: scale(0.8) translateX(-200px) translateY(50px);
+      z-index: 1
+    }
+
     /* 修复悬停效果 */
+    /* data-index="1" 是下一张，在右边 */
     .tool-card[data-index="1"]:not(.active):hover {
-      transform: scale(0.95) translateX(-280px) translateY(20px) !important;
-      opacity: 0.9;
-      filter: blur(1px);
-      z-index: 5 !important
-    }
-
-    .tool-card[data-index="2"]:not(.active):hover {
-      transform: scale(0.9) translateX(-240px) translateY(30px) !important;
-      opacity: 0.85;
-      filter: blur(1px);
-      z-index: 4 !important
-    }
-
-    .tool-card[data-index="3"]:not(.active):hover {
-      transform: scale(0.85) translateX(-200px) translateY(40px) !important;
-      opacity: 0.8;
-      filter: blur(1px);
-      z-index: 3 !important
-    }
-
-    .tool-card[data-index="-1"]:not(.active):hover {
       transform: scale(0.95) translateX(280px) translateY(20px) !important;
       opacity: 0.9;
       filter: blur(1px);
       z-index: 5 !important
     }
 
-    .tool-card[data-index="-2"]:not(.active):hover {
+    .tool-card[data-index="2"]:not(.active):hover {
       transform: scale(0.9) translateX(240px) translateY(30px) !important;
       opacity: 0.85;
       filter: blur(1px);
       z-index: 4 !important
     }
 
-    .tool-card[data-index="-3"]:not(.active):hover {
+    .tool-card[data-index="3"]:not(.active):hover {
       transform: scale(0.85) translateX(200px) translateY(40px) !important;
+      opacity: 0.8;
+      filter: blur(1px);
+      z-index: 3 !important
+    }
+
+    /* data-index="-1" 是上一张，在左边 */
+    .tool-card[data-index="-1"]:not(.active):hover {
+      transform: scale(0.95) translateX(-280px) translateY(20px) !important;
+      opacity: 0.9;
+      filter: blur(1px);
+      z-index: 5 !important
+    }
+
+    .tool-card[data-index="-2"]:not(.active):hover {
+      transform: scale(0.9) translateX(-240px) translateY(30px) !important;
+      opacity: 0.85;
+      filter: blur(1px);
+      z-index: 4 !important
+    }
+
+    .tool-card[data-index="-3"]:not(.active):hover {
+      transform: scale(0.85) translateX(-200px) translateY(40px) !important;
       opacity: 0.8;
       filter: blur(1px);
       z-index: 3 !important
@@ -445,11 +449,11 @@
       }
 
       .tool-card[data-index="1"]:not(.active) {
-        transform: scale(0.9) translateX(-250px) translateY(30px)
+        transform: scale(0.9) translateX(250px) translateY(30px)
       }
 
       .tool-card[data-index="-1"]:not(.active) {
-        transform: scale(0.9) translateX(250px) translateY(30px)
+        transform: scale(0.9) translateX(-250px) translateY(30px)
       }
     }
 
