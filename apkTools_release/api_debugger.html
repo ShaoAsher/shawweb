@@ -1240,8 +1240,29 @@
       // 判断当前选中的标签页
       const activeTab = document.querySelector('.main-tab.active').dataset.tab;
 
-      // 如果选中的是 Body 标签页，处理 Body
-      if (activeTab === 'body') {
+      // 处理 Query 参数（只在 Params 标签页时，或 Body 标签页选择 none 时）
+      if (activeTab === 'params' || (activeTab === 'body' && currentBodyType === 'none')) {
+        try {
+          const baseUrl = url.startsWith('http') ? url : (url.startsWith('/') ? 'https://example.com' + url : 'https://example.com/' + url);
+          const urlObj = new URL(baseUrl);
+          document.querySelectorAll('#paramsTableBody tr').forEach(row => {
+            const checkbox = row.querySelector('.param-checkbox');
+            if (!checkbox.checked) return;
+            const key = row.querySelector('.param-key').value.trim();
+            const value = row.querySelector('.param-value').value.trim();
+            if (key && value) {
+              urlObj.searchParams.append(key, value);
+            }
+          });
+          url = url.startsWith('http') ? urlObj.toString() : urlObj.pathname + urlObj.search;
+        } catch (e) {
+          // URL 解析失败，使用原始 URL
+          console.warn('URL 解析失败:', e);
+        }
+      }
+
+      // 如果选中的是 Body 标签页且不是 none，处理 Body
+      if (activeTab === 'body' && currentBodyType !== 'none') {
         if (currentBodyType === 'form-data') {
           const formData = new FormData();
           document.querySelectorAll('#formDataTableBody tr').forEach(row => {
@@ -1297,30 +1318,25 @@
         }
       }
 
-      // 如果选中的是 Params 标签页，处理 Query 参数
-      if (activeTab === 'params') {
-        const urlObj = new URL(url.startsWith('http') ? url : 'https://example.com' + url);
-        document.querySelectorAll('#paramsTableBody tr').forEach(row => {
-          const checkbox = row.querySelector('.param-checkbox');
-          if (!checkbox.checked) return;
-          const key = row.querySelector('.param-key').value.trim();
-          const value = row.querySelector('.param-value').value.trim();
-          if (key && value) {
-            urlObj.searchParams.append(key, value);
-          }
-        });
-        url = url.startsWith('http') ? urlObj.toString() : urlObj.pathname + urlObj.search;
+      // 确保 URL 格式正确
+      let finalUrl = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        if (url.startsWith('/')) {
+          finalUrl = 'https://example.com' + url;
+        } else {
+          finalUrl = 'https://' + url;
+        }
       }
 
       try {
         const startTime = Date.now();
-        const response = await fetch(url.startsWith('http') ? url : 'https://' + url, requestConfig);
+        const response = await fetch(finalUrl, requestConfig);
         const duration = Date.now() - startTime;
 
         // 保存到历史
         const historyItem = {
           method,
-          url: url,
+          url: finalUrl,
           timestamp: new Date().toISOString(),
           status: response.status,
           statusText: response.statusText
