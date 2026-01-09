@@ -20,247 +20,254 @@
     }
 
     .container {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-      overflow: hidden
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 40px)
     }
 
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
-      padding: 30px;
-      text-align: center
+      padding: 20px 30px;
+      text-align: center;
+      flex-shrink: 0
     }
 
     .header h1 {
-      font-size: 28px;
-      margin-bottom: 10px
+      font-size: 24px;
+      margin-bottom: 5px
     }
 
     .header p {
       opacity: .9;
-      font-size: 14px
+      font-size: 13px
     }
 
-    .content {
-      padding: 30px
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
     }
 
-    .tab-buttons {
+    .request-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-bottom: 2px solid #dee2e6
+    }
+
+    .request-toolbar {
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
       display: flex;
       gap: 10px;
-      margin-bottom: 20px
+      align-items: center;
+      flex-shrink: 0
     }
 
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      background: #e9ecef;
+    .method-select {
+      padding: 10px 15px;
+      background: linear-gradient(135deg, #07C160 0%, #42BD56 100%);
+      color: #fff;
       border: none;
       border-radius: 8px;
+      font-weight: 600;
       font-size: 14px;
-      font-weight: 600;
       cursor: pointer;
-      transition: all .3s
+      min-width: 80px;
+      position: relative
     }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff
+    .method-select::after {
+      content: '▼';
+      margin-left: 8px;
+      font-size: 10px
     }
 
-    .tab-content {
-      display: none
-    }
-
-    .tab-content.active {
-      display: block
-    }
-
-    .form-section {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px
-    }
-
-    .form-section h2 {
-      font-size: 20px;
-      color: #495057;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 10px
-    }
-
-    .form-group {
-      margin-bottom: 18px
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 8px;
-      font-size: 14px
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px;
+    .url-input {
+      flex: 1;
+      padding: 10px 15px;
       border: 2px solid #dee2e6;
       border-radius: 8px;
       font-size: 14px;
-      transition: border-color .3s;
       font-family: 'Courier New', monospace
     }
 
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .url-input:focus {
       outline: none;
       border-color: #667eea
     }
 
-    .form-group textarea {
-      min-height: 120px;
-      resize: vertical
-    }
-
-    .request-line {
+    .toolbar-buttons {
       display: flex;
-      gap: 10px;
-      align-items: center
-    }
-
-    .request-line select {
-      width: 120px;
-      flex-shrink: 0
-    }
-
-    .request-line input {
-      flex: 1
+      gap: 10px
     }
 
     .btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+      padding: 10px 20px;
       border: none;
-      padding: 12px 24px;
       border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform .2s
+      transition: all .2s
     }
 
-    .btn:hover {
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff
+    }
+
+    .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
     }
 
-    .btn-success {
-      background: linear-gradient(135deg, #07C160 0%, #42BD56 100%);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #FF0050 0%, #E83C3C 100%);
-    }
-
     .btn-secondary {
-      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+      background: #6c757d;
+      color: #fff
     }
 
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px
-    }
-
-    .headers-list {
+    .tabs-container {
       background: #fff;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      padding: 10px;
-      min-height: 100px;
-      max-height: 200px;
-      overflow-y: auto
+      border-bottom: 1px solid #dee2e6;
+      flex-shrink: 0
     }
 
-    .header-item {
-      display: grid;
-      grid-template-columns: 30px 1fr 1fr 80px;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center
+    .main-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 20px;
+      overflow-x: auto
     }
 
-    .header-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer
+    .main-tab {
+      padding: 12px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: #6c757d;
+      transition: all .2s;
+      white-space: nowrap
     }
 
-    .header-item input[type="text"] {
-      flex: 1;
+    .main-tab:hover {
+      color: #667eea;
+      background: #f8f9fa
+    }
+
+    .main-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1
+    }
+
+    .tab-panel.active {
+      display: block
+    }
+
+    .body-type-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #dee2e6;
+      overflow-x: auto
+    }
+
+    .body-type-tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: #6c757d;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .body-type-tab:hover {
+      color: #667eea
+    }
+
+    .body-type-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600
+    }
+
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px
+    }
+
+    .params-table th {
+      text-align: left;
+      padding: 12px;
+      background: #f8f9fa;
+      border-bottom: 2px solid #dee2e6;
+      font-size: 13px;
+      font-weight: 600;
+      color: #495057
+    }
+
+    .params-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e9ecef
+    }
+
+    .params-table input,
+    .params-table select {
+      width: 100%;
       padding: 8px;
       border: 1px solid #dee2e6;
       border-radius: 4px;
       font-size: 13px
     }
 
-    .header-item button {
-      padding: 8px 12px;
-      background: #dc3545;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px
+    .params-table input:focus,
+    .params-table select:focus {
+      outline: none;
+      border-color: #667eea
     }
 
-    .param-item {
-      display: grid;
-      grid-template-columns: 30px 1fr 1fr 120px 80px;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center
-    }
-
-    .param-item input[type="checkbox"] {
+    .param-checkbox {
       width: 18px;
       height: 18px;
       cursor: pointer
     }
 
-    .param-item input[type="text"],
-    .param-item select {
-      padding: 8px;
-      border: 1px solid #dee2e6;
-      border-radius: 4px;
-      font-size: 13px
+    .file-input-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: center
     }
 
-    .param-item input[type="file"] {
-      padding: 4px;
-      font-size: 12px
+    .file-input-wrapper input[type="file"] {
+      display: none
     }
 
-    .param-item button {
-      padding: 8px 12px;
-      background: #dc3545;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px
-    }
-
-    .batch-edit-btn {
+    .file-select-btn {
       padding: 6px 12px;
       background: #667eea;
       color: #fff;
@@ -268,7 +275,116 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 12px;
-      margin-bottom: 10px
+      white-space: nowrap
+    }
+
+    .file-name {
+      font-size: 12px;
+      color: #6c757d;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 150px
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px
+    }
+
+    .add-param-btn {
+      color: #667eea;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: underline;
+      padding: 5px
+    }
+
+    .batch-edit-btn {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      color: #6c757d;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 5px
+    }
+
+    .batch-edit-btn:hover {
+      color: #667eea
+    }
+
+    .response-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #f8f9fa
+    }
+
+    .response-header {
+      padding: 15px 20px;
+      background: #fff;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0
+    }
+
+    .response-header h3 {
+      font-size: 16px;
+      color: #495057
+    }
+
+    .response-status {
+      display: flex;
+      gap: 15px;
+      align-items: center
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .status-success {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .response-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #fff;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all
+    }
+
+    .empty-response {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #6c757d
+    }
+
+    .empty-response-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: .5
     }
 
     .modal {
@@ -291,21 +407,21 @@
     .modal-content {
       background: #fff;
       border-radius: 12px;
-      padding: 25px;
-      max-width: 600px;
+      padding: 0;
+      max-width: 700px;
       width: 90%;
       max-height: 80vh;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
       box-shadow: 0 20px 60px rgba(0, 0, 0, .3)
     }
 
     .modal-header {
+      padding: 20px 25px;
+      border-bottom: 1px solid #dee2e6;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #667eea
+      align-items: center
     }
 
     .modal-header h3 {
@@ -319,7 +435,6 @@
       font-size: 24px;
       cursor: pointer;
       color: #6c757d;
-      padding: 0;
       width: 30px;
       height: 30px;
       display: flex;
@@ -334,266 +449,98 @@
       color: #495057
     }
 
-    .batch-edit-area {
-      margin-bottom: 20px
+    .modal-body {
+      padding: 25px;
+      flex: 1;
+      overflow-y: auto
     }
 
-    .batch-edit-area textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 10px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      margin-bottom: 10px;
-      resize: vertical
-    }
-
-    .batch-format-buttons {
+    .batch-mode-tabs {
       display: flex;
-      gap: 10px;
-      margin-bottom: 15px
+      gap: 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #dee2e6
     }
 
-    .batch-format-buttons button {
-      padding: 8px 16px;
-      background: #667eea;
-      color: #fff;
+    .batch-mode-tab {
+      padding: 10px 20px;
+      background: transparent;
       border: none;
-      border-radius: 6px;
+      border-bottom: 2px solid transparent;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 14px;
+      color: #6c757d;
       transition: all .2s
     }
 
-    .batch-format-buttons button:hover {
-      background: #5568d3;
-      transform: translateY(-1px)
+    .batch-mode-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600
+    }
+
+    .batch-format-hint {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 12px;
+      color: #6c757d;
+      line-height: 1.6
+    }
+
+    .batch-textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical
+    }
+
+    .batch-textarea:focus {
+      outline: none;
+      border-color: #667eea
     }
 
     .modal-footer {
+      padding: 15px 25px;
+      border-top: 1px solid #dee2e6;
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid #dee2e6
+      gap: 10px
     }
 
-    .file-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 5px
-    }
-
-    .file-name {
-      font-size: 11px;
-      color: #6c757d;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1
-    }
-
-    .response-section {
-      background: #fff;
-      border: 2px solid #dee2e6;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 25px
-    }
-
-    .response-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #dee2e6
-    }
-
-    .response-status {
+    .remove-btn {
+      background: #dc3545;
+      color: #fff;
+      border: none;
       padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px
-    }
-
-    .status-2xx {
-      background: #d4edda;
-      color: #155724
-    }
-
-    .status-4xx {
-      background: #f8d7da;
-      color: #721c24
-    }
-
-    .status-5xx {
-      background: #f8d7da;
-      color: #721c24
-    }
-
-    .status-other {
-      background: #e2e3e5;
-      color: #383d41
-    }
-
-    .response-body {
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 15px;
-      max-height: 500px;
-      overflow-y: auto;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      white-space: pre-wrap;
-      word-break: break-all
-    }
-
-    .response-headers {
-      margin-bottom: 15px;
-      font-size: 12px;
-      color: #6c757d
-    }
-
-    .response-headers div {
-      margin-bottom: 5px
-    }
-
-    .ws-controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px
-    }
-
-    .ws-status {
-      padding: 8px 15px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 13px
-    }
-
-    .ws-status.connected {
-      background: #d4edda;
-      color: #155724
-    }
-
-    .ws-status.disconnected {
-      background: #f8d7da;
-      color: #721c24
-    }
-
-    .ws-status.connecting {
-      background: #fff3cd;
-      color: #856404
-    }
-
-    .ws-messages {
-      background: #f8f9fa;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      padding: 15px;
-      max-height: 400px;
-      overflow-y: auto;
-      font-family: 'Courier New', monospace;
+      border-radius: 4px;
+      cursor: pointer;
       font-size: 12px
     }
 
-    .ws-message {
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 4px;
-      border-left: 3px solid #667eea
+    .remove-btn:hover {
+      background: #c82333
     }
 
-    .ws-message.sent {
-      background: #e7f3ff;
-      border-left-color: #1677FF
-    }
-
-    .ws-message.received {
-      background: #f0f9ff;
-      border-left-color: #07C160
-    }
-
-    .ws-message.error {
-      background: #fff5f5;
-      border-left-color: #FF0050
-    }
-
-    .ws-message-time {
-      font-size: 10px;
-      color: #6c757d;
-      margin-bottom: 4px
-    }
-
-    .history-section {
-      max-height: 300px;
-      overflow-y: auto;
-      background: #fff;
+    .textarea-body {
+      width: 100%;
+      min-height: 200px;
+      padding: 12px;
       border: 2px solid #dee2e6;
       border-radius: 8px;
-      padding: 10px
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical
     }
 
-    .history-item {
-      padding: 10px;
-      margin-bottom: 8px;
-      background: #f8f9fa;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all .2s;
-      border-left: 3px solid #667eea
-    }
-
-    .history-item:hover {
-      background: #e9ecef;
-      transform: translateX(5px)
-    }
-
-    .history-item-method {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-right: 8px
-    }
-
-    .method-get {
-      background: #d4edda;
-      color: #155724
-    }
-
-    .method-post {
-      background: #cce5ff;
-      color: #004085
-    }
-
-    .method-put {
-      background: #fff3cd;
-      color: #856404
-    }
-
-    .method-delete {
-      background: #f8d7da;
-      color: #721c24
-    }
-
-    .two-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px
-    }
-
-    @media (max-width: 768px) {
-      .two-columns {
-        grid-template-columns: 1fr
-      }
+    .textarea-body:focus {
+      outline: none;
+      border-color: #667eea
     }
   </style>
 </head>
@@ -602,138 +549,223 @@
   <div class="container">
     <div class="header">
       <h1>🔧 API 调试工具</h1>
-      <p>支持 HTTP 请求和 WebSocket (WSS) 连接调试，类似 APIFOX</p>
+      <p>支持 HTTP 请求和 WebSocket (WSS) 连接调试</p>
     </div>
-    <div class="content">
-      <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="http">HTTP 请求</button>
-        <button class="tab-btn" data-tab="websocket">WebSocket (WSS)</button>
-        <button class="tab-btn" data-tab="history">历史记录</button>
-      </div>
 
-      <!-- HTTP 请求标签页 -->
-      <div class="tab-content active" id="httpTab">
-        <div class="form-section">
-          <h2>请求配置</h2>
-          <div class="form-group">
-            <label>请求方法和 URL</label>
-            <div class="request-line">
-              <select id="httpMethod">
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-                <option value="PUT">PUT</option>
-                <option value="DELETE">DELETE</option>
-                <option value="PATCH">PATCH</option>
-                <option value="HEAD">HEAD</option>
-                <option value="OPTIONS">OPTIONS</option>
-              </select>
-              <input type="text" id="httpUrl" placeholder="https://api.example.com/users" value="">
-            </div>
+    <div class="main-content">
+      <!-- 请求区域 -->
+      <div class="request-section">
+        <div class="request-toolbar">
+          <select class="method-select" id="httpMethod">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+            <option value="PATCH">PATCH</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+          </select>
+          <input type="text" class="url-input" id="httpUrl" placeholder='接口路径, "/"起始'>
+          <div class="toolbar-buttons">
+            <button class="btn btn-primary" id="sendBtn">发送</button>
+            <button class="btn btn-secondary" id="saveBtn">保存</button>
           </div>
-          <div class="form-group">
-            <label>
-              请求参数
-              <button class="batch-edit-btn" onclick="openBatchEditModal('params')">📝 批量编辑</button>
-            </label>
-            <div class="headers-list" id="paramsList">
-              <div class="param-item">
-                <input type="checkbox" checked>
-                <input type="text" placeholder="参数名" class="param-key">
-                <input type="text" placeholder="参数值" class="param-value">
-                <select class="param-type">
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
-                  <option value="boolean">Boolean</option>
-                  <option value="file">File</option>
-                </select>
-                <button onclick="removeParam(this)">删除</button>
+        </div>
+
+        <div class="tabs-container">
+          <div class="main-tabs">
+            <button class="main-tab active" data-tab="params">Params</button>
+            <button class="main-tab" data-tab="body">Body</button>
+            <button class="main-tab" data-tab="headers">Headers</button>
+            <button class="main-tab" data-tab="cookies">Cookies</button>
+            <button class="main-tab" data-tab="auth">Auth</button>
+            <button class="main-tab" data-tab="pre-script">前置操作</button>
+            <button class="main-tab" data-tab="post-script">后置操作</button>
+            <button class="main-tab" data-tab="settings">设置</button>
+          </div>
+        </div>
+
+        <!-- Params 标签页 -->
+        <div class="tab-panel active" id="paramsPanel">
+          <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">Query 参数</h3>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"></th>
+                <th>参数名</th>
+                <th>参数值</th>
+                <th>类型</th>
+                <th>说明</th>
+                <th style="width: 80px;"></th>
+              </tr>
+            </thead>
+            <tbody id="paramsTableBody">
+              <tr>
+                <td><input type="checkbox" class="param-checkbox" checked></td>
+                <td><input type="text" placeholder="参数名" class="param-key"></td>
+                <td><input type="text" placeholder="参数值" class="param-value"></td>
+                <td>
+                  <select class="param-type">
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="boolean">Boolean</option>
+                  </select>
+                </td>
+                <td><input type="text" placeholder="说明" class="param-desc"></td>
+                <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="action-buttons">
+            <button class="add-param-btn" onclick="addParamRow()">添加参数</button>
+            <button class="batch-edit-btn" onclick="openBatchEditModal('params')">
+              <span>⋯</span>
+              <span>批量编辑</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Body 标签页 -->
+        <div class="tab-panel" id="bodyPanel">
+          <div class="body-type-tabs">
+            <button class="body-type-tab active" data-body-type="none">none</button>
+            <button class="body-type-tab" data-body-type="form-data">form-data</button>
+            <button class="body-type-tab" data-body-type="x-www-form-urlencoded">x-www-form-urlencoded</button>
+            <button class="body-type-tab" data-body-type="json">JSON</button>
+            <button class="body-type-tab" data-body-type="xml">XML</button>
+            <button class="body-type-tab" data-body-type="text">Text</button>
+            <button class="body-type-tab" data-body-type="binary">Binary</button>
+            <button class="body-type-tab" data-body-type="graphql">GraphQL</button>
+            <button class="body-type-tab" data-body-type="msgpack">msgpack</button>
+          </div>
+
+          <div id="bodyContent">
+            <div id="bodyNone" style="padding: 40px; text-align: center; color: #6c757d;">
+              该请求没有 Body
+            </div>
+
+            <div id="bodyFormData" style="display: none;">
+              <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">Form Data</h3>
+              <table class="params-table">
+                <thead>
+                  <tr>
+                    <th style="width: 30px;"></th>
+                    <th>参数名</th>
+                    <th>参数值</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                    <th style="width: 80px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="formDataTableBody">
+                  <tr>
+                    <td><input type="checkbox" class="param-checkbox" checked></td>
+                    <td><input type="text" placeholder="参数名" class="param-key"></td>
+                    <td>
+                      <div class="file-input-wrapper">
+                        <input type="text" placeholder="参数值" class="param-value">
+                        <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
+                        <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
+                        <span class="file-name"></span>
+                      </div>
+                    </td>
+                    <td>
+                      <select class="param-type">
+                        <option value="text">Text</option>
+                        <option value="file">File</option>
+                      </select>
+                    </td>
+                    <td><input type="text" placeholder="说明" class="param-desc"></td>
+                    <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="action-buttons">
+                <button class="add-param-btn" onclick="addFormDataRow()">添加参数</button>
+                <button class="batch-edit-btn" onclick="openBatchEditModal('form-data')">
+                  <span>⋯</span>
+                  <span>批量编辑</span>
+                </button>
               </div>
             </div>
-            <button class="btn btn-secondary" onclick="addParam()" style="margin-top: 10px; width: auto;">添加参数</button>
+
+            <div id="bodyJson" style="display: none;">
+              <textarea class="textarea-body" id="jsonBody" placeholder='{"key": "value"}'></textarea>
+            </div>
+
+            <div id="bodyText" style="display: none;">
+              <textarea class="textarea-body" id="textBody" placeholder="输入文本内容"></textarea>
+            </div>
           </div>
-          <div class="form-group">
-            <label>
-              请求头
-              <button class="batch-edit-btn" onclick="openBatchEditModal('headers')">📝 批量编辑</button>
+        </div>
+
+        <!-- Headers 标签页 -->
+        <div class="tab-panel" id="headersPanel">
+          <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">请求头</h3>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"></th>
+                <th>Key</th>
+                <th>Value</th>
+                <th>说明</th>
+                <th style="width: 80px;"></th>
+              </tr>
+            </thead>
+            <tbody id="headersTableBody">
+              <tr>
+                <td><input type="checkbox" class="param-checkbox" checked></td>
+                <td><input type="text" placeholder="Key" class="header-key" value="Content-Type"></td>
+                <td><input type="text" placeholder="Value" class="header-value" value="application/json"></td>
+                <td><input type="text" placeholder="说明" class="header-desc"></td>
+                <td><button class="remove-btn" onclick="removeHeaderRow(this)">删除</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="action-buttons">
+            <button class="add-param-btn" onclick="addHeaderRow()">添加请求头</button>
+            <button class="batch-edit-btn" onclick="openBatchEditModal('headers')">
+              <span>⋯</span>
+              <span>批量编辑</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 其他标签页 -->
+        <div class="tab-panel" id="cookiesPanel">
+          <p style="color: #6c757d; padding: 40px; text-align: center;">Cookies 功能开发中...</p>
+        </div>
+        <div class="tab-panel" id="authPanel">
+          <p style="color: #6c757d; padding: 40px; text-align: center;">Auth 功能开发中...</p>
+        </div>
+        <div class="tab-panel" id="pre-scriptPanel">
+          <p style="color: #6c757d; padding: 40px; text-align: center;">前置操作功能开发中...</p>
+        </div>
+        <div class="tab-panel" id="post-scriptPanel">
+          <p style="color: #6c757d; padding: 40px; text-align: center;">后置操作功能开发中...</p>
+        </div>
+        <div class="tab-panel" id="settingsPanel">
+          <p style="color: #6c757d; padding: 40px; text-align: center;">设置功能开发中...</p>
+        </div>
+      </div>
+
+      <!-- 响应区域 -->
+      <div class="response-section">
+        <div class="response-header">
+          <h3>返回响应</h3>
+          <div class="response-status">
+            <span>校验响应</span>
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" id="validateResponse">
             </label>
-            <div class="headers-list" id="httpHeadersList">
-              <div class="header-item">
-                <input type="checkbox" checked>
-                <input type="text" placeholder="Key" class="header-key" value="Content-Type">
-                <input type="text" placeholder="Value" class="header-value" value="application/json">
-                <button onclick="removeHeader(this)">删除</button>
-              </div>
-            </div>
-            <button class="btn btn-secondary" onclick="addHeader()"
-              style="margin-top: 10px; width: auto;">添加请求头</button>
-          </div>
-          <div class="form-group">
-            <label>请求体 (Body)</label>
-            <select id="bodyType" style="margin-bottom: 10px; width: auto;">
-              <option value="none">无 Body</option>
-              <option value="json" selected>JSON</option>
-              <option value="text">Text</option>
-              <option value="form">Form Data</option>
-              <option value="xml">XML</option>
-            </select>
-            <textarea id="httpBody" placeholder='{"key": "value"}'></textarea>
-          </div>
-          <div class="btn-group">
-            <button class="btn btn-success" id="sendHttpBtn">发送请求</button>
-            <button class="btn btn-secondary" onclick="clearHttpRequest()">清空</button>
+            <span class="status-badge status-success" id="responseStatusBadge">成功 (200)</span>
           </div>
         </div>
-
-        <div class="response-section" id="httpResponse" style="display: none;">
-          <div class="response-header">
-            <h3>响应结果</h3>
-            <div>
-              <span class="response-status" id="responseStatus">200 OK</span>
-              <span id="responseTime" style="margin-left: 10px; color: #6c757d; font-size: 12px;"></span>
-            </div>
+        <div class="response-body" id="responseBody">
+          <div class="empty-response">
+            <div class="empty-response-icon">🚀</div>
+            <div>点击"发送"按钮获取返回结果</div>
           </div>
-          <div class="response-headers" id="responseHeaders"></div>
-          <div class="form-group">
-            <label>响应体</label>
-            <div class="response-body" id="responseBody"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- WebSocket 标签页 -->
-      <div class="tab-content" id="websocketTab">
-        <div class="form-section">
-          <h2>WebSocket 连接</h2>
-          <div class="form-group">
-            <label>WebSocket URL (ws:// 或 wss://)</label>
-            <input type="text" id="wsUrl" placeholder="wss://echo.websocket.org" value="">
-          </div>
-          <div class="ws-controls">
-            <button class="btn btn-success" id="wsConnectBtn">连接</button>
-            <button class="btn btn-danger" id="wsDisconnectBtn" disabled>断开</button>
-            <span class="ws-status disconnected" id="wsStatus">未连接</span>
-          </div>
-          <div class="form-group">
-            <label>发送消息</label>
-            <textarea id="wsMessage" placeholder='输入要发送的消息，支持 JSON 格式'></textarea>
-            <button class="btn" id="wsSendBtn" disabled style="margin-top: 10px;">发送消息</button>
-          </div>
-          <div class="form-group">
-            <label>消息历史</label>
-            <div class="ws-messages" id="wsMessages"></div>
-            <button class="btn btn-secondary" onclick="clearWsMessages()"
-              style="margin-top: 10px; width: auto;">清空消息</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 历史记录标签页 -->
-      <div class="tab-content" id="historyTab">
-        <div class="form-section">
-          <h2>请求历史</h2>
-          <div class="history-section" id="historyList"></div>
-          <button class="btn btn-secondary" onclick="clearHistory()"
-            style="margin-top: 15px; width: auto;">清空历史</button>
         </div>
       </div>
     </div>
@@ -743,84 +775,204 @@
   <div class="modal" id="batchEditModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalTitle">批量编辑</h3>
+        <h3>批量编辑</h3>
         <button class="modal-close" onclick="closeBatchEditModal()">&times;</button>
       </div>
-      <div class="batch-edit-area">
-        <label>批量输入</label>
-        <textarea id="batchEditInput"
-          placeholder='逗号格式：key1=value1,key2=value2&#10;冒号格式：key1:value1&#10;key2:value2'></textarea>
-        <div class="batch-format-buttons">
-          <button onclick="parseBatchInput('comma')">批量导入（逗号格式）</button>
-          <button onclick="parseBatchInput('colon')">批量导入（冒号格式）</button>
-          <button onclick="exportBatchInput()">批量导出</button>
+      <div class="modal-body">
+        <div class="batch-mode-tabs">
+          <button class="batch-mode-tab active" data-mode="comma">逗号模式</button>
+          <button class="batch-mode-tab" data-mode="colon">冒号模式</button>
         </div>
+        <div class="batch-format-hint" id="formatHint">
+          格式: 启用,参数名,参数值,类型,必需,Content-Type,说明<br>
+          数据格式遵循《标准 CSV 规范》字段之间以英文逗号(,)分隔,多条记录以换行分隔
+        </div>
+        <textarea class="batch-textarea" id="batchEditInput" placeholder="输入批量数据..."></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeBatchEditModal()">取消</button>
-        <button class="btn" onclick="applyBatchEdit()">应用</button>
+        <button class="btn btn-primary" onclick="applyBatchEdit()">确定</button>
       </div>
     </div>
   </div>
 
   <script>
+    let currentBatchType = 'params';
+    let currentBodyType = 'none';
+
     // 标签页切换
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(tab + 'Tab').classList.add('active');
+    document.querySelectorAll('.main-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tabName + 'Panel').classList.add('active');
       });
     });
 
-    // HTTP 请求相关
-    let requestHistory = JSON.parse(localStorage.getItem('apiDebuggerHistory') || '[]');
+    // Body 类型切换
+    document.querySelectorAll('.body-type-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const bodyType = tab.dataset.bodyType;
+        document.querySelectorAll('.body-type-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('[id^="body"]').forEach(p => p.style.display = 'none');
+        tab.classList.add('active');
+        currentBodyType = bodyType;
 
-    function addHeader() {
-      const list = document.getElementById('httpHeadersList');
-      const item = document.createElement('div');
-      item.className = 'header-item';
-      item.innerHTML = `
-        <input type="checkbox" checked>
-        <input type="text" placeholder="Key" class="header-key">
-        <input type="text" placeholder="Value" class="header-value">
-        <button onclick="removeHeader(this)">删除</button>
-      `;
-      list.appendChild(item);
-    }
-
-    function removeHeader(btn) {
-      btn.parentElement.remove();
-    }
-
-    let currentBatchEditType = 'params'; // 'params' 或 'headers'
-
-    function getHeaders() {
-      const headers = {};
-      document.querySelectorAll('.header-item').forEach(item => {
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        if (!checkbox.checked) return;
-        const key = item.querySelector('.header-key').value.trim();
-        const value = item.querySelector('.header-value').value.trim();
-        if (key && value) {
-          headers[key] = value;
+        if (bodyType === 'none') {
+          document.getElementById('bodyNone').style.display = 'block';
+        } else if (bodyType === 'form-data') {
+          document.getElementById('bodyFormData').style.display = 'block';
+        } else if (bodyType === 'json') {
+          document.getElementById('bodyJson').style.display = 'block';
+        } else if (bodyType === 'text') {
+          document.getElementById('bodyText').style.display = 'block';
         }
       });
-      return headers;
+    });
+
+    // 批量编辑模式切换
+    document.querySelectorAll('.batch-mode-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.batch-mode-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const mode = tab.dataset.mode;
+        const hint = document.getElementById('formatHint');
+        if (mode === 'comma') {
+          hint.innerHTML = '格式: 启用,参数名,参数值,类型,必需,Content-Type,说明<br>数据格式遵循《标准 CSV 规范》字段之间以英文逗号(,)分隔,多条记录以换行分隔';
+        } else {
+          hint.innerHTML = '格式: 参数名:参数值<br>每行一个参数，参数名和参数值用冒号分隔';
+        }
+      });
+    });
+
+    // 参数行管理
+    function addParamRow() {
+      const tbody = document.getElementById('paramsTableBody');
+      const row = createParamRow();
+      tbody.appendChild(row);
     }
 
-    // 批量编辑弹窗
-    function openBatchEditModal(type) {
-      currentBatchEditType = type;
-      const modal = document.getElementById('batchEditModal');
-      const title = document.getElementById('modalTitle');
-      title.textContent = type === 'params' ? '批量编辑参数' : '批量编辑请求头';
-      modal.classList.add('active');
+    function addFormDataRow() {
+      const tbody = document.getElementById('formDataTableBody');
+      const row = createFormDataRow();
+      tbody.appendChild(row);
+    }
 
-      // 如果已有数据，导出到输入框
-      exportBatchInput();
+    function createParamRow() {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="param-checkbox" checked></td>
+        <td><input type="text" placeholder="参数名" class="param-key"></td>
+        <td><input type="text" placeholder="参数值" class="param-value"></td>
+        <td>
+          <select class="param-type">
+            <option value="text">Text</option>
+            <option value="number">Number</option>
+            <option value="boolean">Boolean</option>
+          </select>
+        </td>
+        <td><input type="text" placeholder="说明" class="param-desc"></td>
+        <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
+      `;
+      return tr;
+    }
+
+    function createFormDataRow() {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="param-checkbox" checked></td>
+        <td><input type="text" placeholder="参数名" class="param-key"></td>
+        <td>
+          <div class="file-input-wrapper">
+            <input type="text" placeholder="参数值" class="param-value">
+            <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
+            <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
+            <span class="file-name"></span>
+          </div>
+        </td>
+        <td>
+          <select class="param-type" onchange="handleTypeChange(this)">
+            <option value="text">Text</option>
+            <option value="file">File</option>
+          </select>
+        </td>
+        <td><input type="text" placeholder="说明" class="param-desc"></td>
+        <td><button class="remove-btn" onclick="removeParamRow(this)">删除</button></td>
+      `;
+      return tr;
+    }
+
+    function removeParamRow(btn) {
+      btn.closest('tr').remove();
+    }
+
+    function selectFile(btn) {
+      const fileInput = btn.nextElementSibling;
+      fileInput.click();
+    }
+
+    function handleFileSelect(input) {
+      const file = input.files[0];
+      if (file) {
+        const wrapper = input.closest('.file-input-wrapper');
+        const fileName = wrapper.querySelector('.file-name');
+        fileName.textContent = file.name;
+        const valueInput = wrapper.querySelector('.param-value');
+        valueInput.value = file.name;
+        // 设置类型为 file
+        const typeSelect = input.closest('tr').querySelector('.param-type');
+        typeSelect.value = 'file';
+      }
+    }
+
+    function handleTypeChange(select) {
+      const row = select.closest('tr');
+      const valueCell = row.querySelector('td:nth-child(3)');
+      if (select.value === 'file') {
+        if (!valueCell.querySelector('.file-select-btn')) {
+          valueCell.innerHTML = `
+            <div class="file-input-wrapper">
+              <input type="text" placeholder="参数值" class="param-value" readonly>
+              <button class="file-select-btn" onclick="selectFile(this)">选择文件</button>
+              <input type="file" class="param-file" style="display: none;" onchange="handleFileSelect(this)">
+              <span class="file-name"></span>
+            </div>
+          `;
+        }
+      } else {
+        const valueInput = valueCell.querySelector('.param-value');
+        if (valueInput) {
+          valueCell.innerHTML = `<input type="text" placeholder="参数值" class="param-value">`;
+        }
+      }
+    }
+
+    // 请求头管理
+    function addHeaderRow() {
+      const tbody = document.getElementById('headersTableBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox" class="param-checkbox" checked></td>
+        <td><input type="text" placeholder="Key" class="header-key"></td>
+        <td><input type="text" placeholder="Value" class="header-value"></td>
+        <td><input type="text" placeholder="说明" class="header-desc"></td>
+        <td><button class="remove-btn" onclick="removeHeaderRow(this)">删除</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function removeHeaderRow(btn) {
+      btn.closest('tr').remove();
+    }
+
+    // 批量编辑
+    function openBatchEditModal(type) {
+      currentBatchType = type;
+      const modal = document.getElementById('batchEditModal');
+      modal.classList.add('active');
+      exportBatchData();
     }
 
     function closeBatchEditModal() {
@@ -828,19 +980,40 @@
       modal.classList.remove('active');
     }
 
-    function exportBatchInput() {
+    function exportBatchData() {
       const input = document.getElementById('batchEditInput');
       let lines = [];
 
-      if (currentBatchEditType === 'params') {
-        const { params } = getParams();
-        lines = Object.entries(params).map(([key, value]) => `${key}:${value}`);
-      } else {
-        document.querySelectorAll('.header-item').forEach(item => {
-          const key = item.querySelector('.header-key').value.trim();
-          const value = item.querySelector('.header-value').value.trim();
+      if (currentBatchType === 'params') {
+        document.querySelectorAll('#paramsTableBody tr').forEach(row => {
+          const checkbox = row.querySelector('.param-checkbox');
+          const key = row.querySelector('.param-key').value.trim();
+          const value = row.querySelector('.param-value').value.trim();
+          const type = row.querySelector('.param-type').value;
+          const desc = row.querySelector('.param-desc').value.trim();
           if (key && value) {
-            lines.push(`${key}:${value}`);
+            lines.push(`${checkbox.checked ? '1' : '0'},${key},${value},${type},,${desc}`);
+          }
+        });
+      } else if (currentBatchType === 'form-data') {
+        document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+          const checkbox = row.querySelector('.param-checkbox');
+          const key = row.querySelector('.param-key').value.trim();
+          const value = row.querySelector('.param-value').value.trim();
+          const type = row.querySelector('.param-type').value;
+          const desc = row.querySelector('.param-desc').value.trim();
+          if (key && value) {
+            lines.push(`${checkbox.checked ? '1' : '0'},${key},${value},${type},,${desc}`);
+          }
+        });
+      } else if (currentBatchType === 'headers') {
+        document.querySelectorAll('#headersTableBody tr').forEach(row => {
+          const checkbox = row.querySelector('.param-checkbox');
+          const key = row.querySelector('.header-key').value.trim();
+          const value = row.querySelector('.header-value').value.trim();
+          const desc = row.querySelector('.header-desc').value.trim();
+          if (key && value) {
+            lines.push(`${checkbox.checked ? '1' : '0'},${key},${value},,,${desc}`);
           }
         });
       }
@@ -848,80 +1021,103 @@
       input.value = lines.join('\n');
     }
 
-    function parseBatchInput(format) {
+    function applyBatchEdit() {
       const input = document.getElementById('batchEditInput').value.trim();
       if (!input) {
-        alert('请输入要导入的内容');
+        alert('请输入要导入的数据');
         return;
       }
 
+      const mode = document.querySelector('.batch-mode-tab.active').dataset.mode;
       const lines = input.split('\n').filter(line => line.trim());
-      const items = [];
 
-      lines.forEach(line => {
-        let key, value;
-        if (format === 'comma') {
-          const parts = line.split(',');
-          parts.forEach(part => {
-            const [k, v] = part.split('=').map(s => s.trim());
-            if (k && v) {
-              items.push({ key: k, value: v });
+      if (currentBatchType === 'params') {
+        const tbody = document.getElementById('paramsTableBody');
+        tbody.innerHTML = '';
+        lines.forEach(line => {
+          if (mode === 'comma') {
+            const parts = line.split(',');
+            if (parts.length >= 3) {
+              const row = createParamRow();
+              row.querySelector('.param-checkbox').checked = parts[0] === '1';
+              row.querySelector('.param-key').value = parts[1] || '';
+              row.querySelector('.param-value').value = parts[2] || '';
+              if (parts[3]) row.querySelector('.param-type').value = parts[3];
+              if (parts[6]) row.querySelector('.param-desc').value = parts[6];
+              tbody.appendChild(row);
             }
-          });
-        } else if (format === 'colon') {
-          const [k, v] = line.split(':').map(s => s.trim());
-          if (k && v) {
-            items.push({ key: k, value: v });
+          } else {
+            const [key, value] = line.split(':').map(s => s.trim());
+            if (key && value) {
+              const row = createParamRow();
+              row.querySelector('.param-key').value = key;
+              row.querySelector('.param-value').value = value;
+              tbody.appendChild(row);
+            }
           }
-        }
-      });
-
-      // 清空现有项目并添加新项目
-      if (currentBatchEditType === 'params') {
-        const paramsList = document.getElementById('paramsList');
-        paramsList.innerHTML = '';
-        items.forEach(item => {
-          const paramItem = document.createElement('div');
-          paramItem.className = 'param-item';
-          paramItem.innerHTML = `
-            <input type="checkbox" checked>
-            <input type="text" placeholder="参数名" class="param-key" value="${item.key}">
-            <input type="text" placeholder="参数值" class="param-value" value="${item.value}">
-            <select class="param-type">
-              <option value="text">Text</option>
-              <option value="number">Number</option>
-              <option value="boolean">Boolean</option>
-              <option value="file">File</option>
-            </select>
-            <button onclick="removeParam(this)">删除</button>
-          `;
-          paramsList.appendChild(paramItem);
         });
-        if (items.length === 0) {
-          addParam();
-        }
-      } else {
-        const headersList = document.getElementById('httpHeadersList');
-        headersList.innerHTML = '';
-        items.forEach(item => {
-          const headerItem = document.createElement('div');
-          headerItem.className = 'header-item';
-          headerItem.innerHTML = `
-            <input type="checkbox" checked>
-            <input type="text" placeholder="Key" class="header-key" value="${item.key}">
-            <input type="text" placeholder="Value" class="header-value" value="${item.value}">
-            <button onclick="removeHeader(this)">删除</button>
-          `;
-          headersList.appendChild(headerItem);
+      } else if (currentBatchType === 'form-data') {
+        const tbody = document.getElementById('formDataTableBody');
+        tbody.innerHTML = '';
+        lines.forEach(line => {
+          if (mode === 'comma') {
+            const parts = line.split(',');
+            if (parts.length >= 3) {
+              const row = createFormDataRow();
+              row.querySelector('.param-checkbox').checked = parts[0] === '1';
+              row.querySelector('.param-key').value = parts[1] || '';
+              row.querySelector('.param-value').value = parts[2] || '';
+              if (parts[3]) {
+                row.querySelector('.param-type').value = parts[3];
+                handleTypeChange(row.querySelector('.param-type'));
+              }
+              if (parts[6]) row.querySelector('.param-desc').value = parts[6];
+              tbody.appendChild(row);
+            }
+          } else {
+            const [key, value] = line.split(':').map(s => s.trim());
+            if (key && value) {
+              const row = createFormDataRow();
+              row.querySelector('.param-key').value = key;
+              row.querySelector('.param-value').value = value;
+              tbody.appendChild(row);
+            }
+          }
         });
-        if (items.length === 0) {
-          addHeader();
-        }
+      } else if (currentBatchType === 'headers') {
+        const tbody = document.getElementById('headersTableBody');
+        tbody.innerHTML = '';
+        lines.forEach(line => {
+          if (mode === 'comma') {
+            const parts = line.split(',');
+            if (parts.length >= 3) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><input type="checkbox" class="param-checkbox" ${parts[0] === '1' ? 'checked' : ''}></td>
+                <td><input type="text" placeholder="Key" class="header-key" value="${parts[1] || ''}"></td>
+                <td><input type="text" placeholder="Value" class="header-value" value="${parts[2] || ''}"></td>
+                <td><input type="text" placeholder="说明" class="header-desc" value="${parts[6] || ''}"></td>
+                <td><button class="remove-btn" onclick="removeHeaderRow(this)">删除</button></td>
+              `;
+              tbody.appendChild(tr);
+            }
+          } else {
+            const [key, value] = line.split(':').map(s => s.trim());
+            if (key && value) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><input type="checkbox" class="param-checkbox" checked></td>
+                <td><input type="text" placeholder="Key" class="header-key" value="${key}"></td>
+                <td><input type="text" placeholder="Value" class="header-value" value="${value}"></td>
+                <td><input type="text" placeholder="说明" class="header-desc"></td>
+                <td><button class="remove-btn" onclick="removeHeaderRow(this)">删除</button></td>
+              `;
+              tbody.appendChild(tr);
+            }
+          }
+        });
       }
-    }
 
-    function applyBatchEdit() {
-      // 应用已经在 parseBatchInput 中完成，只需关闭弹窗
       closeBatchEditModal();
     }
 
@@ -932,210 +1128,91 @@
       }
     });
 
-    // 参数管理
-    function addParam() {
-      const list = document.getElementById('paramsList');
-      const item = document.createElement('div');
-      item.className = 'param-item';
-      item.innerHTML = `
-        <input type="checkbox" checked>
-        <input type="text" placeholder="参数名" class="param-key">
-        <input type="text" placeholder="参数值" class="param-value">
-        <select class="param-type">
-          <option value="text">Text</option>
-          <option value="number">Number</option>
-          <option value="boolean">Boolean</option>
-          <option value="file">File</option>
-        </select>
-        <button onclick="removeParam(this)">删除</button>
-      `;
-      list.appendChild(item);
-      // 监听类型变化
-      item.querySelector('.param-type').addEventListener('change', function () {
-        const valueInput = item.querySelector('.param-value');
-        if (this.value === 'file') {
-          const fileInput = document.createElement('input');
-          fileInput.type = 'file';
-          fileInput.className = 'param-file';
-          fileInput.style.display = 'none';
-          const wrapper = document.createElement('div');
-          wrapper.className = 'file-input-wrapper';
-          wrapper.innerHTML = `
-            <input type="file" class="param-file" style="display: none;">
-            <button type="button" onclick="this.previousElementSibling.click()" style="padding: 6px 12px; background: #667eea; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">选择文件</button>
-            <span class="file-name"></span>
-          `;
-          valueInput.replaceWith(wrapper);
-          wrapper.querySelector('.param-file').addEventListener('change', function (e) {
-            wrapper.querySelector('.file-name').textContent = e.target.files[0]?.name || '';
-          });
-        } else {
-          const wrapper = item.querySelector('.file-input-wrapper');
-          if (wrapper) {
-            const textInput = document.createElement('input');
-            textInput.type = 'text';
-            textInput.className = 'param-value';
-            textInput.placeholder = '参数值';
-            wrapper.replaceWith(textInput);
-          }
-        }
-      });
-    }
-
-    function removeParam(btn) {
-      btn.parentElement.remove();
-    }
-
-    function getParams() {
-      const params = {};
-      const files = new FormData();
-      document.querySelectorAll('.param-item').forEach(item => {
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        if (!checkbox.checked) return;
-
-        const key = item.querySelector('.param-key').value.trim();
-        const type = item.querySelector('.param-type').value;
-
-        if (!key) return;
-
-        if (type === 'file') {
-          const fileInput = item.querySelector('.param-file');
-          if (fileInput && fileInput.files.length > 0) {
-            files.append(key, fileInput.files[0]);
-          }
-        } else {
-          const valueInput = item.querySelector('.param-value');
-          if (valueInput) {
-            let value = valueInput.value.trim();
-            if (type === 'number') {
-              value = parseFloat(value) || 0;
-            } else if (type === 'boolean') {
-              value = value === 'true' || value === '1';
-            }
-            params[key] = value;
-          }
-        }
-      });
-      return { params, files };
-    }
-
-
-    function clearHttpRequest() {
-      document.getElementById('httpUrl').value = '';
-      document.getElementById('httpBody').value = '';
-      document.getElementById('paramsList').innerHTML = `
-        <div class="param-item">
-          <input type="checkbox" checked>
-          <input type="text" placeholder="参数名" class="param-key">
-          <input type="text" placeholder="参数值" class="param-value">
-          <select class="param-type">
-            <option value="text">Text</option>
-            <option value="number">Number</option>
-            <option value="boolean">Boolean</option>
-            <option value="file">File</option>
-          </select>
-          <button onclick="removeParam(this)">删除</button>
-        </div>
-      `;
-      document.getElementById('httpHeadersList').innerHTML = `
-        <div class="header-item">
-          <input type="checkbox" checked>
-          <input type="text" placeholder="Key" class="header-key" value="Content-Type">
-          <input type="text" placeholder="Value" class="header-value" value="application/json">
-          <button onclick="removeHeader(this)">删除</button>
-        </div>
-      `;
-      document.getElementById('httpResponse').style.display = 'none';
-    }
-
-    document.getElementById('sendHttpBtn').addEventListener('click', async () => {
+    // 发送请求
+    document.getElementById('sendBtn').addEventListener('click', async () => {
       const method = document.getElementById('httpMethod').value;
-      let url = document.getElementById('httpUrl').value.trim();
-      const bodyType = document.getElementById('bodyType').value;
-      const body = document.getElementById('httpBody').value.trim();
-      const headers = getHeaders();
-      const { params, files } = getParams();
+      const url = document.getElementById('httpUrl').value.trim();
 
       if (!url) {
-        alert('请输入 URL');
+        alert('请输入接口路径');
         return;
       }
 
-      const startTime = Date.now();
+      const headers = {};
+      document.querySelectorAll('#headersTableBody tr').forEach(row => {
+        const checkbox = row.querySelector('.param-checkbox');
+        if (!checkbox.checked) return;
+        const key = row.querySelector('.header-key').value.trim();
+        const value = row.querySelector('.header-value').value.trim();
+        if (key && value) {
+          headers[key] = value;
+        }
+      });
+
       const requestConfig = {
         method: method,
-        headers: { ...headers }
+        headers: headers
       };
 
-      // 处理参数：GET 请求添加到 URL，其他请求根据 bodyType 处理
-      if (Object.keys(params).length > 0 || files.has('')) {
-        if (method === 'GET' || method === 'HEAD') {
-          // GET 请求参数添加到 URL
-          const urlObj = new URL(url);
-          Object.entries(params).forEach(([key, value]) => {
-            urlObj.searchParams.append(key, value);
-          });
-          url = urlObj.toString();
-        } else if (bodyType === 'form' || files.has('')) {
-          // Form Data
-          const formData = new FormData();
-          Object.entries(params).forEach(([key, value]) => {
-            formData.append(key, value);
-          });
-          // 添加文件
-          for (const [key, file] of files.entries()) {
-            formData.append(key, file);
-          }
-          requestConfig.body = formData;
-          // 删除 Content-Type，让浏览器自动设置
-          delete requestConfig.headers['Content-Type'];
-        } else if (bodyType === 'json') {
-          // JSON body，参数合并到 body
-          let jsonBody = {};
-          if (body) {
-            try {
-              jsonBody = JSON.parse(body);
-            } catch (e) {
-              alert('JSON 格式错误：' + e.message);
-              return;
+      // 处理 Body
+      if (currentBodyType === 'form-data') {
+        const formData = new FormData();
+        document.querySelectorAll('#formDataTableBody tr').forEach(row => {
+          const checkbox = row.querySelector('.param-checkbox');
+          if (!checkbox.checked) return;
+          const key = row.querySelector('.param-key').value.trim();
+          const type = row.querySelector('.param-type').value;
+          if (!key) return;
+
+          if (type === 'file') {
+            const fileInput = row.querySelector('.param-file');
+            if (fileInput && fileInput.files.length > 0) {
+              formData.append(key, fileInput.files[0]);
             }
+          } else {
+            const value = row.querySelector('.param-value').value.trim();
+            formData.append(key, value);
           }
-          Object.assign(jsonBody, params);
-          requestConfig.body = JSON.stringify(jsonBody);
-        }
-      } else if (bodyType !== 'none' && body) {
-        if (bodyType === 'json') {
+        });
+        requestConfig.body = formData;
+        delete requestConfig.headers['Content-Type'];
+      } else if (currentBodyType === 'json') {
+        const jsonBody = document.getElementById('jsonBody').value.trim();
+        if (jsonBody) {
           try {
-            JSON.parse(body);
-            requestConfig.body = body;
+            JSON.parse(jsonBody);
+            requestConfig.body = jsonBody;
           } catch (e) {
             alert('JSON 格式错误：' + e.message);
             return;
           }
-        } else {
-          requestConfig.body = body;
+        }
+      } else if (currentBodyType === 'text') {
+        const textBody = document.getElementById('textBody').value.trim();
+        if (textBody) {
+          requestConfig.body = textBody;
         }
       }
 
+      // 处理 Query 参数
+      const urlObj = new URL(url.startsWith('http') ? url : 'https://example.com' + url);
+      document.querySelectorAll('#paramsTableBody tr').forEach(row => {
+        const checkbox = row.querySelector('.param-checkbox');
+        if (!checkbox.checked) return;
+        const key = row.querySelector('.param-key').value.trim();
+        const value = row.querySelector('.param-value').value.trim();
+        if (key && value) {
+          urlObj.searchParams.append(key, value);
+        }
+      });
+
+      const finalUrl = url.startsWith('http') ? urlObj.toString() : urlObj.pathname + urlObj.search;
+
       try {
-        const response = await fetch(url, requestConfig);
-        const endTime = Date.now();
-        const duration = endTime - startTime;
+        const startTime = Date.now();
+        const response = await fetch(finalUrl, requestConfig);
+        const duration = Date.now() - startTime;
 
-        // 保存到历史
-        const historyItem = {
-          method,
-          url,
-          timestamp: new Date().toISOString(),
-          status: response.status,
-          statusText: response.statusText
-        };
-        requestHistory.unshift(historyItem);
-        if (requestHistory.length > 50) requestHistory.pop();
-        localStorage.setItem('apiDebuggerHistory', JSON.stringify(requestHistory));
-        updateHistoryList();
-
-        // 显示响应
         const responseHeaders = {};
         response.headers.forEach((value, key) => {
           responseHeaders[key] = value;
@@ -1156,183 +1233,42 @@
 
         displayResponse(response.status, response.statusText, responseHeaders, responseBody, duration);
       } catch (error) {
-        const endTime = Date.now();
-        const duration = endTime - startTime;
-        // 错误信息也显示在响应中
-        displayResponse(0, 'Error', {}, '请求失败：' + error.message + '\n\n错误详情：\n' + error.stack, duration);
+        displayResponse(0, 'Error', {}, '请求失败：' + error.message, 0);
       }
     });
 
     function displayResponse(status, statusText, headers, body, duration) {
-      const responseDiv = document.getElementById('httpResponse');
-      const statusSpan = document.getElementById('responseStatus');
-      const timeSpan = document.getElementById('responseTime');
-      const headersDiv = document.getElementById('responseHeaders');
-      const bodyDiv = document.getElementById('responseBody');
+      const responseBody = document.getElementById('responseBody');
+      const statusBadge = document.getElementById('responseStatusBadge');
 
-      statusSpan.textContent = status + (statusText ? ' ' + statusText : '');
-      statusSpan.className = 'response-status ';
       if (status >= 200 && status < 300) {
-        statusSpan.className += 'status-2xx';
-      } else if (status >= 400 && status < 500) {
-        statusSpan.className += 'status-4xx';
-      } else if (status >= 500) {
-        statusSpan.className += 'status-5xx';
-      } else if (status === 0) {
-        statusSpan.className += 'status-other';
-        statusSpan.textContent = 'Error: ' + statusText;
+        statusBadge.className = 'status-badge status-success';
+        statusBadge.textContent = `成功 (${status})`;
+      } else if (status >= 400) {
+        statusBadge.className = 'status-badge';
+        statusBadge.style.background = '#f8d7da';
+        statusBadge.style.color = '#721c24';
+        statusBadge.textContent = `错误 (${status})`;
       } else {
-        statusSpan.className += 'status-other';
+        statusBadge.className = 'status-badge';
+        statusBadge.style.background = '#e2e3e5';
+        statusBadge.style.color = '#383d41';
+        statusBadge.textContent = status ? `${status} ${statusText}` : 'Error';
       }
 
-      timeSpan.textContent = `耗时: ${duration}ms`;
-
-      headersDiv.innerHTML = '<strong>响应头：</strong><br>';
+      let html = '';
       if (Object.keys(headers).length > 0) {
+        html += '<div style="margin-bottom: 15px;"><strong>响应头：</strong><br>';
         Object.entries(headers).forEach(([key, value]) => {
-          headersDiv.innerHTML += `<div>${key}: ${value}</div>`;
+          html += `<div style="font-size: 12px; color: #6c757d; margin: 5px 0;">${key}: ${value}</div>`;
         });
-      } else {
-        headersDiv.innerHTML += '<div style="color: #6c757d;">无响应头</div>';
+        html += '</div>';
       }
+      html += `<div>${body || '(无响应体)'}</div>`;
 
-      // 错误信息也显示在响应体中
-      bodyDiv.textContent = body;
-      if (status === 0) {
-        bodyDiv.style.color = '#dc3545';
-      } else {
-        bodyDiv.style.color = '';
-      }
-      responseDiv.style.display = 'block';
+      responseBody.innerHTML = html;
+      responseBody.style.color = status >= 400 ? '#dc3545' : '';
     }
-
-    // WebSocket 相关
-    let ws = null;
-
-    document.getElementById('wsConnectBtn').addEventListener('click', () => {
-      const url = document.getElementById('wsUrl').value.trim();
-      if (!url) {
-        alert('请输入 WebSocket URL');
-        return;
-      }
-
-      try {
-        updateWsStatus('connecting', '连接中...');
-        ws = new WebSocket(url);
-
-        ws.onopen = () => {
-          updateWsStatus('connected', '已连接');
-          document.getElementById('wsConnectBtn').disabled = true;
-          document.getElementById('wsDisconnectBtn').disabled = false;
-          document.getElementById('wsSendBtn').disabled = false;
-          addWsMessage('系统', '连接成功', 'received');
-        };
-
-        ws.onmessage = (event) => {
-          addWsMessage('接收', event.data, 'received');
-        };
-
-        ws.onerror = (error) => {
-          addWsMessage('错误', '连接错误', 'error');
-        };
-
-        ws.onclose = () => {
-          updateWsStatus('disconnected', '已断开');
-          document.getElementById('wsConnectBtn').disabled = false;
-          document.getElementById('wsDisconnectBtn').disabled = true;
-          document.getElementById('wsSendBtn').disabled = true;
-          addWsMessage('系统', '连接已关闭', 'error');
-        };
-      } catch (error) {
-        updateWsStatus('disconnected', '连接失败');
-        addWsMessage('错误', error.message, 'error');
-      }
-    });
-
-    document.getElementById('wsDisconnectBtn').addEventListener('click', () => {
-      if (ws) {
-        ws.close();
-        ws = null;
-      }
-    });
-
-    document.getElementById('wsSendBtn').addEventListener('click', () => {
-      const message = document.getElementById('wsMessage').value.trim();
-      if (!message) {
-        alert('请输入要发送的消息');
-        return;
-      }
-
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(message);
-        addWsMessage('发送', message, 'sent');
-        document.getElementById('wsMessage').value = '';
-      } else {
-        alert('WebSocket 未连接');
-      }
-    });
-
-    function updateWsStatus(status, text) {
-      const statusEl = document.getElementById('wsStatus');
-      statusEl.className = 'ws-status ' + status;
-      statusEl.textContent = text;
-    }
-
-    function addWsMessage(type, message, className) {
-      const messagesDiv = document.getElementById('wsMessages');
-      const messageDiv = document.createElement('div');
-      messageDiv.className = 'ws-message ' + className;
-      const time = new Date().toLocaleTimeString();
-      messageDiv.innerHTML = `
-        <div class="ws-message-time">[${time}] ${type}</div>
-        <div>${message}</div>
-      `;
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function clearWsMessages() {
-      document.getElementById('wsMessages').innerHTML = '';
-    }
-
-    // 历史记录
-    function updateHistoryList() {
-      const historyDiv = document.getElementById('historyList');
-      if (requestHistory.length === 0) {
-        historyDiv.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">暂无历史记录</p>';
-        return;
-      }
-
-      historyDiv.innerHTML = requestHistory.map((item, index) => {
-        const time = new Date(item.timestamp).toLocaleString();
-        const methodClass = 'method-' + item.method.toLowerCase();
-        return `
-          <div class="history-item" onclick="loadHistoryItem(${index})">
-            <span class="history-item-method ${methodClass}">${item.method}</span>
-            <span>${item.url}</span>
-            <span style="float: right; color: #6c757d; font-size: 12px;">${item.status} - ${time}</span>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function loadHistoryItem(index) {
-      const item = requestHistory[index];
-      document.getElementById('httpMethod').value = item.method;
-      document.getElementById('httpUrl').value = item.url;
-      document.querySelector('.tab-btn[data-tab="http"]').click();
-    }
-
-    function clearHistory() {
-      if (confirm('确定要清空所有历史记录吗？')) {
-        requestHistory = [];
-        localStorage.setItem('apiDebuggerHistory', JSON.stringify(requestHistory));
-        updateHistoryList();
-      }
-    }
-
-    // 初始化
-    updateHistoryList();
   </script>
 </body>
 
