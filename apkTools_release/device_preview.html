@@ -571,19 +571,80 @@
       document.getElementById('lastUpdate').textContent = lastUpdateTime;
     }
 
-    // 更新数据（可以从API获取）
-    async function updateData() {
+    // 从公开API获取最新数据
+    async function fetchDeviceData() {
       try {
-        // 这里可以调用API获取最新数据
-        // const response = await fetch('https://api.example.com/devices');
-        // const newData = await response.json();
-        // deviceData = newData;
+        // 尝试从公开数据源获取数据（GitHub raw content或其他公开API）
+        // 注意：由于CORS限制，某些API可能需要代理
+        const apiSources = [
+          // 示例：GitHub上的公开JSON数据源
+          // 'https://raw.githubusercontent.com/user/repo/main/devices.json',
+          // 可以添加更多公开API源
+        ];
 
-        // 目前使用本地数据，但更新时间戳
+        let hasNewData = false;
+
+        // 尝试从各个数据源获取
+        for (const apiUrl of apiSources) {
+          if (!apiUrl) continue;
+
+          try {
+            const response = await fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json'
+              },
+              signal: AbortSignal.timeout(5000)
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              
+              // 转换数据格式以匹配我们的结构
+              if (Array.isArray(data)) {
+                const fetchedDevices = data.map(item => ({
+                  brand: item.brand || item.manufacturer || '',
+                  name: item.name || item.model || '',
+                  model: item.model || item.device || '',
+                  size: item.size || item.display_size || item.screen_size || '',
+                  resolution: item.resolution || item.display_resolution || '',
+                  releaseDate: item.releaseDate || item.release_date || item.announced || ''
+                })).filter(item => item.brand && item.name);
+
+                if (fetchedDevices.length > 0) {
+                  // 合并新数据（去重）
+                  const existingKeys = new Set(deviceData.map(d => `${d.brand}-${d.model}`));
+                  const newDevices = fetchedDevices.filter(d => {
+                    const key = `${d.brand}-${d.model}`;
+                    return !existingKeys.has(key);
+                  });
+
+                  if (newDevices.length > 0) {
+                    deviceData = [...deviceData, ...newDevices];
+                    // 按上市时间排序
+                    deviceData.sort((a, b) => {
+                      if (!a.releaseDate) return 1;
+                      if (!b.releaseDate) return -1;
+                      return b.releaseDate.localeCompare(a.releaseDate);
+                    });
+                    hasNewData = true;
+                  }
+                }
+              }
+              
+              if (hasNewData) break;
+            }
+          } catch (e) {
+            console.warn('API获取失败:', apiUrl, e);
+            continue;
+          }
+        }
+
+        // 更新时间戳
         lastUpdateTime = new Date().toLocaleString('zh-CN');
         updateLastUpdateTime();
 
-        // 如果有搜索关键词，重新过滤
+        // 更新显示
         const searchInput = document.getElementById('searchInput');
         if (searchInput.value.trim()) {
           handleSearch({ target: searchInput });
@@ -593,8 +654,23 @@
           updateStats();
         }
       } catch (error) {
-        console.error('更新数据失败:', error);
+        console.error('获取数据失败:', error);
+        // 即使失败也更新时间戳
+        lastUpdateTime = new Date().toLocaleString('zh-CN');
+        updateLastUpdateTime();
+        
+        // 确保显示本地数据
+        if (filteredData.length === 0) {
+          filteredData = [...deviceData];
+          renderDevices(filteredData);
+          updateStats();
+        }
       }
+    }
+
+    // 更新数据（调用API获取最新数据）
+    async function updateData() {
+      await fetchDeviceData();
     }
 
     // 页面加载完成后初始化
