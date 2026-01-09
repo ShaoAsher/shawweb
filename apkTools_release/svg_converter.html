@@ -1,46 +1,251 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SVG 互转 PNG/JPG/JPEG 工具</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
-    .container{max-width:1000px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
-    .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:30px;text-align:center}
-    .header h1{font-size:28px;margin-bottom:10px}
-    .header p{opacity:.9;font-size:14px}
-    .content{padding:30px}
-    .form-section{background:#f8f9fa;border-radius:12px;padding:25px;margin-bottom:25px}
-    .form-section h2{font-size:20px;color:#495057;margin-bottom:20px;border-bottom:2px solid #667eea;padding-bottom:10px}
-    .file-upload-area{border:3px dashed #667eea;border-radius:12px;padding:40px;text-align:center;background:#f8f9ff;cursor:pointer;transition:all .3s}
-    .file-upload-area:hover{background:#f0f2ff;border-color:#5568d3}
-    .file-upload-area.dragover{background:#e8ebff;border-color:#4456c3}
-    .file-upload-area input[type=file]{display:none}
-    .controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-    .form-group{margin-bottom:18px}
-    .form-group label{display:block;font-weight:600;color:#495057;margin-bottom:8px;font-size:14px}
-    .form-group input,.form-group select{width:100%;padding:12px;border:2px solid #dee2e6;border-radius:8px;font-size:14px}
-    .btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:14px 35px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .2s;width:100%}
-    .btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(102,126,234,.4)}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .preview{display:flex;gap:20px;flex-wrap:wrap}
-    .card{background:#fff;border:2px solid #dee2e6;border-radius:12px;padding:12px;text-align:center;flex:1;min-width:280px}
-    .status{display:none;margin-top:12px;padding:10px;border-radius:8px}
-    .status.show{display:block}
-    .status.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
-    .status.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
-    .loading{text-align:center;padding:20px;display:none}
-    .loading.show{display:block}
-    .spinner{border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 15px}
-    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-    .preview-image{max-width:100%;height:auto;border-radius:8px;background:#fafafa}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+      position: relative
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1)
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .form-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .form-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px
+    }
+
+    .file-upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      background: #f8f9ff;
+      cursor: pointer;
+      transition: all .3s
+    }
+
+    .file-upload-area:hover {
+      background: #f0f2ff;
+      border-color: #5568d3
+    }
+
+    .file-upload-area.dragover {
+      background: #e8ebff;
+      border-color: #4456c3
+    }
+
+    .file-upload-area input[type=file] {
+      display: none
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px
+    }
+
+    .form-group {
+      margin-bottom: 18px
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 14px 35px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+      width: 100%
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed
+    }
+
+    .preview {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .card {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      flex: 1;
+      min-width: 280px
+    }
+
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px
+    }
+
+    .status.show {
+      display: block
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none
+    }
+
+    .loading.show {
+      display: block
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .preview-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      background: #fafafa
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
+      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>🛠️ SVG 互转 PNG/JPG/JPEG</h1>
       <p>支持上传 SVG 或 PNG/JPG/JPEG，进行相互转换与下载</p>
     </div>
@@ -112,217 +317,218 @@
   </div>
 
   <script>
-    const uploadArea=document.getElementById('uploadArea');
-    const fileInput=document.getElementById('fileInput');
-    const statusEl=document.getElementById('status');
-    const targetFormat=document.getElementById('targetFormat');
-    const targetWidth=document.getElementById('targetWidth');
-    const targetHeight=document.getElementById('targetHeight');
-    const keepAspect=document.getElementById('keepAspect');
-    const bgColor=document.getElementById('bgColor');
-    const convertBtn=document.getElementById('convertBtn');
-    const loading=document.getElementById('loading');
-    const inputPreview=document.getElementById('inputPreview');
-    const outputPreview=document.getElementById('outputPreview');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const statusEl = document.getElementById('status');
+    const targetFormat = document.getElementById('targetFormat');
+    const targetWidth = document.getElementById('targetWidth');
+    const targetHeight = document.getElementById('targetHeight');
+    const keepAspect = document.getElementById('keepAspect');
+    const bgColor = document.getElementById('bgColor');
+    const convertBtn = document.getElementById('convertBtn');
+    const loading = document.getElementById('loading');
+    const inputPreview = document.getElementById('inputPreview');
+    const outputPreview = document.getElementById('outputPreview');
 
-    let inputFile=null;
-    let inputType=null; // 'svg' | 'raster'
-    let inputDataURL=null;
-    let svgText=null;
+    let inputFile = null;
+    let inputType = null; // 'svg' | 'raster'
+    let inputDataURL = null;
+    let svgText = null;
 
-    uploadArea.addEventListener('click',()=>fileInput.click());
-    uploadArea.addEventListener('dragover',e=>{e.preventDefault();uploadArea.classList.add('dragover')});
-    uploadArea.addEventListener('dragleave',e=>{e.preventDefault();uploadArea.classList.remove('dragover')});
-    uploadArea.addEventListener('drop',e=>{
-      e.preventDefault();uploadArea.classList.remove('dragover');
-      const files=e.dataTransfer.files;if(files.length>0)handleFile(files[0]);
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover') });
+    uploadArea.addEventListener('dragleave', e => { e.preventDefault(); uploadArea.classList.remove('dragover') });
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault(); uploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files; if (files.length > 0) handleFile(files[0]);
     });
-    fileInput.addEventListener('change',e=>{const file=e.target.files[0];if(file)handleFile(file)});
+    fileInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleFile(file) });
 
-    function showStatus(text,type){statusEl.textContent=text;statusEl.className='status show '+(type||'success')}
+    function showStatus(text, type) { statusEl.textContent = text; statusEl.className = 'status show ' + (type || 'success') }
 
-    function handleFile(file){
-      inputFile=file;
-      const name=file.name.toLowerCase();
-      const isSvg=name.endsWith('.svg') || file.type==='image/svg+xml';
-      if(isSvg){
-        inputType='svg';
-        const reader=new FileReader();
-        reader.onload=e=>{
-          svgText=e.target.result;
-          inputDataURL='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgText);
+    function handleFile(file) {
+      inputFile = file;
+      const name = file.name.toLowerCase();
+      const isSvg = name.endsWith('.svg') || file.type === 'image/svg+xml';
+      if (isSvg) {
+        inputType = 'svg';
+        const reader = new FileReader();
+        reader.onload = e => {
+          svgText = e.target.result;
+          inputDataURL = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText);
           renderInputPreview();
-          convertBtn.disabled=false;
-          showStatus('SVG 加载成功','success');
+          convertBtn.disabled = false;
+          showStatus('SVG 加载成功', 'success');
         };
         reader.readAsText(file);
-      }else if(file.type.startsWith('image/')){
-        inputType='raster';
-        const reader=new FileReader();
-        reader.onload=e=>{
-          inputDataURL=e.target.result;
+      } else if (file.type.startsWith('image/')) {
+        inputType = 'raster';
+        const reader = new FileReader();
+        reader.onload = e => {
+          inputDataURL = e.target.result;
           renderInputPreview();
-          convertBtn.disabled=false;
-          showStatus('图片加载成功','success');
+          convertBtn.disabled = false;
+          showStatus('图片加载成功', 'success');
         };
         reader.readAsDataURL(file);
-      }else{
-        showStatus('不支持的文件类型','error');
-        convertBtn.disabled=true;
+      } else {
+        showStatus('不支持的文件类型', 'error');
+        convertBtn.disabled = true;
       }
     }
 
-    function renderInputPreview(){
-      inputPreview.innerHTML='';
-      if(inputType==='svg'){
-        const iframe=document.createElement('iframe');
-        iframe.style.width='100%';iframe.style.height='220px';iframe.style.border='1px solid #e9ecef';iframe.srcdoc=svgText;
+    function renderInputPreview() {
+      inputPreview.innerHTML = '';
+      if (inputType === 'svg') {
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%'; iframe.style.height = '220px'; iframe.style.border = '1px solid #e9ecef'; iframe.srcdoc = svgText;
         inputPreview.appendChild(iframe);
-      }else{
-        const img=new Image();
-        img.src=inputDataURL;img.style.maxWidth='100%';img.style.borderRadius='8px';img.style.background='#fafafa';
+      } else {
+        const img = new Image();
+        img.src = inputDataURL; img.style.maxWidth = '100%'; img.style.borderRadius = '8px'; img.style.background = '#fafafa';
         inputPreview.appendChild(img);
       }
     }
 
-    convertBtn.addEventListener('click',async()=>{
-      if(!inputFile)return;
+    convertBtn.addEventListener('click', async () => {
+      if (!inputFile) return;
       loading.classList.add('show');
-      try{
-        const fmt=targetFormat.value;
-        if(inputType==='svg'){
-          if(fmt==='svg'){
-            const blob=new Blob([svgText],{type:'image/svg+xml'});
-            const url=URL.createObjectURL(blob);
-            outputPreview.src=url;
-            triggerDownload(blob,rename(inputFile.name,'svg'));
-          }else{
-            const canvas=await rasterizeSvg(svgText,getTargetSize());
-            const mime=fmt==='png'?'image/png':'image/jpeg';
-            const useBg=mime==='image/jpeg';
-            const blob=await canvasToBlob(canvas,mime,0.92,useBg?bgColor.value:null);
-            outputPreview.src=URL.createObjectURL(blob);
-            triggerDownload(blob,rename(inputFile.name,fmt));
+      try {
+        const fmt = targetFormat.value;
+        if (inputType === 'svg') {
+          if (fmt === 'svg') {
+            const blob = new Blob([svgText], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            outputPreview.src = url;
+            triggerDownload(blob, rename(inputFile.name, 'svg'));
+          } else {
+            const canvas = await rasterizeSvg(svgText, getTargetSize());
+            const mime = fmt === 'png' ? 'image/png' : 'image/jpeg';
+            const useBg = mime === 'image/jpeg';
+            const blob = await canvasToBlob(canvas, mime, 0.92, useBg ? bgColor.value : null);
+            outputPreview.src = URL.createObjectURL(blob);
+            triggerDownload(blob, rename(inputFile.name, fmt));
           }
-        }else{
-          if(fmt==='svg'){
-            const svgBlob=await wrapRasterInSvg(inputDataURL,getTargetSize());
-            outputPreview.src=URL.createObjectURL(svgBlob);
-            triggerDownload(svgBlob,rename(inputFile.name,'svg'));
-          }else{
-            const canvas=await drawRasterToCanvas(inputDataURL,getTargetSize());
-            const mime=fmt==='png'?'image/png':'image/jpeg';
-            const useBg=mime==='image/jpeg';
-            const blob=await canvasToBlob(canvas,mime,0.92,useBg?bgColor.value:null);
-            outputPreview.src=URL.createObjectURL(blob);
-            triggerDownload(blob,rename(inputFile.name,fmt));
+        } else {
+          if (fmt === 'svg') {
+            const svgBlob = await wrapRasterInSvg(inputDataURL, getTargetSize());
+            outputPreview.src = URL.createObjectURL(svgBlob);
+            triggerDownload(svgBlob, rename(inputFile.name, 'svg'));
+          } else {
+            const canvas = await drawRasterToCanvas(inputDataURL, getTargetSize());
+            const mime = fmt === 'png' ? 'image/png' : 'image/jpeg';
+            const useBg = mime === 'image/jpeg';
+            const blob = await canvasToBlob(canvas, mime, 0.92, useBg ? bgColor.value : null);
+            outputPreview.src = URL.createObjectURL(blob);
+            triggerDownload(blob, rename(inputFile.name, fmt));
           }
         }
-        showStatus('转换完成，已开始下载','success');
-      }catch(err){
+        showStatus('转换完成，已开始下载', 'success');
+      } catch (err) {
         console.error(err);
-        showStatus('转换失败：'+err.message,'error');
-      }finally{
+        showStatus('转换失败：' + err.message, 'error');
+      } finally {
         loading.classList.remove('show');
       }
     });
 
-    function getTargetSize(){
-      const w=parseInt(targetWidth.value)||0;
-      const h=parseInt(targetHeight.value)||0;
-      return {w,h};
+    function getTargetSize() {
+      const w = parseInt(targetWidth.value) || 0;
+      const h = parseInt(targetHeight.value) || 0;
+      return { w, h };
     }
 
-    function rename(name,ext){
-      const base=name.replace(/\.[^.]+$/,'');
-      return base+'.'+ext;
+    function rename(name, ext) {
+      const base = name.replace(/\.[^.]+$/, '');
+      return base + '.' + ext;
     }
 
-    function canvasToBlob(canvas,mime='image/png',quality=0.92,bg=null){
-      return new Promise(res=>{
-        if(bg){
-          const ctx=canvas.getContext('2d');
-          const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
-          ctx.fillStyle=bg;
-          ctx.fillRect(0,0,canvas.width,canvas.height);
-          ctx.putImageData(imgData,0,0);
+    function canvasToBlob(canvas, mime = 'image/png', quality = 0.92, bg = null) {
+      return new Promise(res => {
+        if (bg) {
+          const ctx = canvas.getContext('2d');
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.putImageData(imgData, 0, 0);
         }
-        canvas.toBlob(b=>res(b),mime,quality);
+        canvas.toBlob(b => res(b), mime, quality);
       });
     }
 
-    async function rasterizeSvg(svgString,size){
-      const svgBlob=new Blob([svgString],{type:'image/svg+xml'});
-      const url=URL.createObjectURL(svgBlob);
-      const img=await loadImage(url);
-      const intrinsicW=img.naturalWidth||img.width;
-      const intrinsicH=img.naturalHeight||img.height;
-      let w=size.w||intrinsicW||1024;
-      let h=size.h||intrinsicH||1024;
-      if(keepAspect.checked && size.w && !size.h){
-        h=Math.round(w*(intrinsicH/intrinsicW));
-      }else if(keepAspect.checked && size.h && !size.w){
-        w=Math.round(h*(intrinsicW/intrinsicH));
+    async function rasterizeSvg(svgString, size) {
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(svgBlob);
+      const img = await loadImage(url);
+      const intrinsicW = img.naturalWidth || img.width;
+      const intrinsicH = img.naturalHeight || img.height;
+      let w = size.w || intrinsicW || 1024;
+      let h = size.h || intrinsicH || 1024;
+      if (keepAspect.checked && size.w && !size.h) {
+        h = Math.round(w * (intrinsicH / intrinsicW));
+      } else if (keepAspect.checked && size.h && !size.w) {
+        w = Math.round(h * (intrinsicW / intrinsicH));
       }
-      const canvas=document.createElement('canvas');
-      canvas.width=w;canvas.height=h;
-      const ctx=canvas.getContext('2d');
-      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-      ctx.clearRect(0,0,w,h);
-      ctx.drawImage(img,0,0,w,h);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
       return canvas;
     }
 
-    async function drawRasterToCanvas(dataURL,size){
-      const img=await loadImage(dataURL);
-      const iw=img.naturalWidth||img.width;
-      const ih=img.naturalHeight||img.height;
-      let w=size.w||iw;
-      let h=size.h||ih;
-      if(keepAspect.checked && size.w && !size.h){
-        h=Math.round(w*(ih/iw));
-      }else if(keepAspect.checked && size.h && !size.w){
-        w=Math.round(h*(iw/ih));
+    async function drawRasterToCanvas(dataURL, size) {
+      const img = await loadImage(dataURL);
+      const iw = img.naturalWidth || img.width;
+      const ih = img.naturalHeight || img.height;
+      let w = size.w || iw;
+      let h = size.h || ih;
+      if (keepAspect.checked && size.w && !size.h) {
+        h = Math.round(w * (ih / iw));
+      } else if (keepAspect.checked && size.h && !size.w) {
+        w = Math.round(h * (iw / ih));
       }
-      const c=document.createElement('canvas');c.width=w;c.height=h;
-      const ctx=c.getContext('2d');
-      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-      ctx.drawImage(img,0,0,w,h);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, w, h);
       return c;
     }
 
-    async function wrapRasterInSvg(dataURL,size){
-      const img=await loadImage(dataURL);
-      const iw=img.naturalWidth||img.width;
-      const ih=img.naturalHeight||img.height;
-      const w=size.w||iw;const h=size.h||ih;
-      const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    async function wrapRasterInSvg(dataURL, size) {
+      const img = await loadImage(dataURL);
+      const iw = img.naturalWidth || img.width;
+      const ih = img.naturalHeight || img.height;
+      const w = size.w || iw; const h = size.h || ih;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
         <rect width="100%" height="100%" fill="none"/>
-        <image href="${dataURL}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="${keepAspect.checked?'xMidYMid meet':'none'}"/>
+        <image href="${dataURL}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="${keepAspect.checked ? 'xMidYMid meet' : 'none'}"/>
       </svg>`;
-      return new Blob([svg],{type:'image/svg+xml'});
+      return new Blob([svg], { type: 'image/svg+xml' });
     }
 
-    function loadImage(src){
-      return new Promise((res,rej)=>{
-        const img=new Image();
-        img.onload=()=>res(img);
-        img.onerror=()=>rej(new Error('图片加载失败'));
-        img.src=src;
+    function loadImage(src) {
+      return new Promise((res, rej) => {
+        const img = new Image();
+        img.onload = () => res(img);
+        img.onerror = () => rej(new Error('图片加载失败'));
+        img.src = src;
       });
     }
 
-    function triggerDownload(blob,filename){
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url;
-      a.download=filename;
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(url),100);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
     }
   </script>
 </body>
+
 </html>

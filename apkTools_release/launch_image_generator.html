@@ -33,6 +33,32 @@
       color: white;
       padding: 30px;
       text-align: center;
+      position: relative;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
     }
 
     .header h1 {
@@ -477,6 +503,7 @@
 <body>
   <div class="container">
     <div class="header">
+      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>🚀 启动图生成工具</h1>
       <p>一键生成 iOS 和 Android 各机型启动图，支持图片居中、不变形、背景填充</p>
     </div>
@@ -521,7 +548,7 @@
         <h2>📐 选择尺寸（单选）</h2>
         <div id="sizesContainer"></div>
       </div>
-      
+
       <!-- 输出格式 -->
       <div class="form-section" id="outputFormatSection" style="display: none;">
         <h2>🧩 输出格式（Android）</h2>
@@ -676,7 +703,7 @@
       // 生成按钮
       generateBtn.addEventListener('click', generateImage);
       downloadBtn.addEventListener('click', downloadImage);
-      
+
       if (outputFormatPng && outputFormatNine) {
         outputFormatPng.addEventListener('change', () => {
           if (outputFormatPng.checked) outputFormat = 'png';
@@ -1070,12 +1097,12 @@
       // 只标注边距为可拉伸区域，避免中心内容被拉伸
       // 添加2像素的安全缓冲距离，防止拉伸到抗锯齿边缘
       const buffer = 2;
-      
+
       const cx = Math.max(0, Math.min(w, Math.round(contentRect.x)));
       const cy = Math.max(0, Math.min(h, Math.round(contentRect.y)));
       const cw = Math.max(0, Math.min(w - cx, Math.round(contentRect.width)));
       const ch = Math.max(0, Math.min(h - cy, Math.round(contentRect.height)));
-      
+
       const leftMargin = cx;
       const rightMargin = Math.max(0, w - (cx + cw));
       const topMargin = cy;
@@ -1084,41 +1111,41 @@
       // 顶部（X 方向可拉伸）：左边距与右边距（避开Buffer）
       // 左侧 stretch：从 0 到 leftMargin - buffer
       if (leftMargin > buffer) {
-          ctx.fillRect(1, 0, leftMargin - buffer, 1);
+        ctx.fillRect(1, 0, leftMargin - buffer, 1);
       } else if (leftMargin > 0) {
-          ctx.fillRect(1, 0, leftMargin, 1);
+        ctx.fillRect(1, 0, leftMargin, 1);
       }
-      
+
       // 右侧 stretch：从 cx + cw + buffer 到 w
       if (rightMargin > buffer) {
-          ctx.fillRect(1 + cx + cw + buffer, 0, rightMargin - buffer, 1);
+        ctx.fillRect(1 + cx + cw + buffer, 0, rightMargin - buffer, 1);
       } else if (rightMargin > 0) {
-          ctx.fillRect(1 + cx + cw, 0, rightMargin, 1);
+        ctx.fillRect(1 + cx + cw, 0, rightMargin, 1);
       }
-      
+
       // 兜底：如果没画任何拉伸点，就在左上角画一个点
       if (leftMargin <= buffer && rightMargin <= buffer) {
-           ctx.fillRect(1, 0, 1, 1);
+        ctx.fillRect(1, 0, 1, 1);
       }
 
       // 左侧（Y 方向可拉伸）：上边距与下边距（避开Buffer）
       // 上侧 stretch
       if (topMargin > buffer) {
-          ctx.fillRect(0, 1, topMargin - buffer, 1);
+        ctx.fillRect(0, 1, topMargin - buffer, 1);
       } else if (topMargin > 0) {
-          ctx.fillRect(0, 1, topMargin, 1);
+        ctx.fillRect(0, 1, topMargin, 1);
       }
-      
+
       // 下侧 stretch
       if (bottomMargin > buffer) {
-          ctx.fillRect(0, 1 + cy + ch + buffer, 1, bottomMargin - buffer);
+        ctx.fillRect(0, 1 + cy + ch + buffer, 1, bottomMargin - buffer);
       } else if (bottomMargin > 0) {
-          ctx.fillRect(0, 1 + cy + ch, 1, bottomMargin);
+        ctx.fillRect(0, 1 + cy + ch, 1, bottomMargin);
       }
 
       // 兜底
       if (topMargin <= buffer && bottomMargin <= buffer) {
-          ctx.fillRect(0, 1, 1, 1);
+        ctx.fillRect(0, 1, 1, 1);
       }
 
       // 底部和右侧（内容区域）：设置为全屏，避免限制App内部布局

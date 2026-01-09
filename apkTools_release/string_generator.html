@@ -32,7 +32,8 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
       padding: 30px;
-      text-align: center
+      text-align: center;
+      position: relative
     }
 
     .header h1 {
@@ -176,17 +177,33 @@
       background: #5568d3
     }
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #fff;
       text-decoration: none;
-      opacity: .9;
-      transition: opacity .3s
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10;
     }
 
-    .back-link:hover {
-      opacity: 1
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header {
+      position: relative;
     }
   </style>
 </head>
@@ -194,7 +211,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <a href="./index.html" class="back-link">← 返回首页</a>
+      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>🔧 多种字符串生成器</h1>
       <p>生成标准银行卡号、UDID、包名等常用字符串</p>
     </div>

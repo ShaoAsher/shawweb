@@ -36,6 +36,32 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-decoration: none;
+            font-size: 20px;
+            transition: all .3s;
+            z-index: 10;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
         }
 
         .header h1 {
@@ -220,6 +246,7 @@
 <body>
     <div class="container">
         <div class="header">
+            <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
             <h1>📱 APK/Keystore 信息提取工具</h1>
             <p>上传 APK 文件或 Keystore/JKS 文件以提取签名信息</p>
         </div>

@@ -1,57 +1,315 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>图片压缩工具</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
-    .container{max-width:1000px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
-    .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:30px;text-align:center}
-    .header h1{font-size:28px;margin-bottom:10px}
-    .header p{opacity:.9;font-size:14px}
-    .content{padding:30px}
-    .form-section{background:#f8f9fa;border-radius:12px;padding:25px;margin-bottom:25px}
-    .form-section h2{font-size:20px;color:#495057;margin-bottom:20px;border-bottom:2px solid #667eea;padding-bottom:10px}
-    .form-group{margin-bottom:20px}
-    .form-group label{display:block;font-weight:600;color:#495057;margin-bottom:8px;font-size:14px}
-    .form-group input,.form-group select{width:100%;padding:12px;border:2px solid #dee2e6;border-radius:8px;font-size:14px;transition:border-color .3s}
-    .form-group input:focus,.form-group select:focus{outline:none;border-color:#667eea}
-    .file-upload-area{border:3px dashed #667eea;border-radius:12px;padding:40px;text-align:center;background:#f8f9ff;cursor:pointer;transition:all .3s}
-    .file-upload-area:hover{background:#f0f2ff;border-color:#5568d3}
-    .file-upload-area.dragover{background:#e8ebff;border-color:#4456c3}
-    .file-upload-area input[type=file]{display:none}
-    .file-upload-icon{font-size:48px;color:#667eea;margin-bottom:15px}
-    .file-upload-text{color:#495057;font-size:16px;margin-bottom:10px}
-    .file-upload-hint{color:#6c757d;font-size:12px}
-    .btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:14px 35px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .2s;width:100%}
-    .btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(102,126,234,.4)}
-    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-    .btn-secondary{background:#6c757d}
-    .btn-secondary:hover{background:#5a6268}
-    .controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-    .range-wrapper{display:flex;align-items:center;gap:10px}
-    .range-wrapper input[type=range]{flex:1}
-    .info-box{background:#e7f3ff;border-left:4px solid #2196F3;padding:15px;border-radius:8px;margin-bottom:20px;font-size:13px;color:#0c5460}
-    .status-message{padding:12px;border-radius:8px;margin-top:15px;display:none}
-    .status-message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;display:block}
-    .status-message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;display:block}
-    .loading{text-align:center;padding:20px;display:none}
-    .loading.show{display:block}
-    .spinner{border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 15px}
-    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-    .preview-section{margin-top:20px}
-    .preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-    .preview-card{background:#fff;border:2px solid #dee2e6;border-radius:12px;padding:12px}
-    .preview-title{font-size:14px;color:#6c757d;margin-bottom:8px}
-    .preview-image{width:100%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-    .meta{font-size:12px;color:#6c757d;margin-top:8px}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+      position: relative
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1)
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px
+    }
+
+    .content {
+      padding: 30px
+    }
+
+    .form-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px
+    }
+
+    .form-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px
+    }
+
+    .form-group {
+      margin-bottom: 20px
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color .3s
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea
+    }
+
+    .file-upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      background: #f8f9ff;
+      cursor: pointer;
+      transition: all .3s
+    }
+
+    .file-upload-area:hover {
+      background: #f0f2ff;
+      border-color: #5568d3
+    }
+
+    .file-upload-area.dragover {
+      background: #e8ebff;
+      border-color: #4456c3
+    }
+
+    .file-upload-area input[type=file] {
+      display: none
+    }
+
+    .file-upload-icon {
+      font-size: 48px;
+      color: #667eea;
+      margin-bottom: 15px
+    }
+
+    .file-upload-text {
+      color: #495057;
+      font-size: 16px;
+      margin-bottom: 10px
+    }
+
+    .file-upload-hint {
+      color: #6c757d;
+      font-size: 12px
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 14px 35px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+      width: 100%
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .btn-secondary {
+      background: #6c757d
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px
+    }
+
+    .range-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .range-wrapper input[type=range] {
+      flex: 1
+    }
+
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #0c5460
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none
+    }
+
+    .status-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block
+    }
+
+    .status-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none
+    }
+
+    .loading.show {
+      display: block
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .preview-section {
+      margin-top: 20px
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px
+    }
+
+    .preview-card {
+      background: #fff;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 12px
+    }
+
+    .preview-title {
+      font-size: 14px;
+      color: #6c757d;
+      margin-bottom: 8px
+    }
+
+    .preview-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .1)
+    }
+
+    .meta {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 8px
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
+      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>🗜️ 图片压缩工具</h1>
       <p>保持比例与清晰度，智能压缩并预览对比</p>
     </div>
@@ -137,59 +395,60 @@
   </div>
 
   <script>
-    const uploadArea=document.getElementById('uploadArea');
-    const imageInput=document.getElementById('imageInput');
-    const statusMessage=document.getElementById('statusMessage');
-    const settingsSection=document.getElementById('settingsSection');
-    const compressBtn=document.getElementById('compressBtn');
-    const loading=document.getElementById('loading');
-    const maxWidthInput=document.getElementById('maxWidth');
-    const maxHeightInput=document.getElementById('maxHeight');
-    const targetSizeKBInput=document.getElementById('targetSizeKB');
-    const formatSelect=document.getElementById('formatSelect');
-    const qualityRange=document.getElementById('qualityRange');
-    const qualityLabel=document.getElementById('qualityLabel');
-    const avoidUpscale=document.getElementById('avoidUpscale');
-    const previewSection=document.getElementById('previewSection');
-    const originalPreview=document.getElementById('originalPreview');
-    const compressedPreview=document.getElementById('compressedPreview');
-    const originalMeta=document.getElementById('originalMeta');
-    const compressedMeta=document.getElementById('compressedMeta');
-    const downloadBtn=document.getElementById('downloadBtn');
-    const resetBtn=document.getElementById('resetBtn');
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const statusMessage = document.getElementById('statusMessage');
+    const settingsSection = document.getElementById('settingsSection');
+    const compressBtn = document.getElementById('compressBtn');
+    const loading = document.getElementById('loading');
+    const maxWidthInput = document.getElementById('maxWidth');
+    const maxHeightInput = document.getElementById('maxHeight');
+    const targetSizeKBInput = document.getElementById('targetSizeKB');
+    const formatSelect = document.getElementById('formatSelect');
+    const qualityRange = document.getElementById('qualityRange');
+    const qualityLabel = document.getElementById('qualityLabel');
+    const avoidUpscale = document.getElementById('avoidUpscale');
+    const previewSection = document.getElementById('previewSection');
+    const originalPreview = document.getElementById('originalPreview');
+    const compressedPreview = document.getElementById('compressedPreview');
+    const originalMeta = document.getElementById('originalMeta');
+    const compressedMeta = document.getElementById('compressedMeta');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const resetBtn = document.getElementById('resetBtn');
 
-    let originalImage=null;
-    let originalBlob=null;
-    let compressedBlob=null;
-    let compressedExt='jpg';
+    let originalImage = null;
+    let originalBlob = null;
+    let compressedBlob = null;
+    let compressedExt = 'jpg';
 
-    uploadArea.addEventListener('click',()=>imageInput.click());
-    uploadArea.addEventListener('dragover',e=>{e.preventDefault();uploadArea.classList.add('dragover')});
-    uploadArea.addEventListener('dragleave',e=>{e.preventDefault();uploadArea.classList.remove('dragover')});
-    uploadArea.addEventListener('drop',e=>{e.preventDefault();uploadArea.classList.remove('dragover');const files=e.dataTransfer.files;if(files.length>0)handleFile(files[0])});
-    imageInput.addEventListener('change',e=>{const file=e.target.files[0];if(file)handleFile(file)});
+    uploadArea.addEventListener('click', () => imageInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover') });
+    uploadArea.addEventListener('dragleave', e => { e.preventDefault(); uploadArea.classList.remove('dragover') });
+    uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length > 0) handleFile(files[0]) });
+    imageInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleFile(file) });
 
-    qualityRange.addEventListener('input',()=>{qualityLabel.textContent=qualityRange.value});
-    formatSelect.addEventListener('change',()=>{const v=formatSelect.value;const lossy=v==='jpeg'||v==='webp'||v==='auto';qualityRange.disabled=!(lossy);qualityLabel.style.opacity=qualityRange.disabled?0.5:1});
+    qualityRange.addEventListener('input', () => { qualityLabel.textContent = qualityRange.value });
+    formatSelect.addEventListener('change', () => { const v = formatSelect.value; const lossy = v === 'jpeg' || v === 'webp' || v === 'auto'; qualityRange.disabled = !(lossy); qualityLabel.style.opacity = qualityRange.disabled ? 0.5 : 1 });
 
-    resetBtn.addEventListener('click',()=>{resetState()});
-    downloadBtn.addEventListener('click',()=>{if(!compressedBlob)return;const url=URL.createObjectURL(compressedBlob);const name=`compressed_${Date.now()}.${compressedExt}`;const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url)});
+    resetBtn.addEventListener('click', () => { resetState() });
+    downloadBtn.addEventListener('click', () => { if (!compressedBlob) return; const url = URL.createObjectURL(compressedBlob); const name = `compressed_${Date.now()}.${compressedExt}`; const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url) });
 
-    compressBtn.addEventListener('click',async()=>{if(!originalImage)return;loading.classList.add('show');try{const result=await compressImage(originalImage);compressedBlob=result.blob;compressedExt=result.ext;const url=URL.createObjectURL(compressedBlob);compressedPreview.src=url;const sizeKB=(compressedBlob.size/1024).toFixed(2);compressedMeta.textContent=`尺寸: ${result.width}×${result.height} | 大小: ${sizeKB} KB | 格式: ${compressedExt.toUpperCase()}`;previewSection.style.display='block'}catch(err){showStatus('压缩失败: '+err.message,'error')}finally{loading.classList.remove('show')}});
+    compressBtn.addEventListener('click', async () => { if (!originalImage) return; loading.classList.add('show'); try { const result = await compressImage(originalImage); compressedBlob = result.blob; compressedExt = result.ext; const url = URL.createObjectURL(compressedBlob); compressedPreview.src = url; const sizeKB = (compressedBlob.size / 1024).toFixed(2); compressedMeta.textContent = `尺寸: ${result.width}×${result.height} | 大小: ${sizeKB} KB | 格式: ${compressedExt.toUpperCase()}`; previewSection.style.display = 'block' } catch (err) { showStatus('压缩失败: ' + err.message, 'error') } finally { loading.classList.remove('show') } });
 
-    function handleFile(file){if(!file.type.startsWith('image/')){showStatus('请选择图片文件','error');return}const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{originalImage=img;originalBlob=file;settingsSection.style.display='block';uploadArea.style.display='none';showStatus('图片加载成功','success');const url=e.target.result;originalPreview.src=url;const sizeKB=(file.size/1024).toFixed(2);originalMeta.textContent=`尺寸: ${img.naturalWidth||img.width}×${img.naturalHeight||img.height} | 大小: ${sizeKB} KB`;previewSection.style.display='none'};img.src=e.target.result};reader.readAsDataURL(file)}
+    function handleFile(file) { if (!file.type.startsWith('image/')) { showStatus('请选择图片文件', 'error'); return } const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { originalImage = img; originalBlob = file; settingsSection.style.display = 'block'; uploadArea.style.display = 'none'; showStatus('图片加载成功', 'success'); const url = e.target.result; originalPreview.src = url; const sizeKB = (file.size / 1024).toFixed(2); originalMeta.textContent = `尺寸: ${img.naturalWidth || img.width}×${img.naturalHeight || img.height} | 大小: ${sizeKB} KB`; previewSection.style.display = 'none' }; img.src = e.target.result }; reader.readAsDataURL(file) }
 
-    function resetState(){originalImage=null;originalBlob=null;compressedBlob=null;compressedExt='jpg';imageInput.value='';uploadArea.style.display='block';settingsSection.style.display='none';previewSection.style.display='none';statusMessage.classList.remove('success','error');statusMessage.style.display='none'}
+    function resetState() { originalImage = null; originalBlob = null; compressedBlob = null; compressedExt = 'jpg'; imageInput.value = ''; uploadArea.style.display = 'block'; settingsSection.style.display = 'none'; previewSection.style.display = 'none'; statusMessage.classList.remove('success', 'error'); statusMessage.style.display = 'none' }
 
-    function showStatus(text,type){statusMessage.textContent=text;statusMessage.className='status-message '+(type||'success');statusMessage.style.display='block'}
+    function showStatus(text, type) { statusMessage.textContent = text; statusMessage.className = 'status-message ' + (type || 'success'); statusMessage.style.display = 'block' }
 
-    function getAutoFormat(img,originalType){const hasAlpha=detectAlpha(img);if(hasAlpha)return 'png';if(originalType&&originalType.includes('png'))return 'png';return 'jpeg'}
+    function getAutoFormat(img, originalType) { const hasAlpha = detectAlpha(img); if (hasAlpha) return 'png'; if (originalType && originalType.includes('png')) return 'png'; return 'jpeg' }
 
-    function detectAlpha(img){const c=document.createElement('canvas');c.width=img.naturalWidth||img.width;c.height=img.naturalHeight||img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const data=ctx.getImageData(0,0,c.width,c.height).data;for(let i=3;i<data.length;i+=4){if(data[i]!==255)return true}return false}
+    function detectAlpha(img) { const c = document.createElement('canvas'); c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0); const data = ctx.getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < data.length; i += 4) { if (data[i] !== 255) return true } return false }
 
-    function computeTargetSize(w,h){const mw=parseInt(maxWidthInput.value)||0;const mh=parseInt(maxHeightInput.value)||0;let tw=w,th=h;if(mw>0||mh>0){const sw=mw>0?mw/w:Infinity;const sh=mh>0?mh/h:Infinity;let scale=Math.min(sw,sh);if(scale===Infinity)scale=1;if(avoidUpscale.checked)scale=Math.min(scale,1);tw=Math.max(1,Math.floor(w*scale));th=Math.max(1,Math.floor(h*scale))}return {tw,th}}
+    function computeTargetSize(w, h) { const mw = parseInt(maxWidthInput.value) || 0; const mh = parseInt(maxHeightInput.value) || 0; let tw = w, th = h; if (mw > 0 || mh > 0) { const sw = mw > 0 ? mw / w : Infinity; const sh = mh > 0 ? mh / h : Infinity; let scale = Math.min(sw, sh); if (scale === Infinity) scale = 1; if (avoidUpscale.checked) scale = Math.min(scale, 1); tw = Math.max(1, Math.floor(w * scale)); th = Math.max(1, Math.floor(h * scale)) } return { tw, th } }
 
-    async function compressImage(img){const ow=img.naturalWidth||img.width;const oh=img.naturalHeight||img.height;const {tw,th}=computeTargetSize(ow,oh);const c=document.createElement('canvas');c.width=tw;c.height=th;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,ow,oh,0,0,tw,th);let fmt=formatSelect.value;if(fmt==='auto')fmt=getAutoFormat(img,originalBlob?originalBlob.type:null);const targetKB=parseInt(targetSizeKBInput.value)||0;const targetBytes=targetKB>0?targetKB*1024:0;const maxQ=parseInt(qualityRange.value)/100;const minQ=0.7;function toBlobAsync(canvas,mime,quality){return new Promise(res=>canvas.toBlob(b=>res(b),mime,quality))}async function tryBinary(mime,ext){let low=minQ,high=maxQ,best=null;for(let i=0;i<8;i++){const mid=(low+high)/2;const blob=await toBlobAsync(c,mime,mid);if(!blob)break;if(targetBytes>0&&blob.size>targetBytes){high=mid}else{best=blob;low=mid}}if(best)return {blob:best,ext};const final=await toBlobAsync(c,mime,Math.max(minQ,Math.min(maxQ,high)));return {blob:final,ext}}if(fmt==='png'){const pngBlob=await toBlobAsync(c,'image/png');if(!pngBlob)throw new Error('生成图片失败');if(targetBytes>0&&pngBlob.size>targetBytes){const hasAlpha=detectAlpha(img);const webpRes=await tryBinary('image/webp','webp');if(targetBytes>0&&webpRes.blob.size>targetBytes){showStatus('已尽力压缩，未完全达到目标大小','error')}else{if(hasAlpha)showStatus('为达到目标大小，已切换为 WEBP（保留透明）','success')}return {blob:webpRes.blob,ext:webpRes.ext,width:tw,height:th}}return {blob:pngBlob,ext:'png',width:tw,height:th}}if(fmt==='jpeg'){const jpgRes=await tryBinary('image/jpeg','jpg');if(targetBytes>0&&jpgRes.blob.size>targetBytes){const webpRes=await tryBinary('image/webp','webp');if(webpRes.blob.size<jpgRes.blob.size){showStatus('为达到目标大小，已切换为 WEBP','success');return {blob:webpRes.blob,ext:webpRes.ext,width:tw,height:th}}else{showStatus('已尽力压缩，未完全达到目标大小','error')}}return {blob:jpgRes.blob,ext:jpgRes.ext,width:tw,height:th}}if(fmt==='webp'){const webpRes=await tryBinary('image/webp','webp');if(targetBytes>0&&webpRes.blob.size>targetBytes){showStatus('已尽力压缩，未完全达到目标大小','error')}return {blob:webpRes.blob,ext:webpRes.ext,width:tw,height:th}}const defaultRes=await tryBinary('image/jpeg','jpg');return {blob:defaultRes.blob,ext:defaultRes.ext,width:tw,height:th}}
+    async function compressImage(img) { const ow = img.naturalWidth || img.width; const oh = img.naturalHeight || img.height; const { tw, th } = computeTargetSize(ow, oh); const c = document.createElement('canvas'); c.width = tw; c.height = th; const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(img, 0, 0, ow, oh, 0, 0, tw, th); let fmt = formatSelect.value; if (fmt === 'auto') fmt = getAutoFormat(img, originalBlob ? originalBlob.type : null); const targetKB = parseInt(targetSizeKBInput.value) || 0; const targetBytes = targetKB > 0 ? targetKB * 1024 : 0; const maxQ = parseInt(qualityRange.value) / 100; const minQ = 0.7; function toBlobAsync(canvas, mime, quality) { return new Promise(res => canvas.toBlob(b => res(b), mime, quality)) } async function tryBinary(mime, ext) { let low = minQ, high = maxQ, best = null; for (let i = 0; i < 8; i++) { const mid = (low + high) / 2; const blob = await toBlobAsync(c, mime, mid); if (!blob) break; if (targetBytes > 0 && blob.size > targetBytes) { high = mid } else { best = blob; low = mid } } if (best) return { blob: best, ext }; const final = await toBlobAsync(c, mime, Math.max(minQ, Math.min(maxQ, high))); return { blob: final, ext } } if (fmt === 'png') { const pngBlob = await toBlobAsync(c, 'image/png'); if (!pngBlob) throw new Error('生成图片失败'); if (targetBytes > 0 && pngBlob.size > targetBytes) { const hasAlpha = detectAlpha(img); const webpRes = await tryBinary('image/webp', 'webp'); if (targetBytes > 0 && webpRes.blob.size > targetBytes) { showStatus('已尽力压缩，未完全达到目标大小', 'error') } else { if (hasAlpha) showStatus('为达到目标大小，已切换为 WEBP（保留透明）', 'success') } return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } return { blob: pngBlob, ext: 'png', width: tw, height: th } } if (fmt === 'jpeg') { const jpgRes = await tryBinary('image/jpeg', 'jpg'); if (targetBytes > 0 && jpgRes.blob.size > targetBytes) { const webpRes = await tryBinary('image/webp', 'webp'); if (webpRes.blob.size < jpgRes.blob.size) { showStatus('为达到目标大小，已切换为 WEBP', 'success'); return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } else { showStatus('已尽力压缩，未完全达到目标大小', 'error') } } return { blob: jpgRes.blob, ext: jpgRes.ext, width: tw, height: th } } if (fmt === 'webp') { const webpRes = await tryBinary('image/webp', 'webp'); if (targetBytes > 0 && webpRes.blob.size > targetBytes) { showStatus('已尽力压缩，未完全达到目标大小', 'error') } return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } const defaultRes = await tryBinary('image/jpeg', 'jpg'); return { blob: defaultRes.blob, ext: defaultRes.ext, width: tw, height: th } }
   </script>
 </body>
+
 </html>
