@@ -187,6 +187,7 @@
       text-overflow: ellipsis;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical
     }
 
@@ -478,14 +479,14 @@
           <div>正在加载机型数据...</div>
         </div>
       `;
-      
+
       // 首次加载时从API获取数据
       await fetchDeviceData();
-      
+
       // 搜索功能
       const searchInput = document.getElementById('searchInput');
       searchInput.addEventListener('input', handleSearch);
-      
+
       // 定期更新数据（每5分钟检查一次更新）
       setInterval(updateData, 300000);
     }
@@ -529,7 +530,7 @@
         const displaySize = device.size || '-';
         const displayResolution = device.resolution || '-';
         const displayDate = device.releaseDate || '-';
-        
+
         return `
           <div class="device-card">
             <div class="device-header">
