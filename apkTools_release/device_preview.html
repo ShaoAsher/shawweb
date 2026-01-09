@@ -1071,8 +1071,8 @@
         }
 
         if (inIPhoneSection && line.includes('iPhone')) {
-          // 解析格式: "iPhone15,2": iPhone 14 Pro
-          const match = line.match(/"([^"]+)":\s*(.+)/);
+          // 解析格式: "iPhone15,2": iPhone 14 Pro 或 "iPhone15,2", "iPhone15,3": iPhone 14 Pro
+          const match = line.match(/"([^"]+)"(?:\s*,\s*"[^"]+")*:\s*(.+)/);
           if (match) {
             const internalModel = match[1];
             const deviceName = match[2].trim();
