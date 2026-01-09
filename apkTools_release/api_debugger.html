@@ -635,7 +635,7 @@
           </div>
 
           <div id="bodyContent">
-            <div id="bodyNone" style="padding: 40px; text-align: center; color: #6c757d;">
+            <div id="bodyNone" style="padding: 40px; text-align: center; color: #6c757d; display: block;">
               该请求没有 Body
             </div>
 
@@ -803,32 +803,39 @@
         const panel = document.getElementById(tabName + 'Panel');
         if (panel) {
           panel.classList.add('active');
-        }
-
-        // 如果是 body 标签页，确保显示 body 内容
-        if (tabName === 'body') {
-          showBodyContent(currentBodyType);
+          
+          // 如果是 body 标签页，确保显示 body 内容
+          if (tabName === 'body') {
+            // 使用 setTimeout 确保 DOM 更新后再显示内容
+            setTimeout(() => {
+              showBodyContent(currentBodyType);
+            }, 0);
+          }
         }
       });
     });
 
     function showBodyContent(bodyType) {
-      document.querySelectorAll('[id^="body"]').forEach(el => {
-        if (el.id === 'bodyContent') return;
-        el.style.display = 'none';
-      });
+      // 隐藏所有 body 内容
+      const bodyNone = document.getElementById('bodyNone');
+      const bodyFormData = document.getElementById('bodyFormData');
+      const bodyJson = document.getElementById('bodyJson');
+      const bodyText = document.getElementById('bodyText');
+      
+      // 隐藏所有
+      if (bodyNone) bodyNone.style.display = 'none';
+      if (bodyFormData) bodyFormData.style.display = 'none';
+      if (bodyJson) bodyJson.style.display = 'none';
+      if (bodyText) bodyText.style.display = 'none';
 
+      // 显示对应的 body 内容
       if (bodyType === 'none') {
-        const bodyNone = document.getElementById('bodyNone');
         if (bodyNone) bodyNone.style.display = 'block';
-      } else if (bodyType === 'form-data') {
-        const bodyFormData = document.getElementById('bodyFormData');
+      } else if (bodyType === 'form-data' || bodyType === 'x-www-form-urlencoded') {
         if (bodyFormData) bodyFormData.style.display = 'block';
       } else if (bodyType === 'json') {
-        const bodyJson = document.getElementById('bodyJson');
         if (bodyJson) bodyJson.style.display = 'block';
-      } else if (bodyType === 'text') {
-        const bodyText = document.getElementById('bodyText');
+      } else if (bodyType === 'text' || bodyType === 'xml' || bodyType === 'binary' || bodyType === 'graphql' || bodyType === 'msgpack') {
         if (bodyText) bodyText.style.display = 'block';
       }
     }
