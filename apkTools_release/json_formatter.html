@@ -326,7 +326,7 @@
         const parsed = JSON.parse(input);
         const formatted = JSON.stringify(parsed, null, 2);
         jsonInput.value = formatted;
-        displayPreview(formatted, parsed);
+        displayPreview(parsed);
         updateStatus(true);
         updateStats(input, formatted);
       } catch (e) {
@@ -347,7 +347,7 @@
         const parsed = JSON.parse(input);
         const minified = JSON.stringify(parsed);
         jsonInput.value = minified;
-        displayPreview(minified, parsed);
+        displayPreview(parsed);
         updateStatus(true);
         updateStats(input, minified);
       } catch (e) {
@@ -366,7 +366,7 @@
 
       try {
         const parsed = JSON.parse(input);
-        displayPreview(JSON.stringify(parsed, null, 2), parsed);
+        displayPreview(parsed);
         updateStatus(true);
         alert('✓ JSON 格式正确！');
       } catch (e) {
@@ -377,14 +377,16 @@
     }
 
     // 显示预览
-    function displayPreview(jsonString, parsedObj) {
+    function displayPreview(parsedObj) {
       const html = renderJSON(parsedObj, 0);
       jsonPreview.innerHTML = html;
       previewStatus.textContent = '已格式化';
       previewStatus.className = 'status valid';
       
       // 绑定折叠展开事件
-      bindCollapseEvents();
+      setTimeout(() => {
+        bindCollapseEvents();
+      }, 0);
     }
 
     // 渲染JSON（支持折叠展开）
@@ -414,14 +416,14 @@
           return `[]`;
         }
         const id = 'arr_' + Math.random().toString(36).substr(2, 9);
-        let html = `<span class="json-collapsible collapsed" data-id="${id}">[<span class="json-count">${obj.length} items</span>]</span>`;
-        html += `<div class="json-children" id="${id}">`;
+        let html = `<div>${indentStr}<span class="json-collapsible collapsed" data-id="${id}">[<span class="json-count">${obj.length} items</span>]</span>`;
+        html += `<div class="json-children" id="${id}" style="display: none;">`;
         obj.forEach((item, index) => {
           html += `${nextIndentStr}${renderJSON(item, nextIndent)}`;
           if (index < obj.length - 1) html += ',';
           html += '<br>';
         });
-        html += `${indentStr}]</div>`;
+        html += `${indentStr}]</div></div>`;
         return html;
       }
 
@@ -431,14 +433,14 @@
           return `{}`;
         }
         const id = 'obj_' + Math.random().toString(36).substr(2, 9);
-        let html = `<span class="json-collapsible collapsed" data-id="${id}">{<span class="json-count">${keys.length} keys</span>}</span>`;
-        html += `<div class="json-children" id="${id}">`;
+        let html = `<div>${indentStr}<span class="json-collapsible collapsed" data-id="${id}">{<span class="json-count">${keys.length} keys</span>}</span>`;
+        html += `<div class="json-children" id="${id}" style="display: none;">`;
         keys.forEach((key, index) => {
           html += `${nextIndentStr}<span class="json-key">"${escapeHtml(key)}"</span>: ${renderJSON(obj[key], nextIndent)}`;
           if (index < keys.length - 1) html += ',';
           html += '<br>';
         });
-        html += `${indentStr}}</div>`;
+        html += `${indentStr}}</div></div>`;
         return html;
       }
 
