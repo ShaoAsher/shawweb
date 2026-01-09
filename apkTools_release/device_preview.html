@@ -133,64 +133,75 @@
 
     .device-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 20px
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px
     }
 
     .device-card {
       background: #fff;
-      border: 2px solid #dee2e6;
-      border-radius: 12px;
-      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 12px;
       transition: all .3s;
       cursor: pointer
     }
 
     .device-card:hover {
       border-color: #667eea;
-      box-shadow: 0 5px 20px rgba(102, 126, 234, .2);
-      transform: translateY(-2px)
+      box-shadow: 0 3px 12px rgba(102, 126, 234, .15);
+      transform: translateY(-1px)
     }
 
     .device-header {
       display: flex;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
-      padding-bottom: 15px;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #e9ecef
     }
 
     .brand-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
       object-fit: contain;
       background: #f8f9fa;
-      padding: 8px;
-      border: 1px solid #dee2e6
+      padding: 4px;
+      border: 1px solid #dee2e6;
+      flex-shrink: 0
     }
 
     .device-title {
-      flex: 1
+      flex: 1;
+      min-width: 0
     }
 
     .device-name {
-      font-size: 18px;
+      font-size: 14px;
       font-weight: 600;
       color: #212529;
-      margin-bottom: 5px
+      margin-bottom: 3px;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical
     }
 
     .device-model {
-      font-size: 13px;
-      color: #6c757d
+      font-size: 11px;
+      color: #6c757d;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
     }
 
     .device-info {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px
+      gap: 8px
     }
 
     .info-item {
@@ -199,15 +210,16 @@
     }
 
     .info-label {
-      font-size: 12px;
+      font-size: 10px;
       color: #6c757d;
-      margin-bottom: 4px
+      margin-bottom: 2px
     }
 
     .info-value {
-      font-size: 14px;
+      font-size: 12px;
       color: #212529;
-      font-weight: 500
+      font-weight: 500;
+      line-height: 1.4
     }
 
     .info-value.full-width {
@@ -216,13 +228,13 @@
 
     .brand-badge {
       display: inline-block;
-      padding: 4px 10px;
+      padding: 2px 6px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
-      border-radius: 12px;
-      font-size: 12px;
+      border-radius: 4px;
+      font-size: 10px;
       font-weight: 500;
-      margin-top: 5px
+      margin-top: 3px
     }
 
     .empty-state {
@@ -457,17 +469,25 @@
     let lastUpdateTime = new Date().toLocaleString('zh-CN');
 
     // 初始化
-    function init() {
-      updateStats();
-      renderDevices(filteredData);
-      updateLastUpdateTime();
-
+    async function init() {
+      // 显示加载状态
+      const deviceList = document.getElementById('deviceList');
+      deviceList.innerHTML = `
+        <div class="loading" style="grid-column: 1 / -1;">
+          <div class="loading-spinner"></div>
+          <div>正在加载机型数据...</div>
+        </div>
+      `;
+      
+      // 首次加载时从API获取数据
+      await fetchDeviceData();
+      
       // 搜索功能
       const searchInput = document.getElementById('searchInput');
       searchInput.addEventListener('input', handleSearch);
-
-      // 定期更新数据（可以改为从API获取）
-      setInterval(updateData, 60000); // 每分钟检查一次更新
+      
+      // 定期更新数据（每5分钟检查一次更新）
+      setInterval(updateData, 300000);
     }
 
     // 处理搜索
@@ -506,29 +526,32 @@
 
       deviceList.innerHTML = devices.map(device => {
         const brandIcon = brandIcons[device.brand] || 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/android.svg';
-
+        const displaySize = device.size || '-';
+        const displayResolution = device.resolution || '-';
+        const displayDate = device.releaseDate || '-';
+        
         return `
           <div class="device-card">
             <div class="device-header">
               <img src="${brandIcon}" alt="${device.brand}" class="brand-icon" onerror="this.src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/android.svg'">
               <div class="device-title">
                 <div class="device-name">${device.name}</div>
-                <div class="device-model">${device.model}</div>
+                <div class="device-model">${device.model || '-'}</div>
                 <span class="brand-badge">${device.brand}</span>
               </div>
             </div>
             <div class="device-info">
               <div class="info-item">
-                <span class="info-label">屏幕尺寸</span>
-                <span class="info-value">${device.size}</span>
+                <span class="info-label">尺寸</span>
+                <span class="info-value">${displaySize}</span>
               </div>
               <div class="info-item">
                 <span class="info-label">分辨率</span>
-                <span class="info-value">${device.resolution}</span>
+                <span class="info-value">${displayResolution}</span>
               </div>
               <div class="info-item">
                 <span class="info-label">上市时间</span>
-                <span class="info-value full-width">${device.releaseDate}</span>
+                <span class="info-value full-width">${displayDate}</span>
               </div>
             </div>
           </div>
