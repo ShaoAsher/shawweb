@@ -574,14 +574,15 @@
       // 使用多重检测：首先等待 canvas 出现，然后等待内容绘制完成
       let attempts = 0;
       const maxAttempts = 60; // 最多等待 3 秒 (60 * 50ms)
-      
+
       const checkCanvas = setInterval(() => {
         attempts++;
         const canvas = qrcodeDiv.querySelector('canvas');
-        
+
         if (canvas && canvas.width > 0 && canvas.height > 0) {
-          const ctx = canvas.getContext('2d');
-          
+          // 设置 willReadFrequently 以优化多次 getImageData 的性能
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
           // 检查 canvas 是否有内容：检查多个位置是否有非背景色的像素
           let hasContent = false;
           const checkPoints = [
@@ -589,7 +590,7 @@
             [size * 0.2, size * 0.2],       // 左上区域
             [size * 0.8, size * 0.8],       // 右下区域
           ];
-          
+
           for (const [x, y] of checkPoints) {
             try {
               const testPixel = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
@@ -603,13 +604,15 @@
               // 如果获取失败，继续尝试
             }
           }
-          
+
           if (hasContent || attempts >= maxAttempts) {
             clearInterval(checkCanvas);
             // 使用 requestAnimationFrame 确保浏览器完成渲染
             requestAnimationFrame(() => {
               setTimeout(() => {
-                applyStyleAndIcon(canvas, ctx, size, color, bgColor, style);
+                // 重新获取 context 确保 willReadFrequently 设置正确
+                const finalCtx = canvas.getContext('2d', { willReadFrequently: true });
+                applyStyleAndIcon(canvas, finalCtx, size, color, bgColor, style);
               }, 50);
             });
           }
@@ -623,7 +626,7 @@
     // 应用样式和图标
     function applyStyleAndIcon(canvas, ctx, size, color, bgColor, style) {
       console.log('开始应用样式和图标', { style, hasIcon: !!iconImage, size });
-      
+
       // 读取原始二维码数据（必须先读取，因为在重新绘制时会清除）
       const imageData = ctx.getImageData(0, 0, size, size);
       const data = imageData.data;
@@ -777,7 +780,7 @@
           ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(img, iconX, iconY, iconSizePx, iconSizePx);
           ctx.restore();
-          
+
           console.log('图标绘制完成');
           document.getElementById('qrcodePreview').style.display = 'block';
         };
