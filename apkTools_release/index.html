@@ -763,13 +763,13 @@
       document.getElementById('nextBtn').disabled = false;
     }
 
-    // 上一张
+    // 上一张（显示左侧的卡片）
     function prevCard() {
       currentIndex = (currentIndex - 1 + totalCards) % totalCards;
       updateCarousel();
     }
 
-    // 下一张
+    // 下一张（显示右侧的卡片）
     function nextCard() {
       currentIndex = (currentIndex + 1) % totalCards;
       updateCarousel();
@@ -792,8 +792,9 @@
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       initCarousel();
-      document.getElementById('prevBtn').addEventListener('click', prevCard);
-      document.getElementById('nextBtn').addEventListener('click', nextCard);
+      // 左箭头显示下一张，右箭头显示上一张（与滑动方向一致）
+      document.getElementById('prevBtn').addEventListener('click', nextCard);
+      document.getElementById('nextBtn').addEventListener('click', prevCard);
     });
   </script>
 </body>
