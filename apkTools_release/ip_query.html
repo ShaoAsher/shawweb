@@ -316,10 +316,10 @@
   </div>
 
   <script>
-    // IP查询API（使用ip-api.com，HTTP版本支持JSONP）
-    const IP_API_BASE = 'http://ip-api.com/json/';
-    // CORS代理（用于HTTPS页面）
-    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    // IP查询API（使用ipinfo.io，支持HTTPS和CORS，免费）
+    const IPINFO_API_BASE = 'https://ipinfo.io/';
+    // 备用API（ipwhois.app，支持HTTPS和CORS，免费）
+    const IPWHOIS_API_BASE = 'https://ipwhois.app/json/';
 
     // 验证IP地址格式
     function isValidIP(ip) {
@@ -327,85 +327,9 @@
       return ipRegex.test(ip);
     }
 
-    // 使用JSONP方式查询IP信息（HTTP页面）
-    function queryIPWithJSONP(ip = '') {
-      return new Promise((resolve, reject) => {
-        // 创建唯一的回调函数名
-        const callbackName = 'ipQueryCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-        // 创建script标签
-        const script = document.createElement('script');
-        const targetUrl = ip
-          ? `${IP_API_BASE}${ip}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as&callback=${callbackName}`
-          : `${IP_API_BASE}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as&callback=${callbackName}`;
-
-        script.src = targetUrl;
-
-        // 设置超时
-        const timeout = setTimeout(() => {
-          if (document.head.contains(script)) {
-            document.head.removeChild(script);
-          }
-          if (window[callbackName]) {
-            delete window[callbackName];
-          }
-          reject(new Error('请求超时，请检查网络连接'));
-        }, 15000);
-
-        // 设置全局回调函数
-        window[callbackName] = function (data) {
-          // 清理
-          clearTimeout(timeout);
-          if (document.head.contains(script)) {
-            document.head.removeChild(script);
-          }
-          delete window[callbackName];
-
-          if (data.status === 'fail') {
-            reject(new Error(data.message || '查询失败'));
-            return;
-          }
-
-          resolve({
-            ip: data.query,
-            country: data.country || '未知',
-            countryCode: data.countryCode || '',
-            region: data.regionName || data.region || '未知',
-            city: data.city || '未知',
-            zip: data.zip || '未知',
-            lat: data.lat || 0,
-            lon: data.lon || 0,
-            timezone: data.timezone || '未知',
-            isp: data.isp || '未知',
-            org: data.org || '未知',
-            as: data.as || '未知'
-          });
-        };
-
-        // 错误处理
-        script.onerror = () => {
-          clearTimeout(timeout);
-          if (document.head.contains(script)) {
-            document.head.removeChild(script);
-          }
-          if (window[callbackName]) {
-            delete window[callbackName];
-          }
-          reject(new Error('网络请求失败，请检查网络连接'));
-        };
-
-        // 添加到页面
-        document.head.appendChild(script);
-      });
-    }
-
-    // 使用CORS代理查询IP信息（HTTPS页面）
-    async function queryIPWithProxy(ip = '') {
-      const targetUrl = ip
-        ? `${IP_API_BASE}${ip}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as`
-        : `${IP_API_BASE}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as`;
-
-      const url = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+    // 使用ipinfo.io查询IP信息（主API）
+    async function queryIPWithIpinfo(ip = '') {
+      const url = ip ? `${IPINFO_API_BASE}${ip}/json` : `${IPINFO_API_BASE}json`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -414,34 +338,90 @@
 
       const data = await response.json();
 
-      if (data.status === 'fail') {
+      // 解析经纬度
+      let lat = 0, lon = 0;
+      if (data.loc) {
+        const [latitude, longitude] = data.loc.split(',').map(Number);
+        lat = latitude || 0;
+        lon = longitude || 0;
+      }
+
+      // 解析AS信息
+      let as = '未知';
+      if (data.org) {
+        const asMatch = data.org.match(/AS\d+/);
+        if (asMatch) {
+          as = asMatch[0];
+        }
+      }
+
+      return {
+        ip: data.ip || ip || '未知',
+        country: data.country_name || data.country || '未知',
+        countryCode: data.country || '',
+        region: data.region || '未知',
+        city: data.city || '未知',
+        zip: data.postal || '未知',
+        lat: lat,
+        lon: lon,
+        timezone: data.timezone || '未知',
+        isp: data.org ? data.org.replace(/AS\d+\s*/, '') : '未知',
+        org: data.org || '未知',
+        as: as
+      };
+    }
+
+    // 使用ipwhois.app查询IP信息（备用API）
+    async function queryIPWithIpwhois(ip = '') {
+      const url = ip ? `${IPWHOIS_API_BASE}${ip}` : IPWHOIS_API_BASE;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP错误: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success === false) {
         throw new Error(data.message || '查询失败');
       }
 
       return {
-        ip: data.query,
+        ip: data.ip || ip || '未知',
         country: data.country || '未知',
-        countryCode: data.countryCode || '',
-        region: data.regionName || data.region || '未知',
+        countryCode: data.country_code || '',
+        region: data.region || '未知',
         city: data.city || '未知',
-        zip: data.zip || '未知',
-        lat: data.lat || 0,
-        lon: data.lon || 0,
+        zip: data.postal || '未知',
+        lat: data.latitude || 0,
+        lon: data.longitude || 0,
         timezone: data.timezone || '未知',
         isp: data.isp || '未知',
         org: data.org || '未知',
-        as: data.as || '未知'
+        as: data.asn ? `AS${data.asn}` : '未知'
       };
     }
 
-    // 查询IP信息（根据页面协议自动选择方法）
+    // 查询IP信息（自动尝试多个API）
     async function queryIP(ip = '') {
-      // 如果页面是HTTPS，使用CORS代理；否则使用JSONP
-      if (window.location.protocol === 'https:') {
-        return await queryIPWithProxy(ip);
-      } else {
-        return await queryIPWithJSONP(ip);
+      const apis = [
+        { name: 'ipinfo.io', func: queryIPWithIpinfo },
+        { name: 'ipwhois.app', func: queryIPWithIpwhois }
+      ];
+
+      for (const api of apis) {
+        try {
+          console.log(`尝试使用 ${api.name} 查询...`);
+          return await api.func(ip);
+        } catch (error) {
+          console.log(`${api.name} 查询失败:`, error.message);
+          // 继续尝试下一个API
+          continue;
+        }
       }
+
+      // 所有API都失败
+      throw new Error('所有API查询均失败，请检查网络连接或稍后重试。');
     }
 
     // 显示加载状态
