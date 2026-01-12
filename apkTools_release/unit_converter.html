@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单位转换工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+    }
+
+    .header p {
+      opacity: .95;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .content {
+      padding: 40px 30px;
+    }
+
+    .converter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 24px;
+    }
+
+    .converter-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid #e9ecef;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+    }
+
+    .converter-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, .15);
+      border-color: #667eea;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f1f3f5;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3748;
+      flex: 1;
+    }
+
+    .converter-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      color: #718096;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .unit-input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.3s;
+      background: #f8f9fa;
+      font-weight: 500;
+    }
+
+    .unit-input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
+    }
+
+    .unit-select {
+      min-width: 140px;
+      max-width: 180px;
+      padding: 12px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .unit-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
+    }
+
+    .arrow-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      color: #667eea;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .result-display {
+      margin-top: 16px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      color: #2d3748;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      word-break: break-all;
+      border: 1px solid #dee2e6;
+      display: none;
+    }
+
+    .result-display.show {
+      display: flex;
+    }
+
+    @media (max-width: 1200px) {
+      .converter-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 24px 20px;
+      }
+
+      .converter-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .converter-card {
+        padding: 20px;
+      }
+
+      .input-row {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .arrow-divider {
+        transform: rotate(90deg);
+        padding: 8px 0;
+      }
+
+      .unit-select {
+        min-width: 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
+      <h1>📐 单位转换工具</h1>
+      <p>支持长度、重量、温度、面积、体积、时间、速度、数据、角度、压力等多种单位转换</p>
+    </div>
+    <div class="content">
+      <div class="converter-grid" id="converterGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    // 单位转换配置
+    const unitConverters = [
+      {
+        icon: '📏',
+        title: '长度单位',
+        units: [
+          { name: '米 (m)', value: 1 },
+          { name: '千米 (km)', value: 0.001 },
+          { name: '厘米 (cm)', value: 100 },
+          { name: '毫米 (mm)', value: 1000 },
+          { name: '微米 (μm)', value: 1000000 },
+          { name: '纳米 (nm)', value: 1000000000 },
+          { name: '英寸 (in)', value: 39.3701 },
+          { name: '英尺 (ft)', value: 3.28084 },
+          { name: '码 (yd)', value: 1.09361 },
+          { name: '英里 (mi)', value: 0.000621371 },
+          { name: '海里 (nmi)', value: 0.000539957 },
+          { name: '光年 (ly)', value: 1.057e-16 }
+        ]
+      },
+      {
+        icon: '⚖️',
+        title: '重量单位',
+        units: [
+          { name: '千克 (kg)', value: 1 },
+          { name: '克 (g)', value: 1000 },
+          { name: '毫克 (mg)', value: 1000000 },
+          { name: '吨 (t)', value: 0.001 },
+          { name: '磅 (lb)', value: 2.20462 },
+          { name: '盎司 (oz)', value: 35.274 },
+          { name: '英石 (st)', value: 0.157473 },
+          { name: '克拉 (ct)', value: 5000 }
+        ]
+      },
+      {
+        icon: '🌡️',
+        title: '温度单位',
+        units: [
+          { name: '摄氏度 (°C)', value: 'celsius' },
+          { name: '华氏度 (°F)', value: 'fahrenheit' },
+          { name: '开尔文 (K)', value: 'kelvin' }
+        ],
+        isTemperature: true
+      },
+      {
+        icon: '📐',
+        title: '面积单位',
+        units: [
+          { name: '平方米 (m²)', value: 1 },
+          { name: '平方千米 (km²)', value: 0.000001 },
+          { name: '公顷 (ha)', value: 0.0001 },
+          { name: '平方厘米 (cm²)', value: 10000 },
+          { name: '平方毫米 (mm²)', value: 1000000 },
+          { name: '平方英寸 (in²)', value: 1550.0031 },
+          { name: '平方英尺 (ft²)', value: 10.7639 },
+          { name: '平方码 (yd²)', value: 1.19599 },
+          { name: '英亩 (acre)', value: 0.000247105 },
+          { name: '平方英里 (mi²)', value: 3.861e-7 }
+        ]
+      },
+      {
+        icon: '🧪',
+        title: '体积单位',
+        units: [
+          { name: '升 (L)', value: 1 },
+          { name: '毫升 (mL)', value: 1000 },
+          { name: '立方米 (m³)', value: 0.001 },
+          { name: '立方厘米 (cm³)', value: 1000 },
+          { name: '立方英寸 (in³)', value: 61.0237 },
+          { name: '立方英尺 (ft³)', value: 0.0353147 },
+          { name: '加仑 (gal)', value: 0.264172 },
+          { name: '美制加仑 (US gal)', value: 0.264172 },
+          { name: '英制加仑 (UK gal)', value: 0.219969 },
+          { name: '品脱 (pt)', value: 2.11338 },
+          { name: '夸脱 (qt)', value: 1.05669 },
+          { name: '液盎司 (fl oz)', value: 33.814 }
+        ]
+      },
+      {
+        icon: '⏰',
+        title: '时间单位',
+        units: [
+          { name: '秒 (s)', value: 1 },
+          { name: '毫秒 (ms)', value: 1000 },
+          { name: '微秒 (μs)', value: 1000000 },
+          { name: '纳秒 (ns)', value: 1000000000 },
+          { name: '分钟 (min)', value: 1 / 60 },
+          { name: '小时 (h)', value: 1 / 3600 },
+          { name: '天 (d)', value: 1 / 86400 },
+          { name: '周 (week)', value: 1 / 604800 },
+          { name: '月 (month)', value: 1 / 2592000 },
+          { name: '年 (year)', value: 1 / 31536000 }
+        ]
+      },
+      {
+        icon: '🚀',
+        title: '速度单位',
+        units: [
+          { name: '米/秒 (m/s)', value: 1 },
+          { name: '千米/小时 (km/h)', value: 3.6 },
+          { name: '英里/小时 (mph)', value: 2.23694 },
+          { name: '节 (kn)', value: 1.94384 },
+          { name: '英尺/秒 (ft/s)', value: 3.28084 },
+          { name: '光速 (c)', value: 3.33564e-9 }
+        ]
+      },
+      {
+        icon: '💾',
+        title: '数据单位',
+        units: [
+          { name: '字节 (B)', value: 1 },
+          { name: '千字节 (KB)', value: 1 / 1024 },
+          { name: '兆字节 (MB)', value: 1 / 1048576 },
+          { name: '吉字节 (GB)', value: 1 / 1073741824 },
+          { name: '太字节 (TB)', value: 1 / 1099511627776 },
+          { name: '拍字节 (PB)', value: 1 / 1125899906842624 },
+          { name: '位 (bit)', value: 8 }
+        ]
+      },
+      {
+        icon: '🔄',
+        title: '角度单位',
+        units: [
+          { name: '度 (°)', value: 1 },
+          { name: '弧度 (rad)', value: Math.PI / 180 },
+          { name: '梯度 (grad)', value: 200 / 180 },
+          { name: '转 (rev)', value: 1 / 360 }
+        ]
+      },
+      {
+        icon: '💨',
+        title: '压力单位',
+        units: [
+          { name: '帕斯卡 (Pa)', value: 1 },
+          { name: '千帕 (kPa)', value: 0.001 },
+          { name: '兆帕 (MPa)', value: 0.000001 },
+          { name: '巴 (bar)', value: 0.00001 },
+          { name: '大气压 (atm)', value: 9.86923e-6 },
+          { name: 'PSI (psi)', value: 0.000145038 },
+          { name: '毫米汞柱 (mmHg)', value: 0.00750062 },
+          { name: '托 (Torr)', value: 0.00750062 }
+        ]
+      }
+    ];
+
+    // 温度转换函数
+    function convertTemperature(value, fromUnit, toUnit) {
+      let celsius;
+
+      if (fromUnit === 'celsius') {
+        celsius = parseFloat(value) || 0;
+      } else if (fromUnit === 'fahrenheit') {
+        celsius = (parseFloat(value) - 32) * 5 / 9;
+      } else if (fromUnit === 'kelvin') {
+        celsius = parseFloat(value) - 273.15;
+      }
+
+      if (toUnit === 'celsius') {
+        return celsius.toFixed(2);
+      } else if (toUnit === 'fahrenheit') {
+        return (celsius * 9 / 5 + 32).toFixed(2);
+      } else if (toUnit === 'kelvin') {
+        return (celsius + 273.15).toFixed(2);
+      }
+      return '0';
+    }
+
+    // 格式化数字结果
+    function formatResult(result) {
+      if (Math.abs(result) < 0.000001) {
+        return result.toExponential(6);
+      } else if (Math.abs(result) < 1) {
+        return result.toFixed(8).replace(/\.?0+$/, '');
+      } else if (Math.abs(result) < 1000000) {
+        return result.toFixed(6).replace(/\.?0+$/, '');
+      } else {
+        return result.toExponential(6);
+      }
+    }
+
+    // 创建转换器卡片
+    function createConverterCard(converter) {
+      const card = document.createElement('div');
+      card.className = 'converter-card';
+
+      const header = document.createElement('div');
+      header.className = 'card-header';
+      header.innerHTML = `
+        <div class="card-icon">${converter.icon}</div>
+        <div class="card-title">${converter.title}</div>
+      `;
+
+      const form = document.createElement('div');
+      form.className = 'converter-form';
+
+      // 输入字段
+      const inputField = document.createElement('div');
+      inputField.className = 'input-field';
+      inputField.innerHTML = `
+        <label class="input-label">输入值</label>
+        <div class="input-row">
+          <div class="input-wrapper">
+            <input type="number" class="unit-input" placeholder="0" step="any">
+            <select class="unit-select">
+              ${converter.units.map(unit => `<option value="${unit.value}">${unit.name}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+
+      // 箭头分隔符
+      const arrow = document.createElement('div');
+      arrow.className = 'arrow-divider';
+      arrow.textContent = '⇄';
+
+      // 输出字段
+      const outputField = document.createElement('div');
+      outputField.className = 'input-field';
+      outputField.innerHTML = `
+        <label class="input-label">转换结果</label>
+        <div class="input-row">
+          <div class="input-wrapper">
+            <input type="text" class="unit-input" readonly style="background: #fff;">
+            <select class="unit-select">
+              ${converter.units.map(unit => `<option value="${unit.value}">${unit.name}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+
+      // 结果显示
+      const resultDisplay = document.createElement('div');
+      resultDisplay.className = 'result-display';
+
+      form.appendChild(inputField);
+      form.appendChild(arrow);
+      form.appendChild(outputField);
+      form.appendChild(resultDisplay);
+
+      card.appendChild(header);
+      card.appendChild(form);
+
+      // 获取元素
+      const input = inputField.querySelector('.unit-input');
+      const fromSelect = inputField.querySelector('.unit-select');
+      const output = outputField.querySelector('.unit-input');
+      const toSelect = outputField.querySelector('.unit-select');
+
+      // 转换函数
+      function performConversion() {
+        const value = parseFloat(input.value);
+        if (isNaN(value) || value === '') {
+          output.value = '';
+          resultDisplay.classList.remove('show');
+          return;
+        }
+
+        const fromValue = fromSelect.value;
+        const toValue = toSelect.value;
+
+        let result;
+        if (converter.isTemperature) {
+          result = convertTemperature(value, fromValue, toValue);
+        } else {
+          const baseValue = value / parseFloat(fromValue);
+          result = baseValue * parseFloat(toValue);
+          result = formatResult(result);
+        }
+
+        output.value = result;
+        const fromUnitName = fromSelect.options[fromSelect.selectedIndex].text;
+        const toUnitName = toSelect.options[toSelect.selectedIndex].text;
+        resultDisplay.textContent = `${value} ${fromUnitName} = ${result} ${toUnitName}`;
+        resultDisplay.classList.add('show');
+      }
+
+      // 事件监听
+      input.addEventListener('input', performConversion);
+      fromSelect.addEventListener('change', performConversion);
+      toSelect.addEventListener('change', performConversion);
+
+      return card;
+    }
+
+    // 初始化所有转换器
+    function initConverters() {
+      const grid = document.getElementById('converterGrid');
+      unitConverters.forEach(converter => {
+        const card = createConverterCard(converter);
+        grid.appendChild(card);
+      });
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', initConverters);
+  </script>
+  <script src="./tools.js"></script>
+</body>
+
+</html>
