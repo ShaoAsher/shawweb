@@ -316,11 +316,10 @@
   </div>
 
   <script>
-    // IP查询API（使用ip-api.com的JSONP接口，支持CORS）
-    // 根据当前页面协议自动选择HTTP或HTTPS
-    const IP_API_BASE = window.location.protocol === 'https:'
-      ? 'https://ip-api.com/json/'
-      : 'http://ip-api.com/json/';
+    // IP查询API（使用ip-api.com，HTTP版本支持JSONP）
+    const IP_API_BASE = 'http://ip-api.com/json/';
+    // CORS代理（用于HTTPS页面）
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
 
     // 验证IP地址格式
     function isValidIP(ip) {
@@ -328,8 +327,8 @@
       return ipRegex.test(ip);
     }
 
-    // 使用JSONP方式查询IP信息（绕过CORS限制）
-    function queryIP(ip = '') {
+    // 使用JSONP方式查询IP信息（HTTP页面）
+    function queryIPWithJSONP(ip = '') {
       return new Promise((resolve, reject) => {
         // 创建唯一的回调函数名
         const callbackName = 'ipQueryCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -398,6 +397,51 @@
         // 添加到页面
         document.head.appendChild(script);
       });
+    }
+
+    // 使用CORS代理查询IP信息（HTTPS页面）
+    async function queryIPWithProxy(ip = '') {
+      const targetUrl = ip
+        ? `${IP_API_BASE}${ip}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as`
+        : `${IP_API_BASE}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as`;
+
+      const url = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP错误: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === 'fail') {
+        throw new Error(data.message || '查询失败');
+      }
+
+      return {
+        ip: data.query,
+        country: data.country || '未知',
+        countryCode: data.countryCode || '',
+        region: data.regionName || data.region || '未知',
+        city: data.city || '未知',
+        zip: data.zip || '未知',
+        lat: data.lat || 0,
+        lon: data.lon || 0,
+        timezone: data.timezone || '未知',
+        isp: data.isp || '未知',
+        org: data.org || '未知',
+        as: data.as || '未知'
+      };
+    }
+
+    // 查询IP信息（根据页面协议自动选择方法）
+    async function queryIP(ip = '') {
+      // 如果页面是HTTPS，使用CORS代理；否则使用JSONP
+      if (window.location.protocol === 'https:') {
+        return await queryIPWithProxy(ip);
+      } else {
+        return await queryIPWithJSONP(ip);
+      }
     }
 
     // 显示加载状态
