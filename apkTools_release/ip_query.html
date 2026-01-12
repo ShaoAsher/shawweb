@@ -317,7 +317,10 @@
 
   <script>
     // IP查询API（使用ip-api.com的JSONP接口，支持CORS）
-    const IP_API_BASE = 'http://ip-api.com/json/';
+    // 根据当前页面协议自动选择HTTP或HTTPS
+    const IP_API_BASE = window.location.protocol === 'https:'
+      ? 'https://ip-api.com/json/'
+      : 'http://ip-api.com/json/';
 
     // 验证IP地址格式
     function isValidIP(ip) {
