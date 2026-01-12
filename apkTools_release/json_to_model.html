@@ -341,7 +341,8 @@
         <h2>2. 输入 JSON 数据</h2>
         <div class="form-group">
           <label for="jsonInput">JSON 内容：</label>
-          <textarea id="jsonInput" placeholder='请输入 JSON 数据，例如：{"name": "张三", "age": 25, "email": "zhangsan@example.com"}'></textarea>
+          <textarea id="jsonInput"
+            placeholder='请输入 JSON 数据，例如：{"name": "张三", "age": 25, "email": "zhangsan@example.com"}'></textarea>
         </div>
         <div class="btn-group">
           <button class="btn btn-secondary example-btn" onclick="loadExample()">加载示例</button>
@@ -448,7 +449,7 @@
         const jsonObj = JSON.parse(jsonInput);
         const generator = getGenerator(currentLanguage);
         const code = generator(jsonObj, className, { useNullSafety, useCamelCase, addComments });
-        
+
         document.getElementById('codeOutput').textContent = code;
         document.getElementById('resultSection').style.display = 'block';
         document.getElementById('copyBtn').style.display = 'inline-flex';
@@ -548,7 +549,7 @@
       if (addComments) {
         code += `/// ${toPascalCase(className)} Model\n`;
       }
-      
+
       const needsCodingKeys = Object.keys(obj).some(key => {
         const propName = toCamelCase(key, useCamelCase);
         return key !== propName;
@@ -576,7 +577,7 @@
       for (const [key, value] of Object.entries(obj)) {
         const propName = toCamelCase(key, useCamelCase);
         const type = getSwiftType(value, false);
-        
+
         if (addComments) {
           properties.push(`    /// ${key}\n    let ${propName}: ${type}`);
         } else {
@@ -875,7 +876,7 @@
 
       const properties = [];
       const jsonTags = [];
-      
+
       for (const [key, value] of Object.entries(obj)) {
         const propName = toPascalCase(toCamelCase(key, useCamelCase));
         let type = 'string';
@@ -899,6 +900,7 @@
       return code;
     }
   </script>
+  <script src="./tools.js"></script>
 </body>
 
 </html>

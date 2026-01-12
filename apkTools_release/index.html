@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>工具管理面板</title>
+  <title></title>
   <style>
     * {
       margin: 0;
@@ -386,18 +386,19 @@
     }
   </style>
   <link rel="icon" href="data:,">
+  <script src="./tools.js"></script>
 </head>
 
 <body>
   <div class="container">
     <div class="header">
-      <h1>🛠️ 工具管理面板</h1>
-      <p>统一入口，快速访问常用页面</p>
+      <h1></h1>
+      <p></p>
     </div>
     <div class="content">
       <!-- 搜索框 -->
       <div class="search-container">
-        <input type="text" class="search-box" id="searchInput" placeholder="🔍 搜索工具...">
+        <input type="text" class="search-box" id="searchInput" placeholder="">
         <span class="search-icon">🔍</span>
         <div class="search-results-info" id="searchResultsInfo"></div>
       </div>
@@ -423,18 +424,25 @@
       </div>
       <div class="tools-grid" id="textTools"></div>
 
+      <!-- 单位转换工具 -->
+      <div class="section-title" id="unitSection">
+        <span class="section-icon">📐</span>
+        <span>单位转换工具</span>
+      </div>
+      <div class="tools-grid" id="unitTools"></div>
+
       <!-- 无结果提示 -->
       <div class="no-results" id="noResults">
         <div class="no-results-icon">🔍</div>
-        <div style="font-size: 18px; margin-bottom: 8px;">未找到相关工具</div>
-        <div>试试其他关键词吧</div>
+        <div style="font-size: 18px; margin-bottom: 8px;"></div>
+        <div></div>
       </div>
 
       <!-- 快捷入口 -->
       <div class="quick-access">
         <div class="quick-access-title">
           <span>⚡</span>
-          <span>快捷入口</span>
+          <span></span>
         </div>
         <div class="quick-links" id="quickLinks"></div>
       </div>
@@ -442,30 +450,46 @@
   </div>
 
   <script>
-    // 工具数据
-    const tools = [
-      // 开发工具
-      { icon: '🔑', title: 'Android 签名文件生成工具', desc: '根据包名生成 .jks 并提取指纹与公钥信息，支持历史记录导入导出。', href: './keystore_generator.html', category: 'dev', rating: 5 },
-      { icon: '📦', title: 'APK 信息提取工具', desc: '解析 APK，读取包名与证书指纹等信息，支持拖拽上传与结果复制。', href: './apk_analyzer.html', category: 'dev', rating: 5 },
-      { icon: '🌐', title: 'API 调试工具', desc: '支持 HTTP 请求和 WebSocket (WSS) 连接调试，类似 APIFOX，包含请求历史记录。', href: './api_debugger.html', category: 'dev', rating: 5 },
-      { icon: '📋', title: 'JSON 格式化工具', desc: 'JSON 格式化、压缩、验证和可视化预览，支持语法高亮和实时验证。', href: './json_formatter.html', category: 'dev', rating: 5 },
-      { icon: '💻', title: 'JSON 转 Model 工具', desc: '支持多语言模型类生成：Swift、OC、Vue、Dart、Kotlin、Java、PHP、Go 等。', href: './json_to_model.html', category: 'dev', rating: 5 },
-      { icon: '📱', title: '机型预览信息工具', desc: '查看主流手机机型详细信息，支持模糊搜索，包含最新iPhone 17系列。', href: './device_preview.html', category: 'dev', rating: 4 },
+    // 工具数据和配置（从 tools.js 加载）
+    let tools = [];
+    let categories = {};
+    let currentLang = 'zh';
 
-      // 图片工具
-      { icon: '🗜️', title: '图片压缩工具', desc: '智能压缩图片，保持比例与清晰度，支持预览对比与多格式导出。', href: './image_compressor.html', category: 'image', rating: 5 },
-      { icon: '🚀', title: '启动图生成工具', desc: '为 iOS 与 Android 批量生成多尺寸启动图，支持背景与Logo配置。', href: './launch_image_generator.html', category: 'image', rating: 5 },
-      { icon: '🎨', title: '图标工厂', desc: '上传一个图标，一键生成 iOS 与 Android 标准尺寸及文件夹结构，包含标准命名。', href: './icon_factory.html', category: 'image', rating: 5 },
-      { icon: '🔄', title: 'SVG 互转 PNG/JPG/JPEG', desc: '支持 SVG 与位图的双向转换，设置尺寸与比例并下载。', href: './svg_converter.html', category: 'image', rating: 4 },
-      { icon: '✍️', title: '文字图片生成工具', desc: '输入文本快速生成图片素材，适用于占位图、标签图等场景。', href: './text_image_generator.html', category: 'image', rating: 4 },
-      { icon: '📷', title: '二维码/条形码生成工具', desc: '支持自定义样式、颜色和中心图标，生成高质量二维码和多种格式条形码。', href: './qrcode_generator.html', category: 'image', rating: 4 },
-      { icon: '🎨', title: 'RGB 颜色互转工具', desc: '支持 RGB、HEX、HSL 颜色格式互转，提供主流颜色预设卡片，条状展示。', href: './color_converter.html', category: 'image', rating: 4 },
+    // 初始化工具数据
+    function initToolsData() {
+      if (typeof window.toolsData === 'undefined') {
+        console.error('tools.js 未加载');
+        return false;
+      }
+      tools = window.toolsData.tools || [];
+      categories = window.toolsData.categories || {};
+      currentLang = window.getLanguage();
+      return true;
+    }
 
-      // 文字/编码工具
-      { icon: '🔐', title: '字符串加解密工具', desc: '支持 Base64、URL、Hex、Unicode、摩斯密码等编码，以及 MD5、SHA、AES、凯撒密码等加解密。', href: './string_encryptor.html', category: 'text', rating: 5 },
-      { icon: '⏰', title: '时间戳转换工具', desc: '支持秒级和毫秒级时间戳与日期时间互转，自动识别时间戳类型。', href: './timestamp_converter.html', category: 'text', rating: 4 },
-      { icon: '🔤', title: '多种字符串生成器', desc: '生成标准银行卡号、UDID、包名、UUID、MAC地址、IP地址、邮箱等常用字符串。', href: './string_generator.html', category: 'text', rating: 3 }
-    ];
+    // 获取首页配置文本
+    function getHomeConfig(field) {
+      if (!window.homeConfig || !window.homeConfig[field]) return '';
+      const value = window.homeConfig[field];
+      return typeof value === 'object' ? (value[currentLang] || value.zh || '') : value;
+    }
+
+    // 获取工具显示文本
+    function getToolText(tool, field) {
+      if (!tool || !tool[field]) return '';
+      const value = tool[field];
+      if (typeof value === 'object' && value !== null) {
+        return value[currentLang] || value.zh || value.en || '';
+      }
+      return value || '';
+    }
+
+    // 获取分类名称
+    function getCategoryName(category) {
+      if (!categories[category]) return category;
+      const cat = categories[category];
+      return typeof cat === 'object' ? (cat[currentLang] || cat.zh || category) : cat;
+    }
 
     // 生成星级
     function generateStars(rating) {
@@ -486,23 +510,35 @@
       return classes[category] || 'category-dev';
     }
 
+    // 获取工具分类显示名称
+    function getToolCategoryName(tool) {
+      if (tool.href.includes('unit_converter')) {
+        return getCategoryName('unit');
+      }
+      return getCategoryName(tool.category);
+    }
+
     // 创建卡片
     function createCard(tool) {
+      const title = getToolText(tool, 'title');
+      const desc = getToolText(tool, 'desc');
+      const categoryName = getToolCategoryName(tool);
+
       return `
         <div class="tool-card" onclick="window.location.href='${tool.href}'">
           <div class="tool-card-header">
             <div class="tool-icon-wrapper">${tool.icon}</div>
             <div class="tool-info">
               <div class="tool-title-row">
-                <div class="tool-title">${tool.title}</div>
+                <div class="tool-title">${title}</div>
                 <div class="tool-rating">${generateStars(tool.rating)}</div>
               </div>
-              <span class="tool-category ${getCategoryClass(tool.category)}">${tool.category === 'dev' ? '开发' : tool.category === 'image' ? '图片' : '文字'}</span>
+              <span class="tool-category ${getCategoryClass(tool.category)}">${categoryName}</span>
             </div>
           </div>
-          <div class="tool-desc">${tool.desc}</div>
+          <div class="tool-desc">${desc}</div>
           <div class="tool-footer">
-            <a href="${tool.href}" class="tool-link">立即使用</a>
+            <a href="${tool.href}" class="tool-link">${currentLang === 'en' ? 'Use Now' : '立即使用'}</a>
           </div>
         </div>
       `;
@@ -513,28 +549,57 @@
       const devTools = document.getElementById('devTools');
       const imageTools = document.getElementById('imageTools');
       const textTools = document.getElementById('textTools');
+      const unitTools = document.getElementById('unitTools');
       const noResults = document.getElementById('noResults');
       const searchResultsInfo = document.getElementById('searchResultsInfo');
+
+      if (!devTools || !imageTools || !textTools || !unitTools) {
+        console.error('工具容器元素未找到');
+        return;
+      }
 
       // 清空现有内容
       devTools.innerHTML = '';
       imageTools.innerHTML = '';
       textTools.innerHTML = '';
+      unitTools.innerHTML = '';
 
       const toolsToRender = filteredTools || tools;
+      if (!toolsToRender || toolsToRender.length === 0) {
+        console.warn('没有工具数据可渲染');
+        if (noResults) {
+          noResults.classList.add('show');
+        }
+        return;
+      }
+
       let hasResults = false;
 
       toolsToRender.forEach(tool => {
-        const card = createCard(tool);
-        if (tool.category === 'dev') {
-          devTools.innerHTML += card;
-          hasResults = true;
-        } else if (tool.category === 'image') {
-          imageTools.innerHTML += card;
-          hasResults = true;
-        } else if (tool.category === 'text') {
-          textTools.innerHTML += card;
-          hasResults = true;
+        if (!tool || !tool.category) {
+          console.warn('工具数据格式错误:', tool);
+          return;
+        }
+        try {
+          const card = createCard(tool);
+          if (tool.category === 'dev') {
+            devTools.innerHTML += card;
+            hasResults = true;
+          } else if (tool.category === 'image') {
+            imageTools.innerHTML += card;
+            hasResults = true;
+          } else if (tool.category === 'text') {
+            // 检查是否是单位转换工具
+            if (tool.href && tool.href.includes('unit_converter')) {
+              unitTools.innerHTML += card;
+              hasResults = true;
+            } else {
+              textTools.innerHTML += card;
+              hasResults = true;
+            }
+          }
+        } catch (error) {
+          console.error('创建工具卡片失败:', tool, error);
         }
       });
 
@@ -542,19 +607,42 @@
       const devSection = document.getElementById('devSection');
       const imageSection = document.getElementById('imageSection');
       const textSection = document.getElementById('textSection');
+      const unitSection = document.getElementById('unitSection');
+
+      // 更新分类标题文本
+      if (devSection) {
+        const devTitle = devSection.querySelector('.section-icon').nextSibling;
+        if (devTitle) devTitle.textContent = ' ' + getCategoryName('dev');
+      }
+      if (imageSection) {
+        const imageTitle = imageSection.querySelector('.section-icon').nextSibling;
+        if (imageTitle) imageTitle.textContent = ' ' + getCategoryName('image');
+      }
+      if (textSection) {
+        const textTitle = textSection.querySelector('.section-icon').nextSibling;
+        if (textTitle) textTitle.textContent = ' ' + getCategoryName('text');
+      }
+      if (unitSection) {
+        const unitTitle = unitSection.querySelector('.section-icon').nextSibling;
+        if (unitTitle) unitTitle.textContent = ' ' + getCategoryName('unit');
+      }
 
       if (filteredTools) {
         const hasDev = toolsToRender.some(t => t.category === 'dev');
         const hasImage = toolsToRender.some(t => t.category === 'image');
-        const hasText = toolsToRender.some(t => t.category === 'text');
+        const hasText = toolsToRender.some(t => t.category === 'text' && !t.href.includes('unit_converter'));
+        const hasUnit = toolsToRender.some(t => t.category === 'text' && t.href.includes('unit_converter'));
 
         devSection.style.display = hasDev ? 'flex' : 'none';
         imageSection.style.display = hasImage ? 'flex' : 'none';
         textSection.style.display = hasText ? 'flex' : 'none';
+        unitSection.style.display = hasUnit ? 'flex' : 'none';
 
         // 显示搜索结果信息
         if (filteredTools.length > 0) {
-          searchResultsInfo.textContent = `找到 ${filteredTools.length} 个工具`;
+          searchResultsInfo.textContent = currentLang === 'en'
+            ? `Found ${filteredTools.length} tool${filteredTools.length > 1 ? 's' : ''}`
+            : `找到 ${filteredTools.length} 个工具`;
           searchResultsInfo.classList.add('show');
         } else {
           searchResultsInfo.classList.remove('show');
@@ -566,44 +654,92 @@
         devSection.style.display = 'flex';
         imageSection.style.display = 'flex';
         textSection.style.display = 'flex';
+        unitSection.style.display = 'flex';
         searchResultsInfo.classList.remove('show');
         noResults.classList.remove('show');
       }
     }
 
-    // 模糊搜索
+    // 模糊搜索（支持中英文、名字、详细介绍和关键词）
     function fuzzySearch(query) {
       if (!query || query.trim() === '') {
         return tools;
       }
 
       const lowerQuery = query.toLowerCase().trim();
-      return tools.filter(tool => {
-        const title = tool.title.toLowerCase();
-        const desc = tool.desc.toLowerCase();
-        const category = tool.category === 'dev' ? '开发' : tool.category === 'image' ? '图片' : '文字';
+      const queryWords = lowerQuery.split(/\s+/).filter(w => w.length > 0);
 
-        // 检查标题、描述、分类是否包含关键词
-        return title.includes(lowerQuery) ||
-          desc.includes(lowerQuery) ||
-          category.includes(lowerQuery) ||
-          // 支持拼音首字母搜索（简单实现）
-          tool.title.match(/[\u4e00-\u9fa5]/g)?.some(char => {
-            const pinyin = getPinyinInitial(char);
-            return pinyin && pinyin.toLowerCase().includes(lowerQuery);
-          });
+      return tools.filter(tool => {
+        // 获取工具的所有文本内容（中英文）
+        const titleZh = getToolText(tool, 'title');
+        const titleEn = (tool.title && typeof tool.title === 'object') ? (tool.title.en || '') : '';
+        const descZh = getToolText(tool, 'desc');
+        const descEn = (tool.desc && typeof tool.desc === 'object') ? (tool.desc.en || '') : '';
+        const keywords = tool.keywords || {};
+        const keywordsZh = keywords.zh || [];
+        const keywordsEn = keywords.en || [];
+
+        // 构建搜索文本（包含所有中英文内容）
+        const searchText = (
+          titleZh + ' ' + titleEn + ' ' +
+          descZh + ' ' + descEn + ' ' +
+          keywordsZh.join(' ') + ' ' +
+          keywordsEn.join(' ')
+        ).toLowerCase();
+
+        // 搜索标题（中英文）
+        const titleMatch = queryWords.some(word =>
+          titleZh.toLowerCase().includes(word) ||
+          titleEn.toLowerCase().includes(word)
+        ) || titleZh.toLowerCase().includes(lowerQuery) ||
+          titleEn.toLowerCase().includes(lowerQuery);
+
+        // 搜索描述（中英文）
+        const descMatch = queryWords.some(word =>
+          descZh.toLowerCase().includes(word) ||
+          descEn.toLowerCase().includes(word)
+        ) || descZh.toLowerCase().includes(lowerQuery) ||
+          descEn.toLowerCase().includes(lowerQuery);
+
+        // 搜索关键词（中英文）
+        const keywordMatch = queryWords.some(word =>
+          keywordsZh.some(kw => kw.toLowerCase().includes(word) || word.includes(kw.toLowerCase())) ||
+          keywordsEn.some(kw => kw.toLowerCase().includes(word) || word.includes(kw.toLowerCase()))
+        ) || keywordsZh.some(kw => kw.toLowerCase().includes(lowerQuery)) ||
+          keywordsEn.some(kw => kw.toLowerCase().includes(lowerQuery));
+
+        // 搜索分类
+        const categoryName = getCategoryName(tool.category);
+        const categoryMatch = categoryName.toLowerCase().includes(lowerQuery);
+
+        // 中文拼音首字母搜索
+        const pinyinMatch = titleZh.match(/[\u4e00-\u9fa5]/g)?.some(char => {
+          const pinyin = getPinyinInitial(char);
+          return pinyin && (pinyin.toLowerCase().includes(lowerQuery) || lowerQuery.includes(pinyin.toLowerCase()));
+        });
+
+        // 全文搜索（包含所有内容）
+        const fullTextMatch = searchText.includes(lowerQuery) ||
+          queryWords.every(word => searchText.includes(word));
+
+        return titleMatch || descMatch || keywordMatch || categoryMatch || pinyinMatch || fullTextMatch;
       });
     }
 
-    // 获取中文拼音首字母（简化版）
+    // 获取中文拼音首字母（扩展版）
     function getPinyinInitial(char) {
       const pinyinMap = {
         '安': 'a', '签': 'q', '名': 'm', '文': 'w', '件': 'j', '生': 's', '成': 'c', '工': 'g', '具': 'j',
         '信': 'x', '息': 'x', '提': 't', '取': 'q', '调': 'd', '试': 's', '格': 'g', '式': 's', '化': 'h',
         '转': 'z', '模': 'm', '型': 'x', '预': 'y', '览': 'l', '压': 'y', '缩': 's', '启': 'q', '动': 'd',
-        '图': 't', '标': 'b', '工': 'g', '厂': 'c', '互': 'h', '字': 'z', '串': 'c', '加': 'j', '解': 'j',
+        '图': 't', '标': 'b', '厂': 'c', '互': 'h', '字': 'z', '串': 'c', '加': 'j', '解': 'j',
         '密': 'm', '时': 's', '间': 'j', '戳': 'c', '多': 'd', '种': 'z', '颜': 'y', '色': 's', '码': 'm',
-        '条': 't', '形': 'x', '码': 'm'
+        '条': 't', '形': 'x', '单': 'd', '位': 'w', '长': 'c', '度': 'd', '重': 'z', '量': 'l',
+        '温': 'w', '面': 'm', '积': 'j', '体': 't', '速': 's', '数': 's', '据': 'j', '角': 'j',
+        '压': 'y', '力': 'l', '机': 'j', '型': 'x', '信': 'x', '息': 'x', '生': 's', '成': 'g',
+        '器': 'q', '压': 'y', '缩': 's', '启': 'q', '动': 'd', '图': 't', '标': 'b', '工': 'g',
+        '厂': 'c', '互': 'h', '转': 'z', '字': 'z', '串': 'c', '加': 'j', '解': 'j', '密': 'm',
+        '时': 's', '间': 'j', '戳': 'c', '多': 'd', '种': 'z', '颜': 'y', '色': 's', '码': 'm'
       };
       return pinyinMap[char] || '';
     }
@@ -611,41 +747,110 @@
     // 初始化快捷入口
     function initQuickLinks() {
       const quickLinks = document.getElementById('quickLinks');
-      // 选择评分5星的热门工具作为快捷入口
-      const popularTools = tools.filter(t => t.rating === 5).slice(0, 8);
+      quickLinks.innerHTML = '';
+      // 从配置中获取推荐工具的评分阈值和数量限制
+      const ratingThreshold = window.homeConfig?.quickAccessRating || 0;
+      const limit = window.homeConfig?.quickAccessLimit || 0;
+
+      // 如果评分阈值为0，显示所有工具；否则按评分过滤
+      let popularTools = ratingThreshold > 0
+        ? tools.filter(t => t.rating >= ratingThreshold)
+        : tools;
+
+      // 如果数量限制为0，显示所有工具；否则限制数量
+      if (limit > 0) {
+        popularTools = popularTools.slice(0, limit);
+      }
 
       popularTools.forEach(tool => {
         const link = document.createElement('a');
         link.href = tool.href;
         link.className = 'quick-link';
-        link.innerHTML = `<span class="quick-link-icon">${tool.icon}</span><span>${tool.title}</span>`;
+        const title = getToolText(tool, 'title');
+        link.innerHTML = `<span class="quick-link-icon">${tool.icon}</span><span>${title}</span>`;
         quickLinks.appendChild(link);
       });
+    }
+
+    // 初始化应用
+    function initApp() {
+      if (!initToolsData()) {
+        console.error('工具数据初始化失败');
+        return;
+      }
+      console.log('初始化应用，工具数量:', tools.length);
+      renderTools();
+      initQuickLinks();
+
+      // 更新页面标题
+      document.title = getHomeConfig('title');
+
+      // 更新搜索框占位符
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.placeholder = getHomeConfig('searchPlaceholder');
+      }
+
+      // 更新页面标题和描述
+      const headerTitle = document.querySelector('.header h1');
+      const headerDesc = document.querySelector('.header p');
+      if (headerTitle) {
+        headerTitle.textContent = getHomeConfig('title');
+      }
+      if (headerDesc) {
+        headerDesc.textContent = getHomeConfig('description');
+      }
+
+      // 更新快捷入口标题
+      const quickAccessTitle = document.querySelector('.quick-access-title');
+      if (quickAccessTitle) {
+        const text = quickAccessTitle.querySelector('span:last-child');
+        if (text) {
+          text.textContent = getHomeConfig('quickAccessTitle');
+        }
+      }
+
+      // 更新无结果提示
+      const noResults = document.getElementById('noResults');
+      if (noResults) {
+        const noResultsText = noResults.querySelector('div:last-child');
+        if (noResultsText) {
+          noResultsText.textContent = getHomeConfig('noResultsText');
+        }
+        const noResultsTitle = noResults.querySelector('div:nth-child(2)');
+        if (noResultsTitle) {
+          noResultsTitle.textContent = getHomeConfig('noResultsTitle');
+        }
+      }
     }
 
     // 搜索事件监听
     let searchTimeout;
     document.addEventListener('DOMContentLoaded', () => {
-      renderTools();
-      initQuickLinks();
+      // 初始化工具数据
+      if (initToolsData()) {
+        initApp();
+      }
 
       const searchInput = document.getElementById('searchInput');
-      searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-          const query = e.target.value;
-          const results = fuzzySearch(query);
-          renderTools(results);
-        }, 300);
-      });
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            const query = e.target.value;
+            const results = fuzzySearch(query);
+            renderTools(results);
+          }, 300);
+        });
 
-      // 支持键盘快捷键 Ctrl/Cmd + K 聚焦搜索框
-      document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-          e.preventDefault();
-          searchInput.focus();
-        }
-      });
+        // 支持键盘快捷键 Ctrl/Cmd + K 聚焦搜索框
+        document.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+          }
+        });
+      }
     });
   </script>
 </body>
