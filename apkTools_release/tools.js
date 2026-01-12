@@ -171,6 +171,24 @@
         href: "./unit_converter.html",
         category: "text",
         rating: 5
+      },
+      {
+        icon: "💱",
+        title: { zh: "汇率转换工具", en: "Currency Converter" },
+        desc: { zh: "实时汇率查询与转换，支持全球主要货币，包含汇率换算工具和实时汇率列表，支持搜索功能。", en: "Real-time exchange rate query and conversion, support major global currencies, includes currency converter and real-time exchange rate list with search function." },
+        keywords: { zh: ["currency", "汇率", "货币", "转换", "实时", "汇率查询", "人民币", "美元", "欧元", "汇率列表"], en: ["currency", "exchange rate", "money", "convert", "real-time", "rate query", "CNY", "USD", "EUR", "rate list"] },
+        href: "./currency_converter.html",
+        category: "text",
+        rating: 5
+      },
+      {
+        icon: "🌍",
+        title: { zh: "IP地址查询工具", en: "IP Address Query Tool" },
+        desc: { zh: "查询当前IP和输入IP的归属地信息，包括国家、城市、ISP、时区等详细信息。", en: "Query current IP and input IP location information, including country, city, ISP, timezone and other detailed information." },
+        keywords: { zh: ["ip", "ip地址", "归属地", "地理位置", "isp", "时区", "查询", "定位"], en: ["ip", "ip address", "location", "geolocation", "isp", "timezone", "query", "lookup"] },
+        href: "./ip_query.html",
+        category: "text",
+        rating: 4
       }
     ],
     categories: {

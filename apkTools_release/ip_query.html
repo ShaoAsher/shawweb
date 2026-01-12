@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP地址查询工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .query-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid #dee2e6;
+    }
+
+    .query-section h2 {
+      font-size: 20px;
+      color: #495057;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .query-form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .input-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      height: fit-content;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    }
+
+    .result-section {
+      margin-top: 25px;
+    }
+
+    .result-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      border: 2px solid #e9ecef;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    }
+
+    .result-card h3 {
+      font-size: 18px;
+      color: #2d3748;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .result-item {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: #718096;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 16px;
+      color: #2d3748;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .result-value.empty {
+      color: #adb5bd;
+      font-style: italic;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #718096;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e9ecef;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      background: #fff5f5;
+      border-color: #fc8181;
+      color: #c53030;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .ip-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .query-form {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="icon" href="data:,">
+  <script src="./tools.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="./index.html" class="home-btn">🏠</a>
+      <h1></h1>
+      <p></p>
+    </div>
+    <div class="content">
+      <!-- 当前IP查询 -->
+      <div class="query-section">
+        <h2>
+          <span>🌐</span>
+          <span>当前IP地址查询</span>
+        </h2>
+        <button class="btn" id="queryCurrentBtn">
+          <span>查询我的IP</span>
+        </button>
+        <div id="currentIpResult"></div>
+      </div>
+
+      <!-- 输入IP查询 -->
+      <div class="query-section">
+        <h2>
+          <span>🔍</span>
+          <span>IP地址归属地查询</span>
+        </h2>
+        <div class="query-form">
+          <div class="input-group">
+            <label for="ipInput">IP地址</label>
+            <input type="text" id="ipInput" placeholder="请输入IP地址，例如：8.8.8.8" />
+          </div>
+          <button class="btn" id="queryIpBtn">
+            <span>查询</span>
+          </button>
+        </div>
+        <div id="ipResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // IP查询API（使用ip-api.com的JSONP接口，支持CORS）
+    const IP_API_BASE = 'http://ip-api.com/json/';
+
+    // 验证IP地址格式
+    function isValidIP(ip) {
+      const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      return ipRegex.test(ip);
+    }
+
+    // 使用JSONP方式查询IP信息（绕过CORS限制）
+    function queryIP(ip = '') {
+      return new Promise((resolve, reject) => {
+        // 创建唯一的回调函数名
+        const callbackName = 'ipQueryCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        // 创建script标签
+        const script = document.createElement('script');
+        const targetUrl = ip
+          ? `${IP_API_BASE}${ip}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as&callback=${callbackName}`
+          : `${IP_API_BASE}?fields=status,message,query,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as&callback=${callbackName}`;
+
+        script.src = targetUrl;
+
+        // 设置超时
+        const timeout = setTimeout(() => {
+          if (document.head.contains(script)) {
+            document.head.removeChild(script);
+          }
+          if (window[callbackName]) {
+            delete window[callbackName];
+          }
+          reject(new Error('请求超时，请检查网络连接'));
+        }, 15000);
+
+        // 设置全局回调函数
+        window[callbackName] = function (data) {
+          // 清理
+          clearTimeout(timeout);
+          if (document.head.contains(script)) {
+            document.head.removeChild(script);
+          }
+          delete window[callbackName];
+
+          if (data.status === 'fail') {
+            reject(new Error(data.message || '查询失败'));
+            return;
+          }
+
+          resolve({
+            ip: data.query,
+            country: data.country || '未知',
+            countryCode: data.countryCode || '',
+            region: data.regionName || data.region || '未知',
+            city: data.city || '未知',
+            zip: data.zip || '未知',
+            lat: data.lat || 0,
+            lon: data.lon || 0,
+            timezone: data.timezone || '未知',
+            isp: data.isp || '未知',
+            org: data.org || '未知',
+            as: data.as || '未知'
+          });
+        };
+
+        // 错误处理
+        script.onerror = () => {
+          clearTimeout(timeout);
+          if (document.head.contains(script)) {
+            document.head.removeChild(script);
+          }
+          if (window[callbackName]) {
+            delete window[callbackName];
+          }
+          reject(new Error('网络请求失败，请检查网络连接'));
+        };
+
+        // 添加到页面
+        document.head.appendChild(script);
+      });
+    }
+
+    // 显示加载状态
+    function showLoading(containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <div>正在查询中...</div>
+        </div>
+      `;
+    }
+
+    // 显示错误信息
+    function showError(containerId, message) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `
+        <div class="error">
+          <strong>❌ 查询失败</strong>
+          <p>${message}</p>
+        </div>
+      `;
+    }
+
+    // 显示查询结果
+    function showResult(containerId, data, isCurrent = false) {
+      const container = document.getElementById(containerId);
+      const title = isCurrent ? '当前IP信息' : 'IP归属地信息';
+      const icon = isCurrent ? '🌐' : '📍';
+
+      container.innerHTML = `
+        <div class="result-card">
+          <h3>
+            <span>${icon}</span>
+            <span>${title}</span>
+            <span class="ip-badge">${data.ip}</span>
+          </h3>
+          <div class="result-grid">
+            <div class="result-item">
+              <div class="result-label">国家/地区</div>
+              <div class="result-value">${data.country} ${data.countryCode ? `(${data.countryCode})` : ''}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">省份/州</div>
+              <div class="result-value">${data.region}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">城市</div>
+              <div class="result-value">${data.city}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">邮政编码</div>
+              <div class="result-value ${data.zip === '未知' ? 'empty' : ''}">${data.zip}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">时区</div>
+              <div class="result-value">${data.timezone}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">ISP服务商</div>
+              <div class="result-value">${data.isp}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">组织</div>
+              <div class="result-value ${data.org === '未知' ? 'empty' : ''}">${data.org}</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">AS编号</div>
+              <div class="result-value ${data.as === '未知' ? 'empty' : ''}">${data.as}</div>
+            </div>
+            ${data.lat && data.lon ? `
+            <div class="result-item">
+              <div class="result-label">经纬度</div>
+              <div class="result-value">${data.lat}, ${data.lon}</div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // 查询当前IP
+    document.getElementById('queryCurrentBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('queryCurrentBtn');
+      const originalText = btn.innerHTML;
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>查询中...</span>';
+      showLoading('currentIpResult');
+
+      try {
+        const data = await queryIP();
+        showResult('currentIpResult', data, true);
+      } catch (error) {
+        showError('currentIpResult', error.message || '无法获取当前IP信息，请检查网络连接');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
+
+    // 查询输入IP
+    document.getElementById('queryIpBtn').addEventListener('click', async () => {
+      const ipInput = document.getElementById('ipInput');
+      const ip = ipInput.value.trim();
+      const btn = document.getElementById('queryIpBtn');
+      const originalText = btn.innerHTML;
+
+      if (!ip) {
+        showError('ipResult', '请输入IP地址');
+        return;
+      }
+
+      if (!isValidIP(ip)) {
+        showError('ipResult', 'IP地址格式不正确，请输入有效的IPv4地址');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>查询中...</span>';
+      showLoading('ipResult');
+
+      try {
+        const data = await queryIP(ip);
+        showResult('ipResult', data, false);
+      } catch (error) {
+        showError('ipResult', error.message || '查询失败，请检查IP地址是否正确');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
+
+    // 支持回车键查询
+    document.getElementById('ipInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('queryIpBtn').click();
+      }
+    });
+
+    // 页面加载时自动查询当前IP
+    window.addEventListener('DOMContentLoaded', () => {
+      // 延迟一下，确保页面完全加载
+      setTimeout(() => {
+        document.getElementById('queryCurrentBtn').click();
+      }, 500);
+    });
+  </script>
+</body>
+
+</html>
