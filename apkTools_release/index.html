@@ -536,28 +536,28 @@
       <!-- 开发工具 -->
       <div class="section-title" id="devSection">
         <span class="section-icon">💻</span>
-        <span>开发工具</span>
+        <span id="devSectionTitle"></span>
       </div>
       <div class="tools-grid" id="devTools"></div>
 
       <!-- 图片工具 -->
       <div class="section-title" id="imageSection">
         <span class="section-icon">🖼️</span>
-        <span>图片工具</span>
+        <span id="imageSectionTitle"></span>
       </div>
       <div class="tools-grid" id="imageTools"></div>
 
       <!-- 文字/编码工具 -->
       <div class="section-title" id="textSection">
         <span class="section-icon">📝</span>
-        <span>文字/编码工具</span>
+        <span id="textSectionTitle"></span>
       </div>
       <div class="tools-grid" id="textTools"></div>
 
       <!-- 单位转换工具 -->
       <div class="section-title" id="unitSection">
         <span class="section-icon">📐</span>
-        <span>单位转换工具</span>
+        <span id="unitSectionTitle"></span>
       </div>
       <div class="tools-grid" id="unitTools"></div>
 
@@ -739,22 +739,23 @@
       const textSection = document.getElementById('textSection');
       const unitSection = document.getElementById('unitSection');
 
-      // 更新分类标题文本
-      if (devSection) {
-        const devTitle = devSection.querySelector('.section-icon').nextSibling;
-        if (devTitle) devTitle.textContent = ' ' + getCategoryName('dev');
+      // 更新分类标题文本（避免重复）
+      const devTitleEl = document.getElementById('devSectionTitle');
+      const imageTitleEl = document.getElementById('imageSectionTitle');
+      const textTitleEl = document.getElementById('textSectionTitle');
+      const unitTitleEl = document.getElementById('unitSectionTitle');
+
+      if (devTitleEl) {
+        devTitleEl.textContent = getCategoryName('dev');
       }
-      if (imageSection) {
-        const imageTitle = imageSection.querySelector('.section-icon').nextSibling;
-        if (imageTitle) imageTitle.textContent = ' ' + getCategoryName('image');
+      if (imageTitleEl) {
+        imageTitleEl.textContent = getCategoryName('image');
       }
-      if (textSection) {
-        const textTitle = textSection.querySelector('.section-icon').nextSibling;
-        if (textTitle) textTitle.textContent = ' ' + getCategoryName('text');
+      if (textTitleEl) {
+        textTitleEl.textContent = getCategoryName('text');
       }
-      if (unitSection) {
-        const unitTitle = unitSection.querySelector('.section-icon').nextSibling;
-        if (unitTitle) unitTitle.textContent = ' ' + getCategoryName('unit');
+      if (unitTitleEl) {
+        unitTitleEl.textContent = getCategoryName('unit');
       }
 
       if (filteredTools) {
