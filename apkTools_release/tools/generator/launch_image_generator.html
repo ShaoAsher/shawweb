@@ -5,11 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>启动图生成工具 - iOS & Android</title>
-    <!-- Google Fonts - 艺术字体 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
   <style>
     /* 继承theme.css的基础样式 */
     /* 以下是工具页面特定的样式覆盖 */
@@ -297,8 +293,9 @@
     .btn-secondary {
       background: var(--color-secondary);
       color: var(--color-text-on-primary);
-    
-      color: var(--color-text-on-primary);}
+
+      color: var(--color-text-on-primary);
+    }
 
     .btn-secondary:hover {
       background: var(--color-primary-dark);
@@ -483,6 +480,184 @@
       background: rgba(255, 255, 255, 0.3);
       transform: rotate(90deg);
     }
+
+    /* 输出格式选择样式 */
+    .format-icon {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 1.2em;
+    }
+
+    .output-format-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .format-option {
+      position: relative;
+    }
+
+    .format-radio {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .format-label {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .format-label::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .format-label:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .format-label:hover::before {
+      opacity: 1;
+    }
+
+    .format-option:has(.format-radio:checked) .format-label,
+    .format-option.format-selected .format-label {
+      border-color: var(--color-primary);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .format-option:has(.format-radio:checked) .format-label::before,
+    .format-option.format-selected .format-label::before {
+      opacity: 1;
+    }
+
+    .format-icon-wrapper {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border-radius: var(--radius-md);
+      transition: all 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .format-option:has(.format-radio:checked) .format-icon-wrapper,
+    .format-option.format-selected .format-icon-wrapper {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      transform: scale(1.05);
+    }
+
+    .format-svg {
+      width: 32px;
+      height: 32px;
+      color: var(--color-primary);
+      transition: all 0.3s;
+    }
+
+    .format-option:has(.format-radio:checked) .format-svg,
+    .format-option.format-selected .format-svg {
+      color: var(--color-primary-dark);
+      transform: scale(1.1);
+    }
+
+    .format-content {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .format-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+
+    .format-option:has(.format-radio:checked) .format-title,
+    .format-option.format-selected .format-title {
+      color: var(--color-primary-dark);
+    }
+
+    .format-desc {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+      transition: color 0.3s;
+    }
+
+    .format-check {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      color: var(--color-primary);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .format-option:has(.format-radio:checked) .format-check,
+    .format-option.format-selected .format-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .format-check svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 640px) {
+      .output-format-container {
+        grid-template-columns: 1fr;
+      }
+
+      .format-label {
+        padding: 16px;
+        gap: 12px;
+      }
+
+      .format-icon-wrapper {
+        width: 48px;
+        height: 48px;
+      }
+
+      .format-svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
   </style>
 </head>
 
@@ -537,16 +712,59 @@
 
       <!-- 输出格式 -->
       <div class="form-section" id="outputFormatSection" style="display: none;">
-        <h2>🧩 输出格式（Android）</h2>
-        <div class="form-group">
-          <label>
-            <input type="radio" name="output-format" id="outputFormatPng" class="size-radio" value="png">
-            普通 PNG
-          </label>
-          <label style="margin-left: 20px;">
-            <input type="radio" name="output-format" id="outputFormatNine" class="size-radio" value="nine">
-            .9.png（Nine‑Patch）
-          </label>
+        <h2>
+          <span class="format-icon">🧩</span>
+          输出格式（Android）
+        </h2>
+        <div class="output-format-container">
+          <div class="format-option" data-format="png">
+            <input type="radio" name="output-format" id="outputFormatPng" class="format-radio" value="png" checked>
+            <label for="outputFormatPng" class="format-label">
+              <div class="format-icon-wrapper">
+                <svg class="format-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
+                  <path d="M9 9h6v6H9z" stroke="currentColor" stroke-width="1.5" fill="none" />
+                </svg>
+              </div>
+              <div class="format-content">
+                <div class="format-title">普通 PNG</div>
+                <div class="format-desc">标准图片格式，适用于普通场景</div>
+              </div>
+              <div class="format-check">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="currentColor" />
+                  <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </label>
+          </div>
+          <div class="format-option" data-format="nine">
+            <input type="radio" name="output-format" id="outputFormatNine" class="format-radio" value="nine">
+            <label for="outputFormatNine" class="format-label">
+              <div class="format-icon-wrapper">
+                <svg class="format-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="20" height="20" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
+                  <path d="M2 2h4v4H2z" fill="currentColor" opacity="0.6" />
+                  <path d="M18 2h4v4h-4z" fill="currentColor" opacity="0.6" />
+                  <path d="M2 18h4v4H2z" fill="currentColor" opacity="0.6" />
+                  <path d="M18 18h4v4h-4z" fill="currentColor" opacity="0.6" />
+                  <rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.5" fill="none" />
+                </svg>
+              </div>
+              <div class="format-content">
+                <div class="format-title">.9.png（Nine‑Patch）</div>
+                <div class="format-desc">Android 九宫格图片，支持智能拉伸</div>
+              </div>
+              <div class="format-check">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="currentColor" />
+                  <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -675,6 +893,7 @@
           if (outputFormatPng && outputFormatNine) {
             outputFormatPng.checked = outputFormat === 'png';
             outputFormatNine.checked = outputFormat === 'nine';
+            updateFormatVisualState();
           }
           updateOutputFormatVisibility();
           selectedSize = null;
@@ -690,13 +909,35 @@
       generateBtn.addEventListener('click', generateImage);
       downloadBtn.addEventListener('click', downloadImage);
 
+      // 更新格式选项的视觉状态
+      const updateFormatVisualState = () => {
+        const formatOptions = document.querySelectorAll('.format-option');
+        formatOptions.forEach(option => {
+          const radio = option.querySelector('.format-radio');
+          if (radio && radio.checked) {
+            option.classList.add('format-selected');
+          } else {
+            option.classList.remove('format-selected');
+          }
+        });
+      };
+
       if (outputFormatPng && outputFormatNine) {
         outputFormatPng.addEventListener('change', () => {
-          if (outputFormatPng.checked) outputFormat = 'png';
+          if (outputFormatPng.checked) {
+            outputFormat = 'png';
+            updateFormatVisualState();
+          }
         });
         outputFormatNine.addEventListener('change', () => {
-          if (outputFormatNine.checked) outputFormat = 'nine';
+          if (outputFormatNine.checked) {
+            outputFormat = 'nine';
+            updateFormatVisualState();
+          }
         });
+
+        // 初始化视觉状态
+        updateFormatVisualState();
       }
 
       // 删除图片
@@ -725,8 +966,10 @@
       outputFormatSection.style.display = currentPlatform === 'android' ? 'block' : 'none';
       if (currentPlatform === 'android') {
         outputFormat = outputFormat || 'nine';
-        outputFormatPng.checked = outputFormat === 'png';
-        outputFormatNine.checked = outputFormat === 'nine';
+        if (outputFormatPng && outputFormatNine) {
+          outputFormatPng.checked = outputFormat === 'png';
+          outputFormatNine.checked = outputFormat === 'nine';
+        }
       }
     }
 

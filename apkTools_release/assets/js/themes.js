@@ -68,8 +68,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：优雅现代字体（Inter + 中文字体）
-        fontFamily: '"Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        // 字体系列：系统默认字体
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 
         // 字号配置：响应式字体大小系统
         fontSizeBase: '16px',         // 基础字号：正文、按钮文字
@@ -164,8 +164,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：科技感字体（需要加载外部字体）
-        fontFamily: '"Orbitron", "Rajdhani", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        // 字体系列：系统默认字体
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',
@@ -254,8 +254,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：清新自然字体（Poppins + 中文字体）
-        fontFamily: '"Poppins", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        // 字体系列：系统默认字体
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',
@@ -344,8 +344,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：现代简约字体（Montserrat + 中文字体）
-        fontFamily: '"Montserrat", "Noto Sans SC", "Helvetica Neue", Helvetica, Arial, sans-serif',
+        // 字体系列：系统默认字体
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',
@@ -434,8 +434,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：现代商务字体（Inter + 中文字体）
-        fontFamily: '"Inter", "Poppins", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        // 字体系列：系统默认字体
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',
@@ -524,8 +524,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：清新自然字体（Poppins + 中文字体）
-        fontFamily: '"Poppins", "Montserrat", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        // 字体系列：系统默认字体
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',

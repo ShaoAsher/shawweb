@@ -5,11 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JSON 转 Model 工具</title>
-    <!-- Google Fonts - 艺术字体 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
   <style>
     /* 继承theme.css的基础样式 */
     /* 以下是工具页面特定的样式覆盖 */
@@ -213,9 +209,8 @@
 
     .btn-success:hover {
       background: var(--color-success);
-      transform: translateY(-2px)
-    
-      color: var(--color-text-on-primary);}
+      transform: translateY(-2px) color: var(--color-text-on-primary);
+    }
 
     .result-section {
       background: var(--color-surface);
@@ -372,7 +367,9 @@
       <div id="messageArea"></div>
 
       <div class="result-section" id="resultSection" style="display: none;">
-        <h3>生成的代码 <span style="font-size: var(--font-size-small); font-weight: normal; color: var(--color-text-secondary);" id="langName"></span></h3>
+        <h3>生成的代码 <span
+            style="font-size: var(--font-size-small); font-weight: normal; color: var(--color-text-secondary);"
+            id="langName"></span></h3>
         <div class="code-output" id="codeOutput"></div>
       </div>
     </div>
