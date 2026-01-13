@@ -131,16 +131,16 @@
         primaryLight: '#ffbe0b',      // 主色浅色：黄色霓虹（辅助元素）
         secondary: '#8338ec',         // 辅助色：紫色霓虹（次要按钮、标签）
 
-        // 背景色 - 暗黑渐变
+        // 背景色 - 暗黑渐变（确保所有背景都是暗色或暗色渐变）
         background: 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b3d 100%)',  // 页面主背景：深色渐变
-        backgroundAlt: 'linear-gradient(135deg, #1a1a3e 0%, #2d1b3d 100%)',  // 备用背景：深紫渐变
+        backgroundAlt: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',  // 备用背景：深蓝黑渐变
         surface: '#1a1a2e',           // 表面色：深蓝黑色（卡片背景）
         surfaceAlt: '#16213e',        // 表面备用色：更深蓝黑色
 
-        // 文本色 - 高对比度
-        text: '#e0e0e0',              // 主文本色：浅灰色（标题、正文）
-        textSecondary: '#a0a0a0',     // 次要文本色：中灰色（描述）
-        textLight: '#666666',         // 浅色文本：深灰色（占位符）
+        // 文本色 - 高对比度白色和发光色
+        text: '#ffffff',              // 主文本色：纯白色（标题、正文）- 增强对比度
+        textSecondary: '#b0e0ff',     // 次要文本色：浅青色发光（描述）
+        textLight: '#80a0c0',         // 浅色文本：青色灰（占位符）
         textOnPrimary: '#0a0e27',     // 主色上的文本：深色（按钮文字）
 
         // 边框色 - 霓虹边框
@@ -148,10 +148,10 @@
         borderLight: '#8338ec',       // 浅边框色：紫色霓虹（分隔线）
 
         // 阴影色 - 霓虹发光效果
-        shadow: 'rgba(0, 240, 255, .3)',        // 主阴影：青色发光（大卡片阴影）
-        shadowLight: 'rgba(0, 240, 255, .1)',   // 浅阴影：青色微光（小元素阴影）
-        shadowPrimary: 'rgba(0, 240, 255, .4)', // 主色阴影：青色强光（按钮、焦点阴影）
-        hover: 'rgba(0, 240, 255, .2)',         // 悬停背景：青色半透明
+        shadow: 'rgba(0, 240, 255, .4)',        // 主阴影：青色发光（大卡片阴影）- 增强发光
+        shadowLight: 'rgba(0, 240, 255, .15)',   // 浅阴影：青色微光（小元素阴影）
+        shadowPrimary: 'rgba(0, 240, 255, .5)', // 主色阴影：青色强光（按钮、焦点阴影）- 增强发光
+        hover: 'rgba(0, 240, 255, .25)',         // 悬停背景：青色半透明 - 增强效果
 
         // 状态色 - 霓虹色彩
         success: '#00ff88',           // 成功色：绿色霓虹
@@ -197,10 +197,10 @@
 
       // ========== 阴影配置 ==========
       shadows: {
-        sm: '0 2px 8px rgba(0, 240, 255, .2)',   // 青色微光
-        md: '0 4px 12px rgba(0, 240, 255, .3)',  // 青色中光
-        lg: '0 8px 20px rgba(0, 240, 255, .4)',  // 青色强光
-        xl: '0 20px 60px rgba(0, 240, 255, .3)'  // 青色大光
+        sm: '0 2px 8px rgba(0, 240, 255, .25), 0 0 10px rgba(0, 240, 255, .1)',   // 青色微光 + 外发光
+        md: '0 4px 12px rgba(0, 240, 255, .35), 0 0 15px rgba(0, 240, 255, .15)',  // 青色中光 + 外发光
+        lg: '0 8px 20px rgba(0, 240, 255, .45), 0 0 25px rgba(0, 240, 255, .2)',  // 青色强光 + 外发光
+        xl: '0 20px 60px rgba(0, 240, 255, .4), 0 0 40px rgba(0, 240, 255, .15)'  // 青色大光 + 外发光
       }
     },
 
@@ -219,15 +219,15 @@
         primaryLight: '#60a5fa',      // 主色浅色：浅蓝色
         secondary: '#8b5cf6',         // 辅助色：紫色
 
-        // 背景色 - 浅色渐变
-        background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%)',  // 页面主背景：浅蓝绿渐变
+        // 背景色 - 精美浅色渐变
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)',  // 页面主背景：精美浅灰渐变
         backgroundAlt: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',  // 备用背景：纯白渐变
         surface: '#ffffff',           // 表面色：纯白色
         surfaceAlt: '#f8fafc',        // 表面备用色：极浅灰色
 
-        // 文本色 - 深色文本
-        text: '#1e293b',              // 主文本色：深蓝灰色
-        textSecondary: '#64748b',     // 次要文本色：中蓝灰色
+        // 文本色 - 深色文本（确保可读性）
+        text: '#0f172a',              // 主文本色：深蓝灰色（增强对比度）
+        textSecondary: '#475569',     // 次要文本色：中蓝灰色
         textLight: '#94a3b8',         // 浅色文本：浅蓝灰色
         textOnPrimary: '#ffffff',     // 主色上的文本：白色
 
@@ -235,11 +235,11 @@
         border: '#e2e8f0',            // 主边框色：浅蓝灰色
         borderLight: '#f1f5f9',       // 浅边框色：极浅蓝灰色
 
-        // 阴影色 - 轻微阴影
-        shadow: 'rgba(0, 0, 0, .08)',         // 主阴影：极浅阴影
-        shadowLight: 'rgba(0, 0, 0, .04)',    // 浅阴影：几乎不可见
-        shadowPrimary: 'rgba(59, 130, 246, .15)',  // 主色阴影：蓝色浅阴影
-        hover: 'rgba(59, 130, 246, .1)',      // 悬停背景：蓝色极浅
+        // 阴影色 - 精美阴影
+        shadow: 'rgba(0, 0, 0, .1)',         // 主阴影：精美阴影
+        shadowLight: 'rgba(0, 0, 0, .05)',    // 浅阴影：轻微阴影
+        shadowPrimary: 'rgba(59, 130, 246, .2)',  // 主色阴影：蓝色阴影（增强）
+        hover: 'rgba(59, 130, 246, .12)',      // 悬停背景：蓝色浅色（增强）
 
         // 状态色 - 清新色彩
         success: '#10b981',           // 成功色：清新绿色
@@ -284,10 +284,10 @@
 
       // ========== 阴影配置 ==========
       shadows: {
-        sm: '0 1px 3px rgba(0, 0, 0, .08)',       // 极小阴影
-        md: '0 4px 6px rgba(0, 0, 0, .1)',        // 轻微阴影
-        lg: '0 10px 15px rgba(0, 0, 0, .1)',      // 中等阴影
-        xl: '0 20px 25px rgba(0, 0, 0, .15)'      // 较大阴影
+        sm: '0 1px 3px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .06)',       // 精美小阴影
+        md: '0 4px 6px rgba(0, 0, 0, .1), 0 2px 4px rgba(0, 0, 0, .06)',        // 精美中阴影
+        lg: '0 10px 15px rgba(0, 0, 0, .1), 0 4px 6px rgba(0, 0, 0, .05)',      // 精美大阴影
+        xl: '0 20px 25px rgba(0, 0, 0, .15), 0 10px 10px rgba(0, 0, 0, .04)'      // 精美超大阴影
       }
     },
 
@@ -306,16 +306,16 @@
         primaryLight: '#7289da',      // 主色浅色：浅Discord蓝
         secondary: '#57f287',         // 辅助色：Discord绿
 
-        // 背景色 - 暗色背景
-        background: '#36393f',        // 页面主背景：Discord灰（固定色，不用渐变）
-        backgroundAlt: '#2f3136',     // 备用背景：更深灰
+        // 背景色 - 暗色渐变（确保所有背景都是暗色或暗色渐变）
+        background: 'linear-gradient(135deg, #2c2f33 0%, #36393f 50%, #2f3136 100%)',  // 页面主背景：暗色渐变
+        backgroundAlt: 'linear-gradient(135deg, #23272a 0%, #2c2f33 100%)',  // 备用背景：深灰渐变
         surface: '#40444b',           // 表面色：中灰色（卡片背景）
-        surfaceAlt: '#36393f',        // 表面备用色：同主背景
+        surfaceAlt: '#36393f',        // 表面备用色：主背景色
 
-        // 文本色 - 浅色文本
-        text: '#dcddde',              // 主文本色：Discord浅灰
-        textSecondary: '#b9bbbe',     // 次要文本色：Discord中灰
-        textLight: '#72767d',         // 浅色文本：Discord深灰
+        // 文本色 - 高对比度白色
+        text: '#ffffff',              // 主文本色：纯白色（标题、正文）- 增强对比度
+        textSecondary: '#e0e0e0',     // 次要文本色：亮灰色（描述）
+        textLight: '#a0a0a0',         // 浅色文本：中灰色（占位符）
         textOnPrimary: '#ffffff',     // 主色上的文本：白色
 
         // 边框色 - 深色边框
@@ -403,16 +403,18 @@
       themeName = defaultTheme;
     }
     localStorage.setItem('theme', themeName);
-    applyTheme(themes[themeName]);
-    return themes[themeName];
+    const theme = themes[themeName];
+    applyTheme(theme, themeName);
+    return theme;
   }
 
   /**
    * 应用主题到页面
    * 将所有主题配置转换为CSS变量并应用到文档根元素
    * @param {Object} theme - 主题配置对象
+   * @param {string} themeKey - 主题键名（可选）
    */
-  function applyTheme(theme) {
+  function applyTheme(theme, themeKey) {
     const root = document.documentElement;
 
     // 设置CSS变量 - 颜色变量
@@ -444,6 +446,14 @@
     document.body.style.background = theme.colors.background;
     document.body.style.fontFamily = theme.typography.fontFamily;
     document.body.style.color = theme.colors.text;
+
+    // 设置主题标识，用于CSS选择器
+    if (themeKey) {
+      document.body.setAttribute('data-theme', themeKey);
+      // 移除所有主题类，添加当前主题类
+      document.body.className = document.body.className.replace(/\b(purple|cyberpunk|light|modern)\b/g, '');
+      document.body.classList.add(themeKey);
+    }
   }
 
   /**
@@ -463,8 +473,9 @@
    * @returns {Object} 应用的主题配置对象
    */
   function initTheme() {
-    const theme = getCurrentTheme();
-    applyTheme(theme);
+    const saved = localStorage.getItem('theme') || defaultTheme;
+    const theme = themes[saved] || themes[defaultTheme];
+    applyTheme(theme, saved);
     return theme;
   }
 

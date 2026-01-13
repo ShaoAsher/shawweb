@@ -78,6 +78,132 @@ body {
   line-height: var(--line-height);
 }
 
+/* 暗色主题文本增强（通过data-theme属性或类名） */
+body[data-theme="cyberpunk"] .header,
+body.cyberpunk .header {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3), 0 2px 10px rgba(0, 0, 0, .5);
+}
+
+body[data-theme="cyberpunk"] .header h1,
+body.cyberpunk .header h1 {
+  text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 0 0 25px rgba(0, 240, 255, 0.4), 0 2px 10px rgba(0, 0, 0, .5);
+  color: #ffffff;
+}
+
+body[data-theme="modern"] .header,
+body.modern .header {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+}
+
+body[data-theme="modern"] .header h1,
+body.modern .header h1 {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+  color: #ffffff;
+}
+
+/* 暗色主题增强卡片和输入框 */
+body[data-theme="cyberpunk"] .container,
+body.cyberpunk .container,
+body[data-theme="modern"] .container,
+body.modern .container {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+body[data-theme="cyberpunk"] .card,
+body.cyberpunk .card,
+body[data-theme="modern"] .card,
+body.modern .card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+/* 确保所有暗色主题的文本都是高对比度 */
+body[data-theme="cyberpunk"],
+body.cyberpunk,
+body[data-theme="modern"],
+body.modern {
+  color: var(--color-text);
+}
+
+body[data-theme="cyberpunk"] h1,
+body.cyberpunk h1,
+body[data-theme="cyberpunk"] h2,
+body.cyberpunk h2,
+body[data-theme="cyberpunk"] h3,
+body.cyberpunk h3,
+body[data-theme="cyberpunk"] p,
+body.cyberpunk p,
+body[data-theme="cyberpunk"] span,
+body.cyberpunk span,
+body[data-theme="cyberpunk"] div,
+body.cyberpunk div,
+body[data-theme="modern"] h1,
+body.modern h1,
+body[data-theme="modern"] h2,
+body.modern h2,
+body[data-theme="modern"] h3,
+body.modern h3,
+body[data-theme="modern"] p,
+body.modern p,
+body[data-theme="modern"] span,
+body.modern span,
+body[data-theme="modern"] div,
+body.modern div {
+  color: var(--color-text);
+}
+
+/* 暗色主题下的表单区域、编辑器区域等 */
+body[data-theme="cyberpunk"] .form-section,
+body.cyberpunk .form-section,
+body[data-theme="cyberpunk"] .editor-section,
+body.cyberpunk .editor-section,
+body[data-theme="cyberpunk"] .result-section,
+body.cyberpunk .result-section,
+body[data-theme="modern"] .form-section,
+body.modern .form-section,
+body[data-theme="modern"] .editor-section,
+body.modern .editor-section,
+body[data-theme="modern"] .result-section,
+body.modern .result-section {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* 暗色主题下的文本区域 */
+body[data-theme="cyberpunk"] textarea,
+body.cyberpunk textarea,
+body[data-theme="cyberpunk"] .preview-section,
+body.cyberpunk .preview-section,
+body[data-theme="modern"] textarea,
+body.modern textarea,
+body[data-theme="modern"] .preview-section,
+body.modern .preview-section {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* 暗色主题下的搜索框和其他输入 */
+body[data-theme="cyberpunk"] .search-box,
+body.cyberpunk .search-box,
+body[data-theme="modern"] .search-box,
+body.modern .search-box {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+body[data-theme="cyberpunk"] .search-box:focus,
+body.cyberpunk .search-box:focus,
+body[data-theme="modern"] .search-box:focus,
+body.modern .search-box:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-shadow-primary), 0 0 15px var(--color-shadow-primary);
+}
+
 /* 容器 */
 .container {
   max-width: 1400px;
@@ -144,6 +270,40 @@ body {
   background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
 }
 
+/* 暗色主题输入框和卡片优化 */
+body[data-theme="cyberpunk"] .input-group input,
+body.cyberpunk .input-group input,
+body[data-theme="cyberpunk"] .input-group select,
+body.cyberpunk .input-group select,
+body[data-theme="cyberpunk"] .input-group textarea,
+body.cyberpunk .input-group textarea,
+body[data-theme="modern"] .input-group input,
+body.modern .input-group input,
+body[data-theme="modern"] .input-group select,
+body.modern .input-group select,
+body[data-theme="modern"] .input-group textarea,
+body.modern .input-group textarea {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+body[data-theme="cyberpunk"] .input-group input:focus,
+body.cyberpunk .input-group input:focus,
+body[data-theme="cyberpunk"] .input-group select:focus,
+body.cyberpunk .input-group select:focus,
+body[data-theme="cyberpunk"] .input-group textarea:focus,
+body.cyberpunk .input-group textarea:focus,
+body[data-theme="modern"] .input-group input:focus,
+body.modern .input-group input:focus,
+body[data-theme="modern"] .input-group select:focus,
+body.modern .input-group select:focus,
+body[data-theme="modern"] .input-group textarea:focus,
+body.modern .input-group textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-shadow-primary), 0 0 15px var(--color-shadow-primary);
+}
+
 /* 输入框 */
 .input-group input,
 .input-group select,
@@ -183,43 +343,177 @@ body {
   transform: translateY(-2px);
 }
 
-/* 主题切换器 */
-.theme-switcher {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  display: flex;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 8px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--color-border);
-}
-
-.theme-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
+/* 主题切换按钮（卡片右上角） */
+.theme-toggle-btn {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-large);
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.theme-btn:hover {
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.theme-btn.active {
-  box-shadow: 0 0 0 2px var(--color-primary);
+/* 主题选择弹窗 */
+.theme-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.theme-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.theme-modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  transform: scale(0.9);
+  transition: transform 0.3s;
+  border: 1px solid var(--color-border);
+}
+
+.theme-modal.show .theme-modal-content {
+  transform: scale(1);
+}
+
+.theme-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.theme-modal-title {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.theme-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xlarge);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.theme-modal-close:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.theme-item {
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--color-background-alt);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-item:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-item.active {
+  border-color: var(--color-primary);
+  background: var(--color-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-item.active::before {
+  content: '✓';
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-item-preview {
+  width: 100%;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+}
+
+.theme-item-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xs);
+}
+
+.theme-item-desc {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
 }
 
 /* 响应式 */
@@ -232,16 +526,21 @@ body {
     padding: var(--spacing-xl) var(--spacing-lg);
   }
 
-  .theme-switcher {
-    top: 10px;
-    right: 10px;
-    flex-wrap: wrap;
-    gap: 4px;
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-base);
+    top: var(--spacing-md);
+    right: var(--spacing-md);
   }
 
-  .theme-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
+  .theme-modal-content {
+    width: 95%;
+    max-height: 85vh;
+    padding: var(--spacing-lg);
+  }
+
+  .theme-list {
+    grid-template-columns: 1fr;
   }
 }
