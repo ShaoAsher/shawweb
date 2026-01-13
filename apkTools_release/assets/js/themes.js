@@ -141,7 +141,9 @@
         text: '#ffffff',              // 主文本色：纯白色（标题、正文）- 增强对比度
         textSecondary: '#b0e0ff',     // 次要文本色：浅青色发光（描述）
         textLight: '#80a0c0',         // 浅色文本：青色灰（占位符）
-        textOnPrimary: '#0a0e27',     // 主色上的文本：深色（按钮文字）
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色（按钮文字、标题文字）
+        textOnSurface: '#ffffff',     // 表面上的文本：白色（卡片文字）
+        textOnSurfaceAlt: '#ffffff',  // 表面备用上的文本：白色
 
         // 边框色 - 霓虹边框
         border: '#00f0ff',            // 主边框色：青色霓虹（输入框、卡片边框）
@@ -229,7 +231,9 @@
         text: '#0f172a',              // 主文本色：深蓝灰色（增强对比度）
         textSecondary: '#475569',     // 次要文本色：中蓝灰色
         textLight: '#94a3b8',         // 浅色文本：浅蓝灰色
-        textOnPrimary: '#ffffff',     // 主色上的文本：白色
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色（按钮文字、标题文字）
+        textOnSurface: '#0f172a',     // 表面上的文本：深蓝灰色（浅色卡片文字）
+        textOnSurfaceAlt: '#0f172a',  // 表面备用上的文本：深蓝灰色（浅色背景文字）
 
         // 边框色 - 浅色边框
         border: '#e2e8f0',            // 主边框色：浅蓝灰色
@@ -317,7 +321,9 @@
         text: '#ffffff',              // 主文本色：纯白色（标题、正文）- 增强对比度
         textSecondary: '#e0e0e0',     // 次要文本色：亮灰色（描述）
         textLight: '#a0a0a0',         // 浅色文本：中灰色（占位符）
-        textOnPrimary: '#ffffff',     // 主色上的文本：白色
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色（按钮文字、标题文字）
+        textOnSurface: '#ffffff',     // 表面上的文本：白色（卡片文字）
+        textOnSurfaceAlt: '#ffffff',  // 表面备用上的文本：白色
 
         // 边框色 - 深色边框
         border: '#202225',            // 主边框色：极深灰
@@ -405,7 +411,9 @@
         text: '#1d39c4',              // 主文本色：深蓝色（增强对比度）
         textSecondary: '#597ef7',     // 次要文本色：中蓝色
         textLight: '#adc6ff',         // 浅色文本：浅蓝色
-        textOnPrimary: '#ffffff',     // 主色上的文本：白色
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色（按钮文字、标题文字）
+        textOnSurface: '#1d39c4',     // 表面上的文本：深蓝色（浅色卡片文字）
+        textOnSurfaceAlt: '#1d39c4',  // 表面备用上的文本：深蓝色（浅色背景文字）
 
         // 边框色 - 浅色边框
         border: '#d4e4f7',            // 主边框色：浅蓝色
@@ -493,7 +501,9 @@
         text: '#166534',              // 主文本色：深绿色（增强对比度）
         textSecondary: '#16a34a',     // 次要文本色：中绿色
         textLight: '#86efac',         // 浅色文本：浅绿色
-        textOnPrimary: '#ffffff',     // 主色上的文本：白色
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色（按钮文字、标题文字）
+        textOnSurface: '#166534',     // 表面上的文本：深绿色（浅色卡片文字）
+        textOnSurfaceAlt: '#166534',  // 表面备用上的文本：深绿色（浅色背景文字）
 
         // 边框色 - 浅色边框
         border: '#bbf7d0',            // 主边框色：浅绿色
@@ -586,6 +596,15 @@
   }
 
   /**
+   * 将驼峰命名转换为连字符命名（如 primaryDark -> primary-dark）
+   * @param {string} key - 驼峰命名的键名
+   * @returns {string} 连字符命名的键名
+   */
+  function camelToKebab(key) {
+    return key.replace(/([A-Z])/g, '-$1').toLowerCase();
+  }
+
+  /**
    * 应用主题到页面
    * 将所有主题配置转换为CSS变量并应用到文档根元素
    * @param {Object} theme - 主题配置对象
@@ -594,33 +613,30 @@
   function applyTheme(theme, themeKey) {
     const root = document.documentElement;
 
-    // 设置CSS变量 - 颜色变量（使用驼峰转连字符）
-    Object.keys(theme.colors).forEach(key => {
-      // 将驼峰命名转换为连字符命名（如 primaryDark -> primary-dark）
-      const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-      root.style.setProperty(`--color-${cssKey}`, theme.colors[key]);
-    });
+    // 批量设置CSS变量 - 使用统一的转换函数
+    const setCSSVars = (obj, prefix) => {
+      Object.keys(obj).forEach(key => {
+        const cssKey = camelToKebab(key);
+        root.style.setProperty(`--${prefix}-${cssKey}`, obj[key]);
+      });
+    };
 
-    // 设置CSS变量 - 字体变量（使用驼峰转连字符）
-    Object.keys(theme.typography).forEach(key => {
-      const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-      root.style.setProperty(`--font-${cssKey}`, theme.typography[key]);
-    });
+    // 设置各类CSS变量
+    setCSSVars(theme.colors, 'color');
+    setCSSVars(theme.typography, 'font');
+    setCSSVars(theme.spacing, 'spacing');
+    setCSSVars(theme.borderRadius, 'radius');
+    setCSSVars(theme.shadows, 'shadow');
 
-    // 设置CSS变量 - 间距变量
-    Object.keys(theme.spacing).forEach(key => {
-      root.style.setProperty(`--spacing-${key}`, theme.spacing[key]);
-    });
-
-    // 设置CSS变量 - 圆角变量
-    Object.keys(theme.borderRadius).forEach(key => {
-      root.style.setProperty(`--radius-${key}`, theme.borderRadius[key]);
-    });
-
-    // 设置CSS变量 - 阴影变量
-    Object.keys(theme.shadows).forEach(key => {
-      root.style.setProperty(`--shadow-${key}`, theme.shadows[key]);
-    });
+    // 确保 textOnSurface 和 textOnSurfaceAlt 已设置（向后兼容）
+    if (!theme.colors.textOnSurface) {
+      const isDarkTheme = themeKey === 'cyberpunk' || themeKey === 'modern';
+      root.style.setProperty('--color-text-on-surface', isDarkTheme ? '#ffffff' : theme.colors.text);
+    }
+    if (!theme.colors.textOnSurfaceAlt) {
+      const isDarkTheme = themeKey === 'cyberpunk' || themeKey === 'modern';
+      root.style.setProperty('--color-text-on-surface-alt', isDarkTheme ? '#ffffff' : theme.colors.text);
+    }
 
     // 应用背景和基础样式
     document.body.style.background = theme.colors.background;
@@ -631,7 +647,8 @@
     if (themeKey) {
       document.body.setAttribute('data-theme', themeKey);
       // 移除所有主题类，添加当前主题类
-      document.body.className = document.body.className.replace(/\b(purple|cyberpunk|light|modern|alipay|wechat)\b/g, '');
+      const themeClasses = ['purple', 'cyberpunk', 'light', 'modern', 'alipay', 'wechat'];
+      themeClasses.forEach(cls => document.body.classList.remove(cls));
       document.body.classList.add(themeKey);
     }
   }

@@ -4,6 +4,39 @@
 (function () {
   'use strict';
 
+  /**
+   * 获取主题描述（支持中英文）
+   * @returns {Object} 主题描述对象
+   */
+  function getThemeDescriptions() {
+    return {
+      purple: {
+        zh: '优雅紫色，渐变紫色背景',
+        en: 'Elegant purple gradient background'
+      },
+      cyberpunk: {
+        zh: '赛博朋克，暗黑霓虹风格',
+        en: 'Cyberpunk style with neon colors'
+      },
+      light: {
+        zh: '清新浅色，简约现代',
+        en: 'Fresh light theme, simple and modern'
+      },
+      modern: {
+        zh: '现代简约，暗色主题',
+        en: 'Modern minimal dark theme'
+      },
+      alipay: {
+        zh: '支付宝蓝，商务专业风格',
+        en: 'Alipay blue, professional business style'
+      },
+      wechat: {
+        zh: '微信绿，社交活力风格',
+        en: 'WeChat green, social vitality style'
+      }
+    };
+  }
+
   // 创建主题选择弹窗
   function createThemeModal() {
     // 检查是否已存在弹窗
@@ -67,32 +100,7 @@
       themeDesc.className = 'theme-item-desc';
       themeDesc.setAttribute('data-theme-key', theme.key);
       // 默认中文，会在打开时更新
-      const descriptions = {
-        purple: {
-          zh: '优雅紫色，渐变紫色背景',
-          en: 'Elegant purple gradient background'
-        },
-        cyberpunk: {
-          zh: '赛博朋克，暗黑霓虹风格',
-          en: 'Cyberpunk style with neon colors'
-        },
-        light: {
-          zh: '清新浅色，简约现代',
-          en: 'Fresh light theme, simple and modern'
-        },
-        modern: {
-          zh: '现代简约，暗色主题',
-          en: 'Modern minimal dark theme'
-        },
-        alipay: {
-          zh: '支付宝蓝，商务专业风格',
-          en: 'Alipay blue, professional business style'
-        },
-        wechat: {
-          zh: '微信绿，社交活力风格',
-          en: 'WeChat green, social vitality style'
-        }
-      };
+      const descriptions = getThemeDescriptions();
       const desc = descriptions[theme.key] || {};
       themeDesc.textContent = desc.zh || '';
 
@@ -150,32 +158,7 @@
 
       // 更新主题描述（支持中英文）
       const themeItems = modal.querySelectorAll('.theme-item');
-      const descriptions = {
-        purple: {
-          zh: '优雅紫色，渐变紫色背景',
-          en: 'Elegant purple gradient background'
-        },
-        cyberpunk: {
-          zh: '赛博朋克，暗黑霓虹风格',
-          en: 'Cyberpunk style with neon colors'
-        },
-        light: {
-          zh: '清新浅色，简约现代',
-          en: 'Fresh light theme, simple and modern'
-        },
-        modern: {
-          zh: '现代简约，暗色主题',
-          en: 'Modern minimal dark theme'
-        },
-        alipay: {
-          zh: '支付宝蓝，商务专业风格',
-          en: 'Alipay blue, professional business style'
-        },
-        wechat: {
-          zh: '微信绿，社交活力风格',
-          en: 'WeChat green, social vitality style'
-        }
-      };
+      const descriptions = getThemeDescriptions();
 
       themeItems.forEach(item => {
         const themeKey = item.getAttribute('data-theme');

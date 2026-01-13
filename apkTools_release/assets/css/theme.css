@@ -16,6 +16,8 @@
   --color-text-secondary: #718096;
   --color-text-light: #adb5bd;
   --color-text-on-primary: #ffffff;
+  --color-text-on-surface: #2d3748;
+  --color-text-on-surface-alt: #2d3748;
   --color-border: #e9ecef;
   --color-border-light: #f1f3f5;
   --color-shadow: rgba(0, 0, 0, .3);
@@ -239,15 +241,45 @@ textarea::placeholder {
   color: var(--color-text-on-primary);
 }
 
-/* 确保所有按钮在暗色主题下文字颜色正确 */
-body[data-theme="cyberpunk"] .btn,
-body.cyberpunk .btn,
-body[data-theme="modern"] .btn,
-body.modern .btn {
+/* ========== 统一按钮文字颜色规则 ========== */
+/* 
+ * 按钮文字颜色规则：
+ * 1. 主色按钮（primary, success, error等）：使用 textOnPrimary（白色）
+ * 2. 浅色背景按钮（surface-alt背景）：使用 textOnSurfaceAlt（根据主题自动调整）
+ * 3. 深色背景按钮：使用 textOnPrimary（白色）
+ */
+
+/* 主色按钮 - 使用白色文字 */
+.btn,
+.button,
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-info,
+.copy-btn,
+.download-btn {
   color: var(--color-text-on-primary);
 }
 
-/* 确保所有按钮变体在暗色主题下文字颜色正确 */
+/* 浅色背景按钮 - 根据主题自动调整文字颜色 */
+.btn-secondary,
+.toolbar-btn,
+.tab-btn {
+  color: var(--color-text-on-surface-alt);
+}
+
+/* 历史记录按钮 - 根据类型使用不同文字颜色 */
+.history-btn.download,
+.history-btn.delete,
+.history-btn.view {
+  color: var(--color-text-on-primary);
+}
+
+/* 暗色主题：确保所有按钮文字可见 */
+body[data-theme="cyberpunk"] .btn,
+body.cyberpunk .btn,
+body[data-theme="cyberpunk"] .button,
+body.cyberpunk .button,
 body[data-theme="cyberpunk"] .btn-primary,
 body.cyberpunk .btn-primary,
 body[data-theme="cyberpunk"] .btn-secondary,
@@ -256,6 +288,20 @@ body[data-theme="cyberpunk"] .btn-success,
 body.cyberpunk .btn-success,
 body[data-theme="cyberpunk"] .btn-danger,
 body.cyberpunk .btn-danger,
+body[data-theme="cyberpunk"] .copy-btn,
+body.cyberpunk .copy-btn,
+body[data-theme="cyberpunk"] .download-btn,
+body.cyberpunk .download-btn,
+body[data-theme="cyberpunk"] .history-btn,
+body.cyberpunk .history-btn,
+body[data-theme="cyberpunk"] .toolbar-btn,
+body.cyberpunk .toolbar-btn,
+body[data-theme="cyberpunk"] .tab-btn,
+body.cyberpunk .tab-btn,
+body[data-theme="modern"] .btn,
+body.modern .btn,
+body[data-theme="modern"] .button,
+body.modern .button,
 body[data-theme="modern"] .btn-primary,
 body.modern .btn-primary,
 body[data-theme="modern"] .btn-secondary,
@@ -263,8 +309,18 @@ body.modern .btn-secondary,
 body[data-theme="modern"] .btn-success,
 body.modern .btn-success,
 body[data-theme="modern"] .btn-danger,
-body.modern .btn-danger {
-  color: var(--color-text-on-primary);
+body.modern .btn-danger,
+body[data-theme="modern"] .copy-btn,
+body.modern .copy-btn,
+body[data-theme="modern"] .download-btn,
+body.modern .download-btn,
+body[data-theme="modern"] .history-btn,
+body.modern .history-btn,
+body[data-theme="modern"] .toolbar-btn,
+body.modern .toolbar-btn,
+body[data-theme="modern"] .tab-btn,
+body.modern .tab-btn {
+  color: var(--color-text-on-primary) !important;
 }
 
 /* ========== 卡片 ========== */

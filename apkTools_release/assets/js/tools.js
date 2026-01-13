@@ -65,6 +65,15 @@
         rating: 5
       },
       {
+        icon: "📝",
+        title: { zh: "在线 Markdown 编辑器", en: "Online Markdown Editor" },
+        desc: { zh: "支持实时预览、语法高亮和丰富的编辑快捷按钮，可导出 Markdown 和 HTML 格式。", en: "Support real-time preview, syntax highlighting and rich editing shortcuts, can export Markdown and HTML formats." },
+        keywords: { zh: ["markdown", "编辑器", "预览", "语法高亮", "md", "文档", "编辑"], en: ["markdown", "editor", "preview", "syntax highlight", "md", "document", "edit"] },
+        href: "./tools/formatter/markdown_editor.html",
+        category: "dev",
+        rating: 5
+      },
+      {
         icon: "📱",
         title: { zh: "机型预览信息工具", en: "Device Preview Tool" },
         desc: { zh: "查看主流手机机型详细信息，支持模糊搜索，包含最新iPhone 17系列。", en: "View detailed information of mainstream mobile phone models, support fuzzy search, including the latest iPhone 17 series." },

@@ -5,11 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>字符串加解密工具</title>
-    <!-- Google Fonts - 艺术字体 -->
+  <!-- Google Fonts - 艺术字体 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/theme.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
   <style>
     /* 继承theme.css的基础样式 */
     /* 以下是工具页面特定的样式覆盖 */
@@ -289,7 +291,7 @@
 
     .tab-btn {
       background: var(--color-surface-alt);
-      color: var(--color-text-secondary);
+      color: var(--color-text-on-surface-alt);
       border: 2px solid var(--color-border);
       padding: 10px 20px;
       border-radius: var(--radius-sm);
@@ -299,9 +301,9 @@
     }
 
     .tab-btn.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
       color: var(--color-text-on-primary);
-      border-color: #667eea
+      border-color: var(--color-primary)
     }
 
     .tab-content {
