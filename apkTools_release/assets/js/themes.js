@@ -417,14 +417,17 @@
   function applyTheme(theme, themeKey) {
     const root = document.documentElement;
 
-    // 设置CSS变量 - 颜色变量
+    // 设置CSS变量 - 颜色变量（使用驼峰转连字符）
     Object.keys(theme.colors).forEach(key => {
-      root.style.setProperty(`--color-${key}`, theme.colors[key]);
+      // 将驼峰命名转换为连字符命名（如 primaryDark -> primary-dark）
+      const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      root.style.setProperty(`--color-${cssKey}`, theme.colors[key]);
     });
 
-    // 设置CSS变量 - 字体变量
+    // 设置CSS变量 - 字体变量（使用驼峰转连字符）
     Object.keys(theme.typography).forEach(key => {
-      root.style.setProperty(`--font-${key}`, theme.typography[key]);
+      const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      root.style.setProperty(`--font-${cssKey}`, theme.typography[key]);
     });
 
     // 设置CSS变量 - 间距变量

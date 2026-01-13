@@ -132,11 +132,11 @@
 
     .btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+      color: var(--color-text-on-primary);
       border: none;
       padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
       font-weight: 600;
       cursor: pointer;
       transition: transform .2s
@@ -159,16 +159,16 @@
     }
 
     .preview-section {
-      background: #fff;
+      background: var(--color-surface);
       border: 2px solid #dee2e6;
-      border-radius: 12px;
-      padding: 25px;
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
       text-align: center;
       margin-top: 25px
     }
 
     .preview-section h3 {
-      font-size: 18px;
+      font-size: var(--font-size-large);
       color: #495057;
       margin-bottom: 20px
     }
@@ -177,8 +177,8 @@
     #barcode {
       display: inline-block;
       padding: 20px;
-      background: #fff;
-      border-radius: 8px;
+      background: var(--color-surface);
+      border-radius: var(--radius-sm);
       box-shadow: 0 2px 8px rgba(0, 0, 0, .1)
     }
 
@@ -195,10 +195,10 @@
     .tab-btn {
       flex: 1;
       padding: 12px;
-      background: #e9ecef;
+      background: var(--color-surface-alt);
       border: none;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
       font-weight: 600;
       cursor: pointer;
       transition: all .3s
@@ -227,7 +227,7 @@
     .style-preset {
       padding: 10px;
       border: 2px solid #dee2e6;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       text-align: center;
       transition: all .3s;

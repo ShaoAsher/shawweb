@@ -145,11 +145,11 @@
       top: 10px;
       right: 10px;
       background: #667eea;
-      color: #fff;
+      color: var(--color-text-on-primary);
       border: none;
       padding: 6px 12px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: var(--font-size-small);
       cursor: pointer;
       transition: background .3s
     }
@@ -170,7 +170,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--color-text-on-primary);
       text-decoration: none;
       font-size: 20px;
       transition: all .3s;
@@ -281,7 +281,7 @@
           <div class="form-group">
             <label>包名层级（2-4，包含 com）</label>
             <input type="number" id="packageLevel" value="3" min="2" max="4">
-            <small style="color: #6c757d; font-size: 12px;">包名以 com. 开头，此数值为总层级数</small>
+            <small style="color: #6c757d; font-size: var(--font-size-small);">包名以 com. 开头，此数值为总层级数</small>
           </div>
           <div class="form-group">
             <label>每段长度（3-10）</label>

@@ -1,8 +1,9 @@
 /* 主题样式系统 - 使用CSS变量 */
 /* 所有颜色、字号、间距等都通过CSS变量定义，由themes.js动态设置 */
+/* 禁止在CSS中硬编码颜色值，必须使用CSS变量 */
 
 :root {
-  /* 颜色变量 - 由themes.js动态设置 */
+  /* 颜色变量 - 由themes.js动态设置（默认值仅用于调试） */
   --color-primary: #667eea;
   --color-primary-dark: #764ba2;
   --color-primary-light: #764ba2;
@@ -26,7 +27,7 @@
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
 
-  /* 字体变量 */
+  /* 字体变量 - 由themes.js动态设置 */
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-size-base: 16px;
   --font-size-small: 14px;
@@ -39,7 +40,7 @@
   --font-weight-bold: 700;
   --line-height: 1.5;
 
-  /* 间距变量 */
+  /* 间距变量 - 由themes.js动态设置 */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -47,14 +48,14 @@
   --spacing-xl: 30px;
   --spacing-xxl: 40px;
 
-  /* 圆角变量 */
+  /* 圆角变量 - 由themes.js动态设置 */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 50%;
 
-  /* 阴影变量 */
+  /* 阴影变量 - 由themes.js动态设置 */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, .05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, .1);
   --shadow-lg: 0 8px 20px rgba(102, 126, 234, .25);
@@ -78,7 +79,7 @@ body {
   line-height: var(--line-height);
 }
 
-/* 暗色主题文本增强（通过data-theme属性或类名） */
+/* 暗色主题文本发光效果（仅赛博朋克主题） */
 body[data-theme="cyberpunk"] .header,
 body.cyberpunk .header {
   text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3), 0 2px 10px rgba(0, 0, 0, .5);
@@ -87,7 +88,6 @@ body.cyberpunk .header {
 body[data-theme="cyberpunk"] .header h1,
 body.cyberpunk .header h1 {
   text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 0 0 25px rgba(0, 240, 255, 0.4), 0 2px 10px rgba(0, 0, 0, .5);
-  color: #ffffff;
 }
 
 body[data-theme="modern"] .header,
@@ -98,111 +98,9 @@ body.modern .header {
 body[data-theme="modern"] .header h1,
 body.modern .header h1 {
   text-shadow: 0 2px 10px rgba(0, 0, 0, .3);
-  color: #ffffff;
 }
 
-/* 暗色主题增强卡片和输入框 */
-body[data-theme="cyberpunk"] .container,
-body.cyberpunk .container,
-body[data-theme="modern"] .container,
-body.modern .container {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-}
-
-body[data-theme="cyberpunk"] .card,
-body.cyberpunk .card,
-body[data-theme="modern"] .card,
-body.modern .card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
-/* 确保所有暗色主题的文本都是高对比度 */
-body[data-theme="cyberpunk"],
-body.cyberpunk,
-body[data-theme="modern"],
-body.modern {
-  color: var(--color-text);
-}
-
-body[data-theme="cyberpunk"] h1,
-body.cyberpunk h1,
-body[data-theme="cyberpunk"] h2,
-body.cyberpunk h2,
-body[data-theme="cyberpunk"] h3,
-body.cyberpunk h3,
-body[data-theme="cyberpunk"] p,
-body.cyberpunk p,
-body[data-theme="cyberpunk"] span,
-body.cyberpunk span,
-body[data-theme="cyberpunk"] div,
-body.cyberpunk div,
-body[data-theme="modern"] h1,
-body.modern h1,
-body[data-theme="modern"] h2,
-body.modern h2,
-body[data-theme="modern"] h3,
-body.modern h3,
-body[data-theme="modern"] p,
-body.modern p,
-body[data-theme="modern"] span,
-body.modern span,
-body[data-theme="modern"] div,
-body.modern div {
-  color: var(--color-text);
-}
-
-/* 暗色主题下的表单区域、编辑器区域等 */
-body[data-theme="cyberpunk"] .form-section,
-body.cyberpunk .form-section,
-body[data-theme="cyberpunk"] .editor-section,
-body.cyberpunk .editor-section,
-body[data-theme="cyberpunk"] .result-section,
-body.cyberpunk .result-section,
-body[data-theme="modern"] .form-section,
-body.modern .form-section,
-body[data-theme="modern"] .editor-section,
-body.modern .editor-section,
-body[data-theme="modern"] .result-section,
-body.modern .result-section {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-/* 暗色主题下的文本区域 */
-body[data-theme="cyberpunk"] textarea,
-body.cyberpunk textarea,
-body[data-theme="cyberpunk"] .preview-section,
-body.cyberpunk .preview-section,
-body[data-theme="modern"] textarea,
-body.modern textarea,
-body[data-theme="modern"] .preview-section,
-body.modern .preview-section {
-  background: var(--color-surface-alt);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-/* 暗色主题下的搜索框和其他输入 */
-body[data-theme="cyberpunk"] .search-box,
-body.cyberpunk .search-box,
-body[data-theme="modern"] .search-box,
-body.modern .search-box {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-body[data-theme="cyberpunk"] .search-box:focus,
-body.cyberpunk .search-box:focus,
-body[data-theme="modern"] .search-box:focus,
-body.modern .search-box:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px var(--color-shadow-primary), 0 0 15px var(--color-shadow-primary);
-}
+/* ========== 基础元素样式 ========== */
 
 /* 容器 */
 .container {
@@ -212,6 +110,7 @@ body.modern .search-box:focus {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
+  border: 1px solid var(--color-border);
 }
 
 /* 头部 */
@@ -228,19 +127,87 @@ body.modern .search-box:focus {
   font-weight: var(--font-weight-bold);
   margin-bottom: 10px;
   text-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+  color: var(--color-text-on-primary);
 }
 
 .header p {
   opacity: .95;
   font-size: var(--font-size-base);
+  color: var(--color-text-on-primary);
 }
 
 /* 内容区域 */
 .content {
   padding: var(--spacing-xl) var(--spacing-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
-/* 按钮 */
+/* ========== 表单元素 ========== */
+
+/* 输入框、选择框、文本域 */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  transition: all 0.3s;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-shadow-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-light);
+}
+
+/* 输入组 */
+.input-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.input-group label {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-small);
+}
+
+/* 搜索框 */
+.search-box {
+  width: 100%;
+  padding: var(--spacing-md) 50px var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: all 0.3s;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-box:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-shadow-primary);
+}
+
+/* ========== 按钮 ========== */
+
 .btn {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: var(--color-text-on-primary);
@@ -249,13 +216,14 @@ body.modern .search-box:focus {
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
   cursor: pointer;
   transition: all 0.3s;
   white-space: nowrap;
   height: fit-content;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px var(--color-shadow-primary);
 }
@@ -267,67 +235,11 @@ body.modern .search-box:focus {
 }
 
 .btn-secondary {
-  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary-dark) 100%);
 }
 
-/* 暗色主题输入框和卡片优化 */
-body[data-theme="cyberpunk"] .input-group input,
-body.cyberpunk .input-group input,
-body[data-theme="cyberpunk"] .input-group select,
-body.cyberpunk .input-group select,
-body[data-theme="cyberpunk"] .input-group textarea,
-body.cyberpunk .input-group textarea,
-body[data-theme="modern"] .input-group input,
-body.modern .input-group input,
-body[data-theme="modern"] .input-group select,
-body.modern .input-group select,
-body[data-theme="modern"] .input-group textarea,
-body.modern .input-group textarea {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
+/* ========== 卡片 ========== */
 
-body[data-theme="cyberpunk"] .input-group input:focus,
-body.cyberpunk .input-group input:focus,
-body[data-theme="cyberpunk"] .input-group select:focus,
-body.cyberpunk .input-group select:focus,
-body[data-theme="cyberpunk"] .input-group textarea:focus,
-body.cyberpunk .input-group textarea:focus,
-body[data-theme="modern"] .input-group input:focus,
-body.modern .input-group input:focus,
-body[data-theme="modern"] .input-group select:focus,
-body.modern .input-group select:focus,
-body[data-theme="modern"] .input-group textarea:focus,
-body.modern .input-group textarea:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px var(--color-shadow-primary), 0 0 15px var(--color-shadow-primary);
-}
-
-/* 输入框 */
-.input-group input,
-.input-group select,
-.search-box {
-  width: 100%;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  transition: all 0.3s;
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-family: var(--font-family);
-}
-
-.input-group input:focus,
-.input-group select:focus,
-.search-box:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px var(--color-shadow-primary);
-}
-
-/* 卡片 */
 .card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -336,6 +248,7 @@ body.modern .input-group textarea:focus {
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s;
+  color: var(--color-text);
 }
 
 .card:hover {
@@ -343,7 +256,213 @@ body.modern .input-group textarea:focus {
   transform: translateY(-2px);
 }
 
-/* 主题切换按钮（卡片右上角） */
+/* 卡片内的所有文本元素使用主题变量 */
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.card h6 {
+  color: var(--color-text);
+}
+
+.card p,
+.card span,
+.card div,
+.card label {
+  color: var(--color-text);
+}
+
+.card .text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.card .text-light {
+  color: var(--color-text-light);
+}
+
+/* ========== 文本元素 ========== */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+}
+
+h1 {
+  font-size: var(--font-size-xxlarge);
+}
+
+h2 {
+  font-size: var(--font-size-xlarge);
+}
+
+h3 {
+  font-size: var(--font-size-large);
+}
+
+p, span, div, label, li {
+  color: var(--color-text);
+}
+
+/* 代码和预格式化文本 */
+pre,
+code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Courier New', monospace;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+pre {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+}
+
+/* ========== 表格 ========== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+th, td {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+th {
+  background: var(--color-surface-alt);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+/* ========== 链接 ========== */
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ========== 分隔线 ========== */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-lg) 0;
+}
+
+/* ========== 表单区域、编辑器区域等 ========== */
+
+.form-section,
+.editor-section,
+.result-section,
+.preview-section,
+.query-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.form-section h2,
+.editor-section h2,
+.result-section h2,
+.preview-section h2,
+.query-section h2 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 结果卡片 */
+.result-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+}
+
+.result-card h3 {
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.result-item {
+  background: var(--color-surface-alt);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.result-label {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.result-value {
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold);
+  word-break: break-all;
+}
+
+.result-value.empty {
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+/* ========== 加载和状态 ========== */
+
+.loading {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-secondary);
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== 主题切换按钮 ========== */
+
 .theme-toggle-btn {
   position: absolute;
   top: var(--spacing-lg);
@@ -372,7 +491,8 @@ body.modern .input-group textarea:focus {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* 主题选择弹窗 */
+/* ========== 主题选择弹窗 ========== */
+
 .theme-modal {
   display: none;
   position: fixed;
@@ -514,9 +634,11 @@ body.modern .input-group textarea:focus {
 .theme-item-desc {
   font-size: var(--font-size-small);
   color: var(--color-text-secondary);
+  line-height: 1.4;
 }
 
-/* 响应式 */
+/* ========== 响应式 ========== */
+
 @media (max-width: 768px) {
   .content {
     padding: var(--spacing-lg);

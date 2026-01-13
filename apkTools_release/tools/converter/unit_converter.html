@@ -86,7 +86,7 @@
     .card-icon {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       align-items: center;
@@ -97,9 +97,9 @@
     }
 
     .card-title {
-      font-size: 18px;
+      font-size: var(--font-size-large);
       font-weight: 700;
-      color: #2d3748;
+      color: var(--color-text);
       flex: 1;
     }
 
@@ -116,8 +116,8 @@
     }
 
     .input-label {
-      font-size: 12px;
-      color: #718096;
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -140,18 +140,18 @@
       flex: 1;
       min-width: 0;
       padding: 12px 16px;
-      border: 2px solid #e9ecef;
+      border: 2px solid var(--color-border);
       border-radius: 10px;
       font-size: 15px;
       transition: all 0.3s;
-      background: #f8f9fa;
+      background: var(--color-surface-alt);
       font-weight: 500;
     }
 
     .unit-input:focus {
       outline: none;
       border-color: #667eea;
-      background: #fff;
+      background: var(--color-surface);
       box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
     }
 
@@ -159,10 +159,10 @@
       min-width: 140px;
       max-width: 180px;
       padding: 12px 16px;
-      border: 2px solid #e9ecef;
+      border: 2px solid var(--color-border);
       border-radius: 10px;
-      font-size: 14px;
-      background: #fff;
+      font-size: var(--font-size-small);
+      background: var(--color-surface);
       cursor: pointer;
       transition: all 0.3s;
       flex-shrink: 0;
@@ -189,10 +189,10 @@
       margin-top: 16px;
       padding: 16px;
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
-      font-size: 14px;
-      color: #2d3748;
+      font-size: var(--font-size-small);
+      color: var(--color-text);
       min-height: 50px;
       display: flex;
       align-items: center;
@@ -479,7 +479,7 @@
         <label class="input-label">转换结果</label>
         <div class="input-row">
           <div class="input-wrapper">
-            <input type="text" class="unit-input" readonly style="background: #fff;">
+            <input type="text" class="unit-input" readonly style="background: var(--color-surface);">
             <select class="unit-select">
               ${converter.units.map(unit => `<option value="${unit.value}">${unit.name}</option>`).join('')}
             </select>

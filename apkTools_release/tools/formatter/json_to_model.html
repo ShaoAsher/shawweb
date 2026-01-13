@@ -171,7 +171,7 @@
     .btn {
       padding: 12px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
@@ -183,7 +183,7 @@
 
     .btn-primary {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+      color: var(--color-text-on-primary);
       box-shadow: 0 4px 15px rgba(102, 126, 234, .3)
     }
 
@@ -213,15 +213,15 @@
     }
 
     .result-section {
-      background: #fff;
+      background: var(--color-surface);
       border: 2px solid #dee2e6;
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       padding: 20px;
       margin-top: 20px
     }
 
     .result-section h3 {
-      font-size: 18px;
+      font-size: var(--font-size-large);
       color: #495057;
       margin-bottom: 15px;
       display: flex;
@@ -233,9 +233,9 @@
       background: #282c34;
       color: #abb2bf;
       padding: 20px;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       font-family: 'Courier New', Consolas, monospace;
-      font-size: 14px;
+      font-size: var(--font-size-small);
       line-height: 1.6;
       overflow-x: auto;
       max-height: 600px;
@@ -247,8 +247,8 @@
     .error-message {
       background: #f8d7da;
       color: #721c24;
-      padding: 15px;
-      border-radius: 8px;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-sm);
       border-left: 4px solid #dc3545;
       margin-bottom: 20px
     }
@@ -256,16 +256,16 @@
     .success-message {
       background: #d4edda;
       color: #155724;
-      padding: 15px;
-      border-radius: 8px;
+      padding: var(--spacing-md);
+      border-radius: var(--radius-sm);
       border-left: 4px solid #28a745;
       margin-bottom: 20px
     }
 
     .example-btn {
-      font-size: 12px;
+      font-size: var(--font-size-small);
       padding: 6px 12px;
-      background: #e9ecef;
+      background: var(--color-surface-alt);
       color: #495057;
       border: none;
       border-radius: 6px;
@@ -367,7 +367,7 @@
       <div id="messageArea"></div>
 
       <div class="result-section" id="resultSection" style="display: none;">
-        <h3>生成的代码 <span style="font-size: 12px; font-weight: normal; color: #6c757d;" id="langName"></span></h3>
+        <h3>生成的代码 <span style="font-size: var(--font-size-small); font-weight: normal; color: #6c757d;" id="langName"></span></h3>
         <div class="code-output" id="codeOutput"></div>
       </div>
     </div>

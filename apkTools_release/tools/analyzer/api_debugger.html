@@ -149,7 +149,7 @@
     }
 
     .tabs-container {
-      background: #fff;
+      background: var(--color-surface);
       border-bottom: 1px solid #dee2e6;
       flex-shrink: 0
     }
@@ -167,7 +167,7 @@
       border: none;
       border-bottom: 3px solid transparent;
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-small);
       color: #6c757d;
       transition: all .2s;
       white-space: nowrap
@@ -235,7 +235,7 @@
     .params-table th {
       text-align: left;
       padding: 12px;
-      background: #f8f9fa;
+      background: var(--color-surface-alt);
       border-bottom: 2px solid #dee2e6;
       font-size: 13px;
       font-weight: 600;
@@ -281,16 +281,16 @@
     .file-select-btn {
       padding: 6px 12px;
       background: #667eea;
-      color: #fff;
+      color: var(--color-text-on-primary);
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: var(--font-size-small);
       white-space: nowrap
     }
 
     .file-name {
-      font-size: 12px;
+      font-size: var(--font-size-small);
       color: #6c757d;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -323,7 +323,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 12px;
+      font-size: var(--font-size-small);
       padding: 5px
     }
 
@@ -341,7 +341,7 @@
 
     .response-header {
       padding: 15px 20px;
-      background: #fff;
+      background: var(--color-surface);
       border-bottom: 1px solid #dee2e6;
       display: flex;
       justify-content: space-between;
@@ -350,7 +350,7 @@
     }
 
     .response-header h3 {
-      font-size: 16px;
+      font-size: var(--font-size-base);
       color: #495057
     }
 
@@ -376,7 +376,7 @@
       flex: 1;
       padding: 20px;
       overflow-y: auto;
-      background: #fff;
+      background: var(--color-surface);
       font-family: 'Courier New', monospace;
       font-size: 13px;
       white-space: pre-wrap;
@@ -416,8 +416,8 @@
     }
 
     .modal-content {
-      background: #fff;
-      border-radius: 12px;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
       padding: 0;
       max-width: 700px;
       width: 90%;
@@ -436,7 +436,7 @@
     }
 
     .modal-header h3 {
-      font-size: 18px;
+      font-size: var(--font-size-large);
       color: #495057
     }
 
@@ -456,12 +456,12 @@
     }
 
     .modal-close:hover {
-      background: #f8f9fa;
+      background: var(--color-surface-alt);
       color: #495057
     }
 
     .modal-body {
-      padding: 25px;
+      padding: var(--spacing-lg);
       flex: 1;
       overflow-y: auto
     }
@@ -479,7 +479,7 @@
       border: none;
       border-bottom: 2px solid transparent;
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-small);
       color: #6c757d;
       transition: all .2s
     }
@@ -491,11 +491,11 @@
     }
 
     .batch-format-hint {
-      background: #f8f9fa;
+      background: var(--color-surface-alt);
       padding: 12px;
       border-radius: 6px;
       margin-bottom: 15px;
-      font-size: 12px;
+      font-size: var(--font-size-small);
       color: #6c757d;
       line-height: 1.6
     }
@@ -505,7 +505,7 @@
       min-height: 200px;
       padding: 12px;
       border: 2px solid #dee2e6;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       font-family: 'Courier New', monospace;
       font-size: 13px;
       resize: vertical
@@ -526,7 +526,7 @@
 
     .remove-btn {
       background: #dc3545;
-      color: #fff;
+      color: var(--color-text-on-primary);
       border: none;
       padding: 6px 12px;
       border-radius: 4px;
@@ -543,7 +543,7 @@
       min-height: 200px;
       padding: 12px;
       border: 2px solid #dee2e6;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       font-family: 'Courier New', monospace;
       font-size: 13px;
       resize: vertical
@@ -594,7 +594,7 @@
 
         <!-- Params 标签页 -->
         <div class="tab-panel active" id="paramsPanel">
-          <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">Query 参数</h3>
+          <h3 style="margin-bottom: 15px; font-size: var(--font-size-base); color: #495057;">Query 参数</h3>
           <table class="params-table">
             <thead>
               <tr>
@@ -647,12 +647,12 @@
           </div>
 
           <div id="bodyContent">
-            <div id="bodyNone" style="padding: 40px; text-align: center; color: #6c757d; display: block;">
+            <div id="bodyNone" style="padding: var(--spacing-xl); text-align: center; color: #6c757d; display: block;">
               该请求没有 Body
             </div>
 
             <div id="bodyFormData" style="display: none;">
-              <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">Form Data</h3>
+              <h3 style="margin-bottom: 15px; font-size: var(--font-size-base); color: #495057;">Form Data</h3>
               <table class="params-table">
                 <thead>
                   <tr>
@@ -701,7 +701,7 @@
             </div>
 
             <div id="bodyXForm" style="display: none;">
-              <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">x-www-form-urlencoded</h3>
+              <h3 style="margin-bottom: 15px; font-size: var(--font-size-base); color: #495057;">x-www-form-urlencoded</h3>
               <table class="params-table">
                 <thead>
                   <tr>
@@ -752,7 +752,7 @@
 
         <!-- Headers 标签页 -->
         <div class="tab-panel" id="headersPanel">
-          <h3 style="margin-bottom: 15px; font-size: 16px; color: #495057;">请求头</h3>
+          <h3 style="margin-bottom: 15px; font-size: var(--font-size-base); color: #495057;">请求头</h3>
           <table class="params-table">
             <thead>
               <tr>
@@ -1301,15 +1301,15 @@
             <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
           </div>
           <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
-            ${requestHistory.length === 0 ? '<p style="text-align: center; color: #6c757d; padding: 40px;">暂无历史记录</p>' : ''}
+            ${requestHistory.length === 0 ? '<p style="text-align: center; color: #6c757d; padding: var(--spacing-xl);">暂无历史记录</p>' : ''}
             ${requestHistory.map((item, index) => `
-              <div style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #667eea; cursor: pointer;" onclick="loadHistoryItem(${index})">
+              <div style="padding: var(--spacing-md); margin-bottom: 10px; background: var(--color-surface-alt); border-radius: var(--radius-sm); border-left: 3px solid #667eea; cursor: pointer;" onclick="loadHistoryItem(${index})">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <span style="display: inline-block; padding: 4px 12px; background: ${getMethodColor(item.method)}; color: #fff; border-radius: 4px; font-size: 12px; font-weight: 600;">${item.method}</span>
+                  <span style="display: inline-block; padding: 4px 12px; background: ${getMethodColor(item.method)}; color: var(--color-text-on-primary); border-radius: 4px; font-size: var(--font-size-small); font-weight: 600;">${item.method}</span>
                   <span style="font-size: 11px; color: #6c757d;">${new Date(item.timestamp).toLocaleString()}</span>
                 </div>
                 <div style="font-size: 13px; color: #495057; margin-bottom: 5px;">${item.url}</div>
-                <div style="font-size: 12px; color: #6c757d;">状态: ${item.status} ${item.statusText || ''}</div>
+                <div style="font-size: var(--font-size-small); color: #6c757d;">状态: ${item.status} ${item.statusText || ''}</div>
               </div>
             `).join('')}
           </div>
@@ -1544,9 +1544,9 @@
 
       let html = '';
       if (Object.keys(headers).length > 0) {
-        html += '<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;"><strong style="font-size: 14px; color: #495057;">响应头：</strong><br>';
+        html += '<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #dee2e6;"><strong style="font-size: var(--font-size-small); color: #495057;">响应头：</strong><br>';
         Object.entries(headers).forEach(([key, value]) => {
-          html += `<div style="font-size: 12px; color: #6c757d; margin: 5px 0;">${key}: ${value}</div>`;
+          html += `<div style="font-size: var(--font-size-small); color: #6c757d; margin: 5px 0;">${key}: ${value}</div>`;
         });
         html += '</div>';
       }

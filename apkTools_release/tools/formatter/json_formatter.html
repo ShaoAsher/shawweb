@@ -142,7 +142,7 @@
 
     .json-count {
       color: #6c757d;
-      font-size: 12px;
+      font-size: var(--font-size-small);
       font-weight: normal;
       margin-left: 5px;
     }
@@ -185,11 +185,11 @@
 
     .btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+      color: var(--color-text-on-primary);
       border: none;
       padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
       font-weight: 600;
       cursor: pointer;
       transition: transform .2s
@@ -224,7 +224,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--color-text-on-primary);
       text-decoration: none;
       font-size: 20px;
       transition: all .3s;
@@ -246,9 +246,9 @@
       gap: 15px;
       margin-top: 15px;
       padding: 10px;
-      background: #f8f9fa;
+      background: var(--color-surface-alt);
       border-radius: 6px;
-      font-size: 12px;
+      font-size: var(--font-size-small);
       color: #6c757d
     }
 
@@ -295,7 +295,7 @@
             <span class="status valid" id="previewStatus">就绪</span>
           </h2>
           <div class="preview-section" id="jsonPreview">
-            <div style="color: #6c757d; text-align: center; padding: 40px;">
+            <div style="color: #6c757d; text-align: center; padding: var(--spacing-xl);">
               格式化后的 JSON 将显示在这里
             </div>
           </div>
@@ -522,7 +522,7 @@
     function clearJSON() {
       if (confirm('确定要清空所有内容吗？')) {
         jsonInput.value = '';
-        jsonPreview.innerHTML = '<div style="color: #6c757d; text-align: center; padding: 40px;">格式化后的 JSON 将显示在这里</div>';
+        jsonPreview.innerHTML = '<div style="color: #6c757d; text-align: center; padding: var(--spacing-xl);">格式化后的 JSON 将显示在这里</div>';
         editStatus.textContent = '未验证';
         editStatus.className = 'status';
         previewStatus.textContent = '就绪';
