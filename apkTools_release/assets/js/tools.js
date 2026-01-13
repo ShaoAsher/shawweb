@@ -198,13 +198,23 @@
         href: "./tools/developer/ip_query.html",
         category: "text",
         rating: 4
+      },
+      {
+        icon: "🚀",
+        title: { zh: "网络测速工具", en: "Network Speed Test" },
+        desc: { zh: "测试网络延迟、下载速度和上传速度，类似 Speedtest，实时显示测试进度和结果。", en: "Test network latency, download speed and upload speed, similar to Speedtest, display test progress and results in real-time." },
+        keywords: { zh: ["网络", "测速", "speedtest", "网速", "延迟", "ping", "下载", "上传", "带宽"], en: ["network", "speed", "speedtest", "ping", "download", "upload", "bandwidth", "latency"] },
+        href: "./tools/life/speed_test.html",
+        category: "life",
+        rating: 5
       }
     ],
     categories: {
       dev: { zh: "开发工具", en: "Development Tools" },
       image: { zh: "图片工具", en: "Image Tools" },
       text: { zh: "文字/编码工具", en: "Text/Encoding Tools" },
-      unit: { zh: "单位转换工具", en: "Unit Converter" }
+      unit: { zh: "单位转换工具", en: "Unit Converter" },
+      life: { zh: "生活工具", en: "Life Tools" }
     }
   };
 

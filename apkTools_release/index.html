@@ -676,6 +676,10 @@
         <div class="tools-grid" id="unitTools"></div>
       </div>
 
+      <div class="tab-content" id="tabLife">
+        <div class="tools-grid" id="lifeTools"></div>
+      </div>
+
       <div class="tab-content" id="tabSearch">
         <div class="tools-grid" id="searchTools"></div>
       </div>
@@ -861,6 +865,7 @@
       const imageTools = document.getElementById('imageTools');
       const textTools = document.getElementById('textTools');
       const unitTools = document.getElementById('unitTools');
+      const lifeTools = document.getElementById('lifeTools');
       const noResults = document.getElementById('noResults');
       const searchResultsInfo = document.getElementById('searchResultsInfo');
 
@@ -870,6 +875,7 @@
       if (imageTools) imageTools.innerHTML = '';
       if (textTools) textTools.innerHTML = '';
       if (unitTools) unitTools.innerHTML = '';
+      if (lifeTools) lifeTools.innerHTML = '';
 
       let toolsToRender = [];
 
@@ -883,6 +889,8 @@
         toolsToRender = tools.filter(t => t.category === 'text' && !t.href.includes('unit_converter'));
       } else if (tabId === 'unit') {
         toolsToRender = tools.filter(t => t.category === 'text' && t.href.includes('unit_converter'));
+      } else if (tabId === 'life') {
+        toolsToRender = tools.filter(t => t.category === 'life');
       }
 
       let hasResults = false;
@@ -908,6 +916,9 @@
             hasResults = true;
           } else if (tabId === 'unit') {
             unitTools.innerHTML += card;
+            hasResults = true;
+          } else if (tabId === 'life') {
+            lifeTools.innerHTML += card;
             hasResults = true;
           }
         } catch (error) {
@@ -1000,6 +1011,8 @@
         return tools.filter(t => t.category === 'text' && !t.href.includes('unit_converter')).length;
       } else if (tabId === 'unit') {
         return tools.filter(t => t.category === 'text' && t.href.includes('unit_converter')).length;
+      } else if (tabId === 'life') {
+        return tools.filter(t => t.category === 'life').length;
       }
       return 0;
     }
@@ -1035,7 +1048,8 @@
         { id: 'dev', icon: '💻', name: { zh: '开发工具', en: 'Development Tools' } },
         { id: 'image', icon: '🖼️', name: { zh: '图片工具', en: 'Image Tools' } },
         { id: 'text', icon: '📝', name: { zh: '文字/编码工具', en: 'Text/Encoding Tools' } },
-        { id: 'unit', icon: '📐', name: { zh: '单位转换工具', en: 'Unit Converter' } }
+        { id: 'unit', icon: '📐', name: { zh: '单位转换工具', en: 'Unit Converter' } },
+        { id: 'life', icon: '🌍', name: { zh: '生活工具', en: 'Life Tools' } }
       ];
 
       tabsNav.innerHTML = '';
