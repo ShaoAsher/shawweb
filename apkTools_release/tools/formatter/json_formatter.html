@@ -132,8 +132,8 @@
 
     .json-children {
       margin-left: 20px;
-      border-left: 1px solid #e9ecef;
-      padding-left: 10px;
+      border-left: 1px solid var(--color-border);
+      padding-left: var(--spacing-sm);
     }
 
     .json-collapsible.collapsed+.json-children {
@@ -141,7 +141,7 @@
     }
 
     .json-count {
-      color: #6c757d;
+      color: var(--color-text-secondary);
       font-size: var(--font-size-small);
       font-weight: normal;
       margin-left: 5px;
@@ -165,15 +165,14 @@
     }
 
     .preview-section .json-null {
-      color: #6e7781
-    }
+      color: var(--color-text-secondary); }
 
     .preview-section .json-error {
-      color: #dc3545;
-      background: #f8d7da;
-      padding: 10px;
-      border-radius: 4px;
-      border-left: 3px solid #dc3545
+      color: var(--color-error);
+      background: var(--color-surface-alt);
+      padding: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--color-error);
     }
 
     .btn-group {
@@ -249,8 +248,7 @@
       background: var(--color-surface-alt);
       border-radius: 6px;
       font-size: var(--font-size-small);
-      color: #6c757d
-    }
+      color: var(--color-text-secondary); }
 
     .stat-item {
       display: flex;
@@ -295,7 +293,7 @@
             <span class="status valid" id="previewStatus">就绪</span>
           </h2>
           <div class="preview-section" id="jsonPreview">
-            <div style="color: #6c757d; text-align: center; padding: var(--spacing-xl);">
+            <div style="color: var(--color-text-secondary); text-align: center; padding: var(--spacing-xl);">
               格式化后的 JSON 将显示在这里
             </div>
           </div>
@@ -522,7 +520,7 @@
     function clearJSON() {
       if (confirm('确定要清空所有内容吗？')) {
         jsonInput.value = '';
-        jsonPreview.innerHTML = '<div style="color: #6c757d; text-align: center; padding: var(--spacing-xl);">格式化后的 JSON 将显示在这里</div>';
+        jsonPreview.innerHTML = '<div style="color: var(--color-text-secondary); text-align: center; padding: var(--spacing-xl);">格式化后的 JSON 将显示在这里</div>';
         editStatus.textContent = '未验证';
         editStatus.className = 'status';
         previewStatus.textContent = '就绪';
