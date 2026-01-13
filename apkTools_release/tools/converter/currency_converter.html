@@ -5,7 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>汇率转换工具</title>
-  <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - 艺术字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/theme.css">
   <style>
     /* 继承theme.css的基础样式 */
     /* 以下是工具页面特定的样式覆盖 */
@@ -136,7 +140,7 @@
 
     .currency-select:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--color-primary);
       box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
     }
 
@@ -160,7 +164,7 @@
 
     .currency-select-input:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--color-primary);
       box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
       cursor: text;
     }
@@ -212,7 +216,7 @@
     .currency-search-input:focus {
       outline: none;
       background: var(--color-surface);
-      border-bottom-color: #667eea;
+      border-bottom-color: var(--color-primary);
     }
 
     .currency-options {
@@ -227,7 +231,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      border-bottom: 1px solid #f1f3f5;
+      border-bottom: 1px solid var(--color-border);
     }
 
     .currency-option:last-child {
@@ -378,7 +382,7 @@
 
     .search-box:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--color-primary);
       box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
     }
 
@@ -419,7 +423,7 @@
       grid-template-columns: 60px 1fr 120px;
       gap: 16px;
       padding: 12px 16px;
-      border-bottom: 1px solid #f1f3f5;
+      border-bottom: 1px solid var(--color-border);
       transition: all 0.2s;
       cursor: pointer;
       align-items: center;
@@ -431,7 +435,7 @@
 
     .rate-row:hover {
       background: var(--color-surface-alt);
-      border-left: 3px solid #667eea;
+      border-left: 3px solid var(--color-primary);
     }
 
     .rate-flag {
@@ -568,7 +572,7 @@
     }
 
     .error-message {
-      background: #fee;
+      background: var(--color-surface-alt);
       color: #c33;
       padding: 16px;
       border-radius: var(--radius-md);

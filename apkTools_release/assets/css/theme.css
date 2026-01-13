@@ -236,6 +236,35 @@ textarea::placeholder {
 
 .btn-secondary {
   background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-on-primary);
+}
+
+/* 确保所有按钮在暗色主题下文字颜色正确 */
+body[data-theme="cyberpunk"] .btn,
+body.cyberpunk .btn,
+body[data-theme="modern"] .btn,
+body.modern .btn {
+  color: var(--color-text-on-primary);
+}
+
+/* 确保所有按钮变体在暗色主题下文字颜色正确 */
+body[data-theme="cyberpunk"] .btn-primary,
+body.cyberpunk .btn-primary,
+body[data-theme="cyberpunk"] .btn-secondary,
+body.cyberpunk .btn-secondary,
+body[data-theme="cyberpunk"] .btn-success,
+body.cyberpunk .btn-success,
+body[data-theme="cyberpunk"] .btn-danger,
+body.cyberpunk .btn-danger,
+body[data-theme="modern"] .btn-primary,
+body.modern .btn-primary,
+body[data-theme="modern"] .btn-secondary,
+body.modern .btn-secondary,
+body[data-theme="modern"] .btn-success,
+body.modern .btn-success,
+body[data-theme="modern"] .btn-danger,
+body.modern .btn-danger {
+  color: var(--color-text-on-primary);
 }
 
 /* ========== 卡片 ========== */
@@ -283,7 +312,12 @@ textarea::placeholder {
 
 /* ========== 文本元素 ========== */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--color-text);
   font-family: var(--font-family);
   font-weight: var(--font-weight-bold);
@@ -301,7 +335,11 @@ h3 {
   font-size: var(--font-size-large);
 }
 
-p, span, div, label, li {
+p,
+span,
+div,
+label,
+li {
   color: var(--color-text);
 }
 
@@ -335,7 +373,8 @@ table {
   color: var(--color-text);
 }
 
-th, td {
+th,
+td {
   padding: var(--spacing-md);
   border: 1px solid var(--color-border);
   text-align: left;
@@ -458,7 +497,9 @@ hr {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ========== 主题切换按钮 ========== */

@@ -68,8 +68,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：系统字体栈，确保跨平台一致性
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        // 字体系列：优雅现代字体（Inter + 中文字体）
+        fontFamily: '"Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 
         // 字号配置：响应式字体大小系统
         fontSizeBase: '16px',         // 基础字号：正文、按钮文字
@@ -250,7 +250,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        // 字体系列：清新自然字体（Poppins + 中文字体）
+        fontFamily: '"Poppins", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',
@@ -337,8 +338,8 @@
 
       // ========== 字体配置 ==========
       typography: {
-        // 字体系列：Discord字体栈
-        fontFamily: '"Whitney", "Helvetica Neue", Helvetica, Arial, sans-serif',
+        // 字体系列：现代简约字体（Montserrat + 中文字体）
+        fontFamily: '"Montserrat", "Noto Sans SC", "Helvetica Neue", Helvetica, Arial, sans-serif',
         fontSizeBase: '16px',
         fontSizeSmall: '14px',
         fontSizeLarge: '20px',
@@ -377,6 +378,182 @@
         lg: '0 8px 16px rgba(0, 0, 0, .24)',
         xl: '0 16px 32px rgba(0, 0, 0, .3)'
       }
+    },
+
+    /**
+     * 主题5: 支付宝蓝（商务专业风格）
+     * 特点：支付宝品牌蓝色，商务专业，现代简约
+     */
+    alipay: {
+      name: { zh: '支付宝蓝', en: 'Alipay Blue' },
+
+      // ========== 颜色配置 ==========
+      colors: {
+        // 主色系 - 支付宝品牌蓝色
+        primary: '#1677FF',           // 主色：支付宝蓝（按钮、链接主色）
+        primaryDark: '#0958d9',       // 主色深色：深支付宝蓝（按钮hover、渐变终点）
+        primaryLight: '#4096ff',      // 主色浅色：浅支付宝蓝（辅助元素）
+        secondary: '#52c41a',         // 辅助色：支付宝绿（次要按钮、标签）
+
+        // 背景色 - 精美浅色渐变
+        background: 'linear-gradient(135deg, #e6f4ff 0%, #bae0ff 50%, #91caff 100%)',  // 页面主背景：支付宝蓝渐变
+        backgroundAlt: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',  // 备用背景：纯白渐变
+        surface: '#ffffff',           // 表面色：纯白色
+        surfaceAlt: '#f0f9ff',        // 表面备用色：极浅蓝色
+
+        // 文本色 - 深色文本（确保可读性）
+        text: '#1d39c4',              // 主文本色：深蓝色（增强对比度）
+        textSecondary: '#597ef7',     // 次要文本色：中蓝色
+        textLight: '#adc6ff',         // 浅色文本：浅蓝色
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色
+
+        // 边框色 - 浅色边框
+        border: '#d4e4f7',            // 主边框色：浅蓝色
+        borderLight: '#e6f4ff',       // 浅边框色：极浅蓝色
+
+        // 阴影色 - 精美阴影
+        shadow: 'rgba(22, 119, 255, .15)',         // 主阴影：支付宝蓝阴影
+        shadowLight: 'rgba(22, 119, 255, .08)',    // 浅阴影：轻微阴影
+        shadowPrimary: 'rgba(22, 119, 255, .25)',  // 主色阴影：支付宝蓝阴影（增强）
+        hover: 'rgba(22, 119, 255, .12)',          // 悬停背景：蓝色浅色（增强）
+
+        // 状态色 - 支付宝风格
+        success: '#52c41a',           // 成功色：支付宝绿
+        error: '#ff4d4f',             // 错误色：红色
+        warning: '#faad14',           // 警告色：橙色
+        info: '#1677FF'               // 信息色：支付宝蓝
+      },
+
+      // ========== 字体配置 ==========
+      typography: {
+        // 字体系列：现代商务字体（Inter + 中文字体）
+        fontFamily: '"Inter", "Poppins", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        fontSizeBase: '16px',
+        fontSizeSmall: '14px',
+        fontSizeLarge: '20px',
+        fontSizeXLarge: '28px',
+        fontSizeXXLarge: '32px',
+        fontWeightNormal: '400',
+        fontWeightMedium: '500',
+        fontWeightSemiBold: '600',
+        fontWeightBold: '700',
+        lineHeight: '1.6'             // 较大行高：更舒适的阅读体验
+      },
+
+      // ========== 间距配置 ==========
+      spacing: {
+        xs: '4px',
+        sm: '8px',
+        md: '16px',
+        lg: '24px',
+        xl: '30px',
+        xxl: '40px'
+      },
+
+      // ========== 圆角配置 ==========
+      borderRadius: {
+        sm: '6px',    // 稍小圆角：更精致
+        md: '10px',
+        lg: '14px',
+        xl: '18px',
+        full: '50%'
+      },
+
+      // ========== 阴影配置 ==========
+      shadows: {
+        sm: '0 1px 3px rgba(22, 119, 255, .12), 0 1px 2px rgba(22, 119, 255, .08)',       // 精美小阴影
+        md: '0 4px 6px rgba(22, 119, 255, .15), 0 2px 4px rgba(22, 119, 255, .1)',        // 精美中阴影
+        lg: '0 10px 15px rgba(22, 119, 255, .18), 0 4px 6px rgba(22, 119, 255, .12)',     // 精美大阴影
+        xl: '0 20px 25px rgba(22, 119, 255, .2), 0 10px 10px rgba(22, 119, 255, .08)'      // 精美超大阴影
+      }
+    },
+
+    /**
+     * 主题6: 微信绿（社交活力风格）
+     * 特点：微信品牌绿色，社交活力，清新自然
+     */
+    wechat: {
+      name: { zh: '微信绿', en: 'WeChat Green' },
+
+      // ========== 颜色配置 ==========
+      colors: {
+        // 主色系 - 微信品牌绿色
+        primary: '#07C160',           // 主色：微信绿（按钮、链接主色）
+        primaryDark: '#06ad56',       // 主色深色：深微信绿（按钮hover、渐变终点）
+        primaryLight: '#38d976',      // 主色浅色：浅微信绿（辅助元素）
+        secondary: '#576b95',         // 辅助色：微信蓝（次要按钮、标签）
+
+        // 背景色 - 清新绿色渐变
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)',  // 页面主背景：微信绿渐变
+        backgroundAlt: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',  // 备用背景：纯白渐变
+        surface: '#ffffff',           // 表面色：纯白色
+        surfaceAlt: '#f0fdf4',        // 表面备用色：极浅绿色
+
+        // 文本色 - 深色文本（确保可读性）
+        text: '#166534',              // 主文本色：深绿色（增强对比度）
+        textSecondary: '#16a34a',     // 次要文本色：中绿色
+        textLight: '#86efac',         // 浅色文本：浅绿色
+        textOnPrimary: '#ffffff',     // 主色上的文本：白色
+
+        // 边框色 - 浅色边框
+        border: '#bbf7d0',            // 主边框色：浅绿色
+        borderLight: '#dcfce7',       // 浅边框色：极浅绿色
+
+        // 阴影色 - 精美阴影
+        shadow: 'rgba(7, 193, 96, .15)',         // 主阴影：微信绿阴影
+        shadowLight: 'rgba(7, 193, 96, .08)',    // 浅阴影：轻微阴影
+        shadowPrimary: 'rgba(7, 193, 96, .25)',  // 主色阴影：微信绿阴影（增强）
+        hover: 'rgba(7, 193, 96, .12)',          // 悬停背景：绿色浅色（增强）
+
+        // 状态色 - 微信风格
+        success: '#07C160',           // 成功色：微信绿
+        error: '#ef4444',             // 错误色：红色
+        warning: '#f59e0b',           // 警告色：橙色
+        info: '#576b95'               // 信息色：微信蓝
+      },
+
+      // ========== 字体配置 ==========
+      typography: {
+        // 字体系列：清新自然字体（Poppins + 中文字体）
+        fontFamily: '"Poppins", "Montserrat", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        fontSizeBase: '16px',
+        fontSizeSmall: '14px',
+        fontSizeLarge: '20px',
+        fontSizeXLarge: '28px',
+        fontSizeXXLarge: '32px',
+        fontWeightNormal: '400',
+        fontWeightMedium: '500',
+        fontWeightSemiBold: '600',
+        fontWeightBold: '700',
+        lineHeight: '1.6'             // 较大行高：更舒适的阅读体验
+      },
+
+      // ========== 间距配置 ==========
+      spacing: {
+        xs: '4px',
+        sm: '8px',
+        md: '16px',
+        lg: '24px',
+        xl: '30px',
+        xxl: '40px'
+      },
+
+      // ========== 圆角配置 ==========
+      borderRadius: {
+        sm: '8px',    // 圆角：更柔和
+        md: '12px',
+        lg: '16px',
+        xl: '20px',
+        full: '50%'
+      },
+
+      // ========== 阴影配置 ==========
+      shadows: {
+        sm: '0 1px 3px rgba(7, 193, 96, .12), 0 1px 2px rgba(7, 193, 96, .08)',       // 精美小阴影
+        md: '0 4px 6px rgba(7, 193, 96, .15), 0 2px 4px rgba(7, 193, 96, .1)',        // 精美中阴影
+        lg: '0 10px 15px rgba(7, 193, 96, .18), 0 4px 6px rgba(7, 193, 96, .12)',     // 精美大阴影
+        xl: '0 20px 25px rgba(7, 193, 96, .2), 0 10px 10px rgba(7, 193, 96, .08)'      // 精美超大阴影
+      }
     }
   };
 
@@ -394,7 +571,7 @@
 
   /**
    * 设置主题
-   * @param {string} themeName - 主题名称（purple/cyberpunk/light/modern）
+   * @param {string} themeName - 主题名称（purple/cyberpunk/light/modern/alipay/wechat）
    * @returns {Object} 设置的主题配置对象
    */
   function setTheme(themeName) {
@@ -454,7 +631,7 @@
     if (themeKey) {
       document.body.setAttribute('data-theme', themeKey);
       // 移除所有主题类，添加当前主题类
-      document.body.className = document.body.className.replace(/\b(purple|cyberpunk|light|modern)\b/g, '');
+      document.body.className = document.body.className.replace(/\b(purple|cyberpunk|light|modern|alipay|wechat)\b/g, '');
       document.body.classList.add(themeKey);
     }
   }

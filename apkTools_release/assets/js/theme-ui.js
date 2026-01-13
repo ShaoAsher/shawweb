@@ -83,6 +83,14 @@
         modern: {
           zh: '现代简约，暗色主题',
           en: 'Modern minimal dark theme'
+        },
+        alipay: {
+          zh: '支付宝蓝，商务专业风格',
+          en: 'Alipay blue, professional business style'
+        },
+        wechat: {
+          zh: '微信绿，社交活力风格',
+          en: 'WeChat green, social vitality style'
         }
       };
       const desc = descriptions[theme.key] || {};
@@ -158,6 +166,14 @@
         modern: {
           zh: '现代简约，暗色主题',
           en: 'Modern minimal dark theme'
+        },
+        alipay: {
+          zh: '支付宝蓝，商务专业风格',
+          en: 'Alipay blue, professional business style'
+        },
+        wechat: {
+          zh: '微信绿，社交活力风格',
+          en: 'WeChat green, social vitality style'
         }
       };
 
