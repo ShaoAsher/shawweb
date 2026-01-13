@@ -5,52 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
+  <link rel="stylesheet" href="./assets/css/theme.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-      overflow-x: hidden
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-      overflow: hidden
-    }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 40px 30px;
-      text-align: center;
-      position: relative
-    }
-
-    .header h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, .2)
-    }
-
-    .header p {
-      opacity: .95;
-      font-size: 15px
-    }
-
-    .content {
-      padding: 30px 24px
-    }
+    /* 继承theme.css的基础样式 */
+    /* 以下是首页特定的样式覆盖 */
 
     /* 搜索框 */
     .search-container {
@@ -59,41 +17,30 @@
     }
 
     .search-box {
-      width: 100%;
-      padding: 16px 50px 16px 20px;
-      border: 2px solid #e9ecef;
-      border-radius: 12px;
-      font-size: 16px;
-      transition: all 0.3s;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .05)
-    }
-
-    .search-box:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, .2)
+      padding: var(--spacing-md) 50px var(--spacing-md) var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
     }
 
     .search-icon {
       position: absolute;
-      right: 20px;
+      right: var(--spacing-lg);
       top: 50%;
       transform: translateY(-50%);
-      font-size: 20px;
-      color: #adb5bd;
-      pointer-events: none
+      font-size: var(--font-size-large);
+      color: var(--color-text-light);
+      pointer-events: none;
+      transition: color 0.3s;
     }
 
     .search-box:focus+.search-icon {
-      color: #667eea
+      color: var(--color-primary);
     }
 
     .search-results-info {
-      margin-top: 12px;
-      color: #718096;
-      font-size: 14px;
-      display: none
+      margin-top: var(--spacing-sm);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-small);
+      display: none;
     }
 
     .search-results-info.show {
@@ -102,9 +49,9 @@
 
     .no-results {
       text-align: center;
-      padding: 60px 20px;
-      color: #a0aec0;
-      display: none
+      padding: 60px var(--spacing-lg);
+      color: var(--color-text-light);
+      display: none;
     }
 
     .no-results.show {
@@ -120,18 +67,18 @@
     /* 快捷入口 */
     .quick-access {
       margin-top: 60px;
-      padding-top: 40px;
-      border-top: 2px solid #e9ecef
+      padding-top: var(--spacing-xxl);
+      border-top: 2px solid var(--color-border);
     }
 
     .quick-access-title {
-      font-size: 24px;
-      color: #2d3748;
-      margin-bottom: 24px;
-      font-weight: 700;
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      font-weight: var(--font-weight-bold);
       display: flex;
       align-items: center;
-      gap: 12px
+      gap: var(--spacing-sm);
     }
 
     .quick-links {
@@ -143,24 +90,24 @@
     .quick-link {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 20px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      background: var(--color-background-alt);
       border-radius: 24px;
-      color: #495057;
+      color: var(--color-text);
       text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-medium);
       transition: all 0.3s;
-      border: 2px solid transparent
+      border: 2px solid transparent;
     }
 
     .quick-link:hover {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text-on-primary);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
-      border-color: transparent
+      box-shadow: var(--shadow-md);
+      border-color: transparent;
     }
 
     .quick-link-icon {
@@ -176,15 +123,15 @@
     }
 
     .tool-card {
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      box-shadow: var(--shadow-sm);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       border: 2px solid transparent;
       position: relative;
-      overflow: hidden
+      overflow: hidden;
     }
 
     .tool-card::before {
@@ -194,15 +141,15 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
       transform: scaleX(0);
-      transition: transform 0.3s
+      transition: transform 0.3s;
     }
 
     .tool-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, .25);
-      border-color: #667eea
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-primary);
     }
 
     .tool-card:hover::before {
@@ -219,15 +166,15 @@
     .tool-icon-wrapper {
       width: 48px;
       height: 48px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, .3);
-      transition: transform 0.3s
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s;
     }
 
     .tool-card:hover .tool-icon-wrapper {
@@ -249,10 +196,10 @@
 
     .tool-title {
       font-size: 15px;
-      color: #2d3748;
-      font-weight: 700;
+      color: var(--color-text);
+      font-weight: var(--font-weight-bold);
       line-height: 1.3;
-      flex: 1
+      flex: 1;
     }
 
     .tool-rating {
@@ -298,38 +245,38 @@
     }
 
     .tool-desc {
-      font-size: 12px;
-      color: #718096;
-      line-height: 1.5;
-      margin-bottom: 12px;
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height);
+      margin-bottom: var(--spacing-sm);
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-      overflow: hidden
+      overflow: hidden;
     }
 
     .tool-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 12px;
-      border-top: 1px solid #e9ecef
+      padding-top: var(--spacing-sm);
+      border-top: 1px solid var(--color-border);
     }
 
     .tool-link {
-      color: #667eea;
+      color: var(--color-primary);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: var(--font-weight-semibold);
       font-size: 13px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.3s
+      gap: var(--spacing-sm);
+      transition: all 0.3s;
     }
 
     .tool-link:hover {
-      color: #764ba2;
-      gap: 10px
+      color: var(--color-primary-dark);
+      gap: 10px;
     }
 
     .tool-link::after {
@@ -343,15 +290,15 @@
 
     /* 分类标题 */
     .section-title {
-      font-size: 20px;
-      color: #2d3748;
-      margin: 32px 0 16px 0;
-      font-weight: 700;
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin: 32px 0 var(--spacing-md) 0;
+      font-weight: var(--font-weight-bold);
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #e9ecef
+      gap: var(--spacing-sm);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 2px solid var(--color-border);
     }
 
     .section-title:first-child {
@@ -386,7 +333,9 @@
     }
   </style>
   <link rel="icon" href="data:,">
-  <script src="./tools.js"></script>
+  <script src="./assets/js/tools.js"></script>
+  <script src="./assets/js/themes.js"></script>
+  <script src="./assets/js/theme-ui.js"></script>
 </head>
 
 <body>

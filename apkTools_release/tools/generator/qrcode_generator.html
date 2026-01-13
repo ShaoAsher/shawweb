@@ -5,54 +5,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>二维码/条形码生成工具</title>
+  <link rel="stylesheet" href="../../assets/css/theme.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px
-    }
+    /* 继承theme.css的基础样式 */
+    /* 以下是工具页面特定的样式覆盖 */
 
     .container {
       max-width: 1200px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-      overflow: hidden
-    }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 30px;
-      text-align: center;
-      position: relative
     }
 
     .home-btn {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
       width: 40px;
       height: 40px;
       background: rgba(255, 255, 255, 0.2);
       border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--color-text-on-primary);
       text-decoration: none;
-      font-size: 20px;
+      font-size: var(--font-size-large);
       transition: all .3s;
       z-index: 10;
     }
@@ -64,88 +42,91 @@
     }
 
     .header h1 {
-      font-size: 28px;
-      margin-bottom: 10px
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
     }
 
     .header p {
       opacity: .9;
-      font-size: 14px
+      font-size: var(--font-size-small);
     }
 
     .content {
-      padding: 30px
+      padding: var(--spacing-xl);
     }
 
     .form-section {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
     }
 
     .form-section h2 {
-      font-size: 20px;
-      color: #495057;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 10px
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--spacing-sm);
     }
 
     .form-group {
-      margin-bottom: 18px
+      margin-bottom: var(--spacing-lg);
     }
 
     .form-group label {
       display: block;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 8px;
-      font-size: 14px
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-small);
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 12px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color .3s
+      padding: var(--spacing-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
+      transition: border-color .3s;
+      background: var(--color-surface);
+      color: var(--color-text);
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
       outline: none;
-      border-color: #667eea
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
     }
 
     .form-group textarea {
       min-height: 100px;
-      resize: vertical
+      resize: vertical;
     }
 
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 15px
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-md);
     }
 
     .color-input-group {
       display: flex;
-      gap: 10px;
-      align-items: center
+      gap: var(--spacing-sm);
+      align-items: center;
     }
 
     .color-input-group input[type="color"] {
       width: 60px;
       height: 40px;
-      border: 2px solid #dee2e6;
-      border-radius: 6px;
-      cursor: pointer
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
     }
 
 
@@ -268,7 +249,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
+      <a href="../../index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>📷 二维码/条形码生成工具</h1>
       <p>支持自定义样式、颜色和图标，生成高质量二维码和条形码</p>
     </div>
@@ -573,7 +554,9 @@
       }
     });
   </script>
-  <script src="./tools.js"></script>
+  <script src="../../assets/js/tools.js"></script>
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
 </body>
 
 </html>

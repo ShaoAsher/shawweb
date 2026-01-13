@@ -5,54 +5,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IP地址查询工具</title>
+  <link rel="stylesheet" href="../../assets/css/theme.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
+    /* 继承theme.css的基础样式 */
+    /* 以下是工具页面特定的样式覆盖 */
 
     .container {
       max-width: 1000px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-      overflow: hidden;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 30px;
-      text-align: center;
-      position: relative;
     }
 
     .home-btn {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
       width: 40px;
       height: 40px;
       background: rgba(255, 255, 255, 0.2);
       border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--color-text-on-primary);
       text-decoration: none;
-      font-size: 20px;
+      font-size: var(--font-size-large);
       transition: all .3s;
       z-index: 10;
+      backdrop-filter: blur(10px);
     }
 
     .home-btn:hover {
@@ -62,34 +41,34 @@
     }
 
     .header h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
     }
 
     .header p {
       opacity: .9;
-      font-size: 14px;
+      font-size: var(--font-size-small);
     }
 
     .content {
-      padding: 30px;
+      padding: var(--spacing-xl);
     }
 
     .query-section {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-      border: 1px solid #dee2e6;
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      border: 1px solid var(--color-border);
     }
 
     .query-section h2 {
-      font-size: 20px;
-      color: #495057;
-      margin-bottom: 20px;
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: var(--spacing-sm);
     }
 
     .query-form {
@@ -106,44 +85,32 @@
 
     .input-group label {
       display: block;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 8px;
-      font-size: 14px;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-small);
     }
 
     .input-group input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: all 0.3s;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
     }
 
     .input-group input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, .1);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
     }
 
     .btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      white-space: nowrap;
-      height: fit-content;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text-on-primary);
+      padding: var(--spacing-sm) var(--spacing-xl);
+      border-radius: var(--radius-sm);
     }
 
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, .4);
+      box-shadow: var(--shadow-md);
     }
 
     .btn:disabled {
@@ -272,13 +239,15 @@
     }
   </style>
   <link rel="icon" href="data:,">
-  <script src="./tools.js"></script>
+  <script src="../../assets/js/tools.js"></script>
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
 </head>
 
 <body>
   <div class="container">
     <div class="header">
-      <a href="./index.html" class="home-btn">🏠</a>
+      <a href="../../index.html" class="home-btn">🏠</a>
       <h1></h1>
       <p></p>
     </div>

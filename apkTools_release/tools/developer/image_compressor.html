@@ -5,147 +5,128 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>图片压缩工具</title>
+  <link rel="stylesheet" href="../../assets/css/theme.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px
-    }
+    /* 继承theme.css的基础样式 */
+    /* 以下是工具页面特定的样式覆盖 */
 
     .container {
       max-width: 1000px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
-      overflow: hidden
-    }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 30px;
-      text-align: center;
-      position: relative
     }
 
     .home-btn {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
       width: 40px;
       height: 40px;
       background: rgba(255, 255, 255, 0.2);
       border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      color: var(--color-text-on-primary);
       text-decoration: none;
-      font-size: 20px;
+      font-size: var(--font-size-large);
       transition: all .3s;
-      z-index: 10
+      z-index: 10;
     }
 
     .home-btn:hover {
       background: rgba(255, 255, 255, 0.3);
       border-color: rgba(255, 255, 255, 0.5);
-      transform: scale(1.1)
+      transform: scale(1.1);
     }
 
     .header h1 {
-      font-size: 28px;
-      margin-bottom: 10px
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
     }
 
     .header p {
       opacity: .9;
-      font-size: 14px
+      font-size: var(--font-size-small);
     }
 
     .content {
-      padding: 30px
+      padding: var(--spacing-xl);
     }
 
     .form-section {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
     }
 
     .form-section h2 {
-      font-size: 20px;
-      color: #495057;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 10px
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--spacing-sm);
     }
 
     .form-group {
-      margin-bottom: 20px
+      margin-bottom: var(--spacing-lg);
     }
 
     .form-group label {
       display: block;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 8px;
-      font-size: 14px
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-small);
     }
 
     .form-group input,
     .form-group select {
       width: 100%;
-      padding: 12px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color .3s
+      padding: var(--spacing-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
+      transition: border-color .3s;
+      background: var(--color-surface);
+      color: var(--color-text);
     }
 
     .form-group input:focus,
     .form-group select:focus {
       outline: none;
-      border-color: #667eea
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
     }
 
     .file-upload-area {
-      border: 3px dashed #667eea;
-      border-radius: 12px;
-      padding: 40px;
+      border: 3px dashed var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-xxl);
       text-align: center;
-      background: #f8f9ff;
+      background: var(--color-hover);
       cursor: pointer;
-      transition: all .3s
+      transition: all .3s;
     }
 
     .file-upload-area:hover {
-      background: #f0f2ff;
-      border-color: #5568d3
+      background: var(--color-surface-alt);
+      border-color: var(--color-primary-dark);
     }
 
     .file-upload-area.dragover {
-      background: #e8ebff;
-      border-color: #4456c3
+      background: var(--color-hover);
+      border-color: var(--color-primary);
     }
 
     .file-upload-area input[type=file] {
-      display: none
+      display: none;
     }
 
     .file-upload-icon {
       font-size: 48px;
-      color: #667eea;
-      margin-bottom: 15px
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-md);
     }
 
     .file-upload-text {
@@ -309,7 +290,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <a href="./index.html" class="home-btn" title="返回首页">🏠</a>
+      <a href="../../index.html" class="home-btn" title="返回首页">🏠</a>
       <h1>🗜️ 图片压缩工具</h1>
       <p>保持比例与清晰度，智能压缩并预览对比</p>
     </div>
@@ -449,7 +430,9 @@
 
     async function compressImage(img) { const ow = img.naturalWidth || img.width; const oh = img.naturalHeight || img.height; const { tw, th } = computeTargetSize(ow, oh); const c = document.createElement('canvas'); c.width = tw; c.height = th; const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(img, 0, 0, ow, oh, 0, 0, tw, th); let fmt = formatSelect.value; if (fmt === 'auto') fmt = getAutoFormat(img, originalBlob ? originalBlob.type : null); const targetKB = parseInt(targetSizeKBInput.value) || 0; const targetBytes = targetKB > 0 ? targetKB * 1024 : 0; const maxQ = parseInt(qualityRange.value) / 100; const minQ = 0.7; function toBlobAsync(canvas, mime, quality) { return new Promise(res => canvas.toBlob(b => res(b), mime, quality)) } async function tryBinary(mime, ext) { let low = minQ, high = maxQ, best = null; for (let i = 0; i < 8; i++) { const mid = (low + high) / 2; const blob = await toBlobAsync(c, mime, mid); if (!blob) break; if (targetBytes > 0 && blob.size > targetBytes) { high = mid } else { best = blob; low = mid } } if (best) return { blob: best, ext }; const final = await toBlobAsync(c, mime, Math.max(minQ, Math.min(maxQ, high))); return { blob: final, ext } } if (fmt === 'png') { const pngBlob = await toBlobAsync(c, 'image/png'); if (!pngBlob) throw new Error('生成图片失败'); if (targetBytes > 0 && pngBlob.size > targetBytes) { const hasAlpha = detectAlpha(img); const webpRes = await tryBinary('image/webp', 'webp'); if (targetBytes > 0 && webpRes.blob.size > targetBytes) { showStatus('已尽力压缩，未完全达到目标大小', 'error') } else { if (hasAlpha) showStatus('为达到目标大小，已切换为 WEBP（保留透明）', 'success') } return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } return { blob: pngBlob, ext: 'png', width: tw, height: th } } if (fmt === 'jpeg') { const jpgRes = await tryBinary('image/jpeg', 'jpg'); if (targetBytes > 0 && jpgRes.blob.size > targetBytes) { const webpRes = await tryBinary('image/webp', 'webp'); if (webpRes.blob.size < jpgRes.blob.size) { showStatus('为达到目标大小，已切换为 WEBP', 'success'); return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } else { showStatus('已尽力压缩，未完全达到目标大小', 'error') } } return { blob: jpgRes.blob, ext: jpgRes.ext, width: tw, height: th } } if (fmt === 'webp') { const webpRes = await tryBinary('image/webp', 'webp'); if (targetBytes > 0 && webpRes.blob.size > targetBytes) { showStatus('已尽力压缩，未完全达到目标大小', 'error') } return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } const defaultRes = await tryBinary('image/jpeg', 'jpg'); return { blob: defaultRes.blob, ext: defaultRes.ext, width: tw, height: th } }
   </script>
-  <script src="./tools.js"></script>
+  <script src="../../assets/js/tools.js"></script>
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
 </body>
 
 </html>
