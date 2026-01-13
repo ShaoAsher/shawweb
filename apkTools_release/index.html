@@ -468,25 +468,139 @@
       transform: translateX(4px)
     }
 
-    /* 分类标题 */
-    .section-title {
-      font-size: var(--font-size-large);
-      color: var(--color-text);
-      margin: 32px 0 var(--spacing-md) 0;
-      font-weight: var(--font-weight-bold);
+    /* 页签导航 */
+    .tabs-container {
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 2px solid var(--color-border);
+      position: relative;
+    }
+
+    .tabs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-xs);
+      margin-bottom: -2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 2px;
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
       display: flex;
       align-items: center;
       gap: var(--spacing-sm);
-      padding-bottom: var(--spacing-sm);
-      border-bottom: 2px solid var(--color-border);
+      position: relative;
+      font-family: var(--font-family);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
     }
 
-    .section-title:first-child {
-      margin-top: 0
+    .tab-btn::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--color-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .section-icon {
-      font-size: 24px
+    .tab-btn:hover {
+      color: var(--color-primary);
+      background: var(--color-hover);
+    }
+
+    .tab-btn:hover::before {
+      transform: scaleX(0.5);
+    }
+
+    .tab-btn.active {
+      color: var(--color-primary);
+      background: var(--color-hover);
+      border-bottom-color: var(--color-primary);
+    }
+
+    .tab-btn.active::before {
+      transform: scaleX(1);
+    }
+
+    .tab-btn .tab-icon {
+      font-size: 18px;
+      transition: transform 0.3s;
+    }
+
+    .tab-btn:hover .tab-icon {
+      transform: scale(1.1);
+    }
+
+    .tab-btn.active .tab-icon {
+      transform: scale(1.15);
+    }
+
+    .tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      background: var(--color-text-light);
+      color: var(--color-text-on-primary);
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: var(--font-weight-bold);
+      margin-left: var(--spacing-xs);
+      transition: all 0.3s;
+    }
+
+    .tab-btn:hover .tab-count {
+      background: var(--color-primary);
+    }
+
+    .tab-btn.active .tab-count {
+      background: var(--color-primary);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 分类标题（保留用于向后兼容，但隐藏） */
+    .section-title {
+      display: none;
     }
 
     /* 响应式 */
@@ -509,6 +623,15 @@
 
       .header {
         padding: 30px 20px
+      }
+
+      .tab-btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-small);
+      }
+
+      .tabs-nav {
+        gap: var(--spacing-xs);
       }
     }
   </style>
@@ -533,33 +656,53 @@
         <div class="search-results-info" id="searchResultsInfo"></div>
       </div>
 
-      <!-- 开发工具 -->
-      <div class="section-title" id="devSection">
+      <!-- 页签导航 -->
+      <div class="tabs-container">
+        <div class="tabs-nav" id="tabsNav"></div>
+      </div>
+
+      <!-- 页签内容 -->
+      <div class="tab-content active" id="tabAll">
+        <div class="tools-grid" id="allTools"></div>
+      </div>
+
+      <div class="tab-content" id="tabDev">
+        <div class="tools-grid" id="devTools"></div>
+      </div>
+
+      <div class="tab-content" id="tabImage">
+        <div class="tools-grid" id="imageTools"></div>
+      </div>
+
+      <div class="tab-content" id="tabText">
+        <div class="tools-grid" id="textTools"></div>
+      </div>
+
+      <div class="tab-content" id="tabUnit">
+        <div class="tools-grid" id="unitTools"></div>
+      </div>
+
+      <div class="tab-content" id="tabSearch">
+        <div class="tools-grid" id="searchTools"></div>
+      </div>
+
+      <!-- 保留原有分类标题（隐藏）用于向后兼容 -->
+      <div class="section-title" id="devSection" style="display: none;">
         <span class="section-icon">💻</span>
         <span id="devSectionTitle"></span>
       </div>
-      <div class="tools-grid" id="devTools"></div>
-
-      <!-- 图片工具 -->
-      <div class="section-title" id="imageSection">
+      <div class="section-title" id="imageSection" style="display: none;">
         <span class="section-icon">🖼️</span>
         <span id="imageSectionTitle"></span>
       </div>
-      <div class="tools-grid" id="imageTools"></div>
-
-      <!-- 文字/编码工具 -->
-      <div class="section-title" id="textSection">
+      <div class="section-title" id="textSection" style="display: none;">
         <span class="section-icon">📝</span>
         <span id="textSectionTitle"></span>
       </div>
-      <div class="tools-grid" id="textTools"></div>
-
-      <!-- 单位转换工具 -->
-      <div class="section-title" id="unitSection">
+      <div class="section-title" id="unitSection" style="display: none;">
         <span class="section-icon">📐</span>
         <span id="unitSectionTitle"></span>
       </div>
-      <div class="tools-grid" id="unitTools"></div>
 
       <!-- 无结果提示 -->
       <div class="no-results" id="noResults">
@@ -584,6 +727,9 @@
     let tools = [];
     let categories = {};
     let currentLang = 'zh';
+    let activeTab = 'all';
+    let previousTab = 'all'; // 保存搜索前的页签
+    let currentSearchQuery = '';
 
     // 初始化工具数据
     function initToolsData() {
@@ -674,8 +820,49 @@
       `;
     }
 
-    // 渲染工具
-    function renderTools(filteredTools = null) {
+    // 切换页签
+    function switchTab(tabId) {
+      // 更新活动页签（搜索页签不更新activeTab，保持原页签）
+      if (tabId !== 'search') {
+        activeTab = tabId;
+      }
+
+      // 更新页签按钮状态（搜索时不更新按钮状态）
+      if (tabId !== 'search') {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => {
+          if (btn.dataset.tab === tabId) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
+
+      // 更新页签内容显示
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => {
+        // 将 tabAll, tabDev 等转换为对应的 tabId
+        let contentTabId = content.id.replace('tab', '');
+        // 首字母小写：All -> all, Dev -> dev
+        contentTabId = contentTabId.charAt(0).toLowerCase() + contentTabId.slice(1);
+
+        if (contentTabId === tabId) {
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+
+      // 如果没有搜索查询，渲染对应页签的工具
+      if (!currentSearchQuery && tabId !== 'search') {
+        renderToolsByTab(tabId);
+      }
+    }
+
+    // 根据页签渲染工具
+    function renderToolsByTab(tabId) {
+      const allTools = document.getElementById('allTools');
       const devTools = document.getElementById('devTools');
       const imageTools = document.getElementById('imageTools');
       const textTools = document.getElementById('textTools');
@@ -683,24 +870,25 @@
       const noResults = document.getElementById('noResults');
       const searchResultsInfo = document.getElementById('searchResultsInfo');
 
-      if (!devTools || !imageTools || !textTools || !unitTools) {
-        console.error('工具容器元素未找到');
-        return;
-      }
+      // 清空所有容器
+      if (allTools) allTools.innerHTML = '';
+      if (devTools) devTools.innerHTML = '';
+      if (imageTools) imageTools.innerHTML = '';
+      if (textTools) textTools.innerHTML = '';
+      if (unitTools) unitTools.innerHTML = '';
 
-      // 清空现有内容
-      devTools.innerHTML = '';
-      imageTools.innerHTML = '';
-      textTools.innerHTML = '';
-      unitTools.innerHTML = '';
+      let toolsToRender = [];
 
-      const toolsToRender = filteredTools || tools;
-      if (!toolsToRender || toolsToRender.length === 0) {
-        console.warn('没有工具数据可渲染');
-        if (noResults) {
-          noResults.classList.add('show');
-        }
-        return;
+      if (tabId === 'all') {
+        toolsToRender = tools;
+      } else if (tabId === 'dev') {
+        toolsToRender = tools.filter(t => t.category === 'dev');
+      } else if (tabId === 'image') {
+        toolsToRender = tools.filter(t => t.category === 'image');
+      } else if (tabId === 'text') {
+        toolsToRender = tools.filter(t => t.category === 'text' && !t.href.includes('unit_converter'));
+      } else if (tabId === 'unit') {
+        toolsToRender = tools.filter(t => t.category === 'text' && t.href.includes('unit_converter'));
       }
 
       let hasResults = false;
@@ -712,82 +900,185 @@
         }
         try {
           const card = createCard(tool);
-          if (tool.category === 'dev') {
+          if (tabId === 'all') {
+            allTools.innerHTML += card;
+            hasResults = true;
+          } else if (tabId === 'dev') {
             devTools.innerHTML += card;
             hasResults = true;
-          } else if (tool.category === 'image') {
+          } else if (tabId === 'image') {
             imageTools.innerHTML += card;
             hasResults = true;
-          } else if (tool.category === 'text') {
-            // 检查是否是单位转换工具
-            if (tool.href && tool.href.includes('unit_converter')) {
-              unitTools.innerHTML += card;
-              hasResults = true;
-            } else {
-              textTools.innerHTML += card;
-              hasResults = true;
-            }
+          } else if (tabId === 'text') {
+            textTools.innerHTML += card;
+            hasResults = true;
+          } else if (tabId === 'unit') {
+            unitTools.innerHTML += card;
+            hasResults = true;
           }
         } catch (error) {
           console.error('创建工具卡片失败:', tool, error);
         }
       });
 
-      // 显示/隐藏分类标题
-      const devSection = document.getElementById('devSection');
-      const imageSection = document.getElementById('imageSection');
-      const textSection = document.getElementById('textSection');
-      const unitSection = document.getElementById('unitSection');
-
-      // 更新分类标题文本（避免重复）
-      const devTitleEl = document.getElementById('devSectionTitle');
-      const imageTitleEl = document.getElementById('imageSectionTitle');
-      const textTitleEl = document.getElementById('textSectionTitle');
-      const unitTitleEl = document.getElementById('unitSectionTitle');
-
-      if (devTitleEl) {
-        devTitleEl.textContent = getCategoryName('dev');
-      }
-      if (imageTitleEl) {
-        imageTitleEl.textContent = getCategoryName('image');
-      }
-      if (textTitleEl) {
-        textTitleEl.textContent = getCategoryName('text');
-      }
-      if (unitTitleEl) {
-        unitTitleEl.textContent = getCategoryName('unit');
+      // 显示/隐藏无结果提示
+      if (noResults) {
+        noResults.classList.toggle('show', !hasResults);
       }
 
-      if (filteredTools) {
-        const hasDev = toolsToRender.some(t => t.category === 'dev');
-        const hasImage = toolsToRender.some(t => t.category === 'image');
-        const hasText = toolsToRender.some(t => t.category === 'text' && !t.href.includes('unit_converter'));
-        const hasUnit = toolsToRender.some(t => t.category === 'text' && t.href.includes('unit_converter'));
+      // 隐藏搜索结果信息
+      if (searchResultsInfo) {
+        searchResultsInfo.classList.remove('show');
+      }
+    }
 
-        devSection.style.display = hasDev ? 'flex' : 'none';
-        imageSection.style.display = hasImage ? 'flex' : 'none';
-        textSection.style.display = hasText ? 'flex' : 'none';
-        unitSection.style.display = hasUnit ? 'flex' : 'none';
+    // 渲染搜索结果
+    function renderSearchResults(filteredTools) {
+      const allTools = document.getElementById('allTools');
+      const noResults = document.getElementById('noResults');
+      const searchResultsInfo = document.getElementById('searchResultsInfo');
 
-        // 显示搜索结果信息
-        if (filteredTools.length > 0) {
-          searchResultsInfo.textContent = currentLang === 'en'
-            ? `Found ${filteredTools.length} tool${filteredTools.length > 1 ? 's' : ''}`
-            : `找到 ${filteredTools.length} 个工具`;
-          searchResultsInfo.classList.add('show');
-        } else {
+      if (!allTools) {
+        console.error('工具容器未找到');
+        return;
+      }
+
+      // 保存当前页签（如果不是搜索状态）
+      if (!currentSearchQuery) {
+        previousTab = activeTab;
+      }
+
+      // 切换到"全部"页签
+      switchTab('all');
+
+      // 清空搜索结果
+      allTools.innerHTML = '';
+
+      if (!filteredTools || filteredTools.length === 0) {
+        if (noResults) {
+          noResults.classList.add('show');
+        }
+        if (searchResultsInfo) {
           searchResultsInfo.classList.remove('show');
         }
+        return;
+      }
 
-        // 显示/隐藏无结果提示
+      let hasResults = false;
+
+      filteredTools.forEach(tool => {
+        if (!tool || !tool.category) {
+          console.warn('工具数据格式错误:', tool);
+          return;
+        }
+        try {
+          const card = createCard(tool);
+          allTools.innerHTML += card;
+          hasResults = true;
+        } catch (error) {
+          console.error('创建工具卡片失败:', tool, error);
+        }
+      });
+
+      // 显示搜索结果信息
+      if (searchResultsInfo && filteredTools.length > 0) {
+        searchResultsInfo.textContent = currentLang === 'en'
+          ? `找到 ${filteredTools.length} 个工具`
+          : `找到 ${filteredTools.length} 个工具`;
+        searchResultsInfo.classList.add('show');
+      }
+
+      // 显示/隐藏无结果提示
+      if (noResults) {
         noResults.classList.toggle('show', !hasResults);
+      }
+    }
+
+    // 获取页签的工具数量
+    function getTabToolCount(tabId) {
+      if (tabId === 'all') {
+        return tools.length;
+      } else if (tabId === 'dev') {
+        return tools.filter(t => t.category === 'dev').length;
+      } else if (tabId === 'image') {
+        return tools.filter(t => t.category === 'image').length;
+      } else if (tabId === 'text') {
+        return tools.filter(t => t.category === 'text' && !t.href.includes('unit_converter')).length;
+      } else if (tabId === 'unit') {
+        return tools.filter(t => t.category === 'text' && t.href.includes('unit_converter')).length;
+      }
+      return 0;
+    }
+
+    // 更新页签数量显示
+    function updateTabCounts() {
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      tabButtons.forEach(btn => {
+        const tabId = btn.dataset.tab;
+        if (tabId) {
+          const count = getTabToolCount(tabId);
+          let countEl = btn.querySelector('.tab-count');
+          if (!countEl) {
+            countEl = document.createElement('span');
+            countEl.className = 'tab-count';
+            btn.appendChild(countEl);
+          }
+          countEl.textContent = count;
+        }
+      });
+    }
+
+    // 初始化页签
+    function initTabs() {
+      const tabsNav = document.getElementById('tabsNav');
+      if (!tabsNav) {
+        console.error('页签导航容器未找到');
+        return;
+      }
+
+      const tabConfigs = [
+        { id: 'all', icon: '🌟', name: { zh: '全部', en: 'All' } },
+        { id: 'dev', icon: '💻', name: { zh: '开发工具', en: 'Development Tools' } },
+        { id: 'image', icon: '🖼️', name: { zh: '图片工具', en: 'Image Tools' } },
+        { id: 'text', icon: '📝', name: { zh: '文字/编码工具', en: 'Text/Encoding Tools' } },
+        { id: 'unit', icon: '📐', name: { zh: '单位转换工具', en: 'Unit Converter' } }
+      ];
+
+      tabsNav.innerHTML = '';
+
+      tabConfigs.forEach(tab => {
+        const button = document.createElement('button');
+        button.className = 'tab-btn';
+        button.dataset.tab = tab.id;
+        if (tab.id === 'all') {
+          button.classList.add('active');
+        }
+        const tabName = typeof tab.name === 'object' ? (tab.name[currentLang] || tab.name.zh) : tab.name;
+        const count = getTabToolCount(tab.id);
+        button.innerHTML = `<span class="tab-icon">${tab.icon}</span><span>${tabName}</span><span class="tab-count">${count}</span>`;
+        button.addEventListener('click', () => {
+          currentSearchQuery = '';
+          previousTab = tab.id; // 更新之前的页签
+          const searchInput = document.getElementById('searchInput');
+          if (searchInput) {
+            searchInput.value = '';
+          }
+          switchTab(tab.id);
+        });
+        tabsNav.appendChild(button);
+      });
+    }
+
+    // 渲染工具（保留用于向后兼容，但已重构）
+    function renderTools(filteredTools = null) {
+      if (filteredTools) {
+        // 有搜索查询，显示搜索结果
+        currentSearchQuery = document.getElementById('searchInput')?.value || '';
+        renderSearchResults(filteredTools);
       } else {
-        devSection.style.display = 'flex';
-        imageSection.style.display = 'flex';
-        textSection.style.display = 'flex';
-        unitSection.style.display = 'flex';
-        searchResultsInfo.classList.remove('show');
-        noResults.classList.remove('show');
+        // 无搜索查询，根据当前页签渲染
+        currentSearchQuery = '';
+        renderToolsByTab(activeTab);
       }
     }
 
@@ -910,6 +1201,8 @@
         return;
       }
       console.log('初始化应用，工具数量:', tools.length);
+      initTabs();
+      updateTabCounts(); // 更新页签数量显示
       renderTools();
       initQuickLinks();
 
@@ -968,9 +1261,21 @@
         searchInput.addEventListener('input', (e) => {
           clearTimeout(searchTimeout);
           searchTimeout = setTimeout(() => {
-            const query = e.target.value;
-            const results = fuzzySearch(query);
-            renderTools(results);
+            const query = e.target.value.trim();
+            currentSearchQuery = query;
+            if (query) {
+              const results = fuzzySearch(query);
+              renderSearchResults(results);
+            } else {
+              // 清空搜索，回到搜索前的页签
+              const searchResultsInfo = document.getElementById('searchResultsInfo');
+              if (searchResultsInfo) {
+                searchResultsInfo.classList.remove('show');
+              }
+              // 返回到搜索前选中的页签，如果没有则使用当前页签
+              const tabToReturn = previousTab || activeTab;
+              switchTab(tabToReturn);
+            }
           }, 300);
         });
 
