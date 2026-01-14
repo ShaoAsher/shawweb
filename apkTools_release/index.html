@@ -672,8 +672,12 @@
         <div class="tools-grid" id="textTools"></div>
       </div>
 
-      <div class="tab-content" id="tabUnit">
-        <div class="tools-grid" id="unitTools"></div>
+      <div class="tab-content" id="tabConverter">
+        <div class="tools-grid" id="converterTools"></div>
+      </div>
+
+      <div class="tab-content" id="tabWriting">
+        <div class="tools-grid" id="writingTools"></div>
       </div>
 
       <div class="tab-content" id="tabLife">
@@ -786,9 +790,6 @@
 
     // 获取工具分类显示名称
     function getToolCategoryName(tool) {
-      if (tool.href.includes('unit_converter')) {
-        return getCategoryName('unit');
-      }
       return getCategoryName(tool.category);
     }
 
@@ -864,7 +865,8 @@
       const devTools = document.getElementById('devTools');
       const imageTools = document.getElementById('imageTools');
       const textTools = document.getElementById('textTools');
-      const unitTools = document.getElementById('unitTools');
+      const converterTools = document.getElementById('converterTools');
+      const writingTools = document.getElementById('writingTools');
       const lifeTools = document.getElementById('lifeTools');
       const noResults = document.getElementById('noResults');
       const searchResultsInfo = document.getElementById('searchResultsInfo');
@@ -874,7 +876,8 @@
       if (devTools) devTools.innerHTML = '';
       if (imageTools) imageTools.innerHTML = '';
       if (textTools) textTools.innerHTML = '';
-      if (unitTools) unitTools.innerHTML = '';
+      if (converterTools) converterTools.innerHTML = '';
+      if (writingTools) writingTools.innerHTML = '';
       if (lifeTools) lifeTools.innerHTML = '';
 
       let toolsToRender = [];
@@ -886,9 +889,11 @@
       } else if (tabId === 'image') {
         toolsToRender = tools.filter(t => t.category === 'image');
       } else if (tabId === 'text') {
-        toolsToRender = tools.filter(t => t.category === 'text' && !t.href.includes('unit_converter'));
-      } else if (tabId === 'unit') {
-        toolsToRender = tools.filter(t => t.category === 'text' && t.href.includes('unit_converter'));
+        toolsToRender = tools.filter(t => t.category === 'text');
+      } else if (tabId === 'converter') {
+        toolsToRender = tools.filter(t => t.category === 'converter');
+      } else if (tabId === 'writing') {
+        toolsToRender = tools.filter(t => t.category === 'writing');
       } else if (tabId === 'life') {
         toolsToRender = tools.filter(t => t.category === 'life');
       }
@@ -914,8 +919,11 @@
           } else if (tabId === 'text') {
             textTools.innerHTML += card;
             hasResults = true;
-          } else if (tabId === 'unit') {
-            unitTools.innerHTML += card;
+          } else if (tabId === 'converter') {
+            converterTools.innerHTML += card;
+            hasResults = true;
+          } else if (tabId === 'writing') {
+            writingTools.innerHTML += card;
             hasResults = true;
           } else if (tabId === 'life') {
             lifeTools.innerHTML += card;
@@ -1008,9 +1016,11 @@
       } else if (tabId === 'image') {
         return tools.filter(t => t.category === 'image').length;
       } else if (tabId === 'text') {
-        return tools.filter(t => t.category === 'text' && !t.href.includes('unit_converter')).length;
-      } else if (tabId === 'unit') {
-        return tools.filter(t => t.category === 'text' && t.href.includes('unit_converter')).length;
+        return tools.filter(t => t.category === 'text').length;
+      } else if (tabId === 'converter') {
+        return tools.filter(t => t.category === 'converter').length;
+      } else if (tabId === 'writing') {
+        return tools.filter(t => t.category === 'writing').length;
       } else if (tabId === 'life') {
         return tools.filter(t => t.category === 'life').length;
       }
@@ -1047,8 +1057,9 @@
         { id: 'all', icon: '🌟', name: { zh: '全部', en: 'All' } },
         { id: 'dev', icon: '💻', name: { zh: '开发工具', en: 'Development Tools' } },
         { id: 'image', icon: '🖼️', name: { zh: '图片工具', en: 'Image Tools' } },
-        { id: 'text', icon: '📝', name: { zh: '文字/编码工具', en: 'Text/Encoding Tools' } },
-        { id: 'unit', icon: '📐', name: { zh: '单位转换工具', en: 'Unit Converter' } },
+        { id: 'text', icon: '📝', name: { zh: '文本工具', en: 'Text Tools' } },
+        { id: 'converter', icon: '🔄', name: { zh: '转换工具', en: 'Converter Tools' } },
+        { id: 'writing', icon: '✍️', name: { zh: '写作工具', en: 'Writing Tools' } },
         { id: 'life', icon: '🌍', name: { zh: '生活工具', en: 'Life Tools' } }
       ];
 
