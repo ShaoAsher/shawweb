@@ -65,20 +65,17 @@
         rating: 5
       },
       {
-        icon: "📝",
-        title: { zh: "在线 Markdown 编辑器", en: "Online Markdown Editor" },
-        desc: { zh: "支持实时预览、语法高亮和丰富的编辑快捷按钮，可导出 Markdown 和 HTML 格式。", en: "Support real-time preview, syntax highlighting and rich editing shortcuts, can export Markdown and HTML formats." },
-        keywords: { zh: ["markdown", "编辑器", "预览", "语法高亮", "md", "文档", "编辑"], en: ["markdown", "editor", "preview", "syntax highlight", "md", "document", "edit"] },
-        href: "./tools/text/markdown_editor.html",
-        category: "text",
-        rating: 5
-      },
-      {
         icon: "📖",
-        title: { zh: "在线 Markdown 阅读器", en: "Online Markdown Viewer" },
-        desc: { zh: "支持文件上传和文本粘贴预览，精美界面展示，包含历史记录功能，可导出 Markdown 和 HTML 格式。", en: "Support file upload and text paste preview, beautiful interface display, includes history function, can export Markdown and HTML formats." },
-        keywords: { zh: ["markdown", "阅读器", "预览", "查看器", "md", "文档", "阅读", "上传", "历史记录"], en: ["markdown", "viewer", "reader", "preview", "md", "document", "read", "upload", "history"] },
-        href: "./tools/text/markdown_viewer.html",
+        title: { zh: "Markdown 编辑器", en: "Markdown Editor" },
+        desc: {
+          zh: "支持导入文件或粘贴文本，提供编辑、预览、历史记录与 Markdown/HTML 导出。",
+          en: "Import or paste Markdown, then edit, preview, manage history, and export as Markdown or HTML."
+        },
+        keywords: {
+          zh: ["markdown", "编辑器", "预览", "编译", "历史", "导入", "md", "文档"],
+          en: ["markdown", "editor", "preview", "compile", "history", "import", "md", "document"]
+        },
+        href: "./tools/text/markdown/markdownHome.html",
         category: "text",
         rating: 5
       },
