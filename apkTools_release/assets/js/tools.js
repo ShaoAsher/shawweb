@@ -69,8 +69,8 @@
         title: { zh: "在线 Markdown 编辑器", en: "Online Markdown Editor" },
         desc: { zh: "支持实时预览、语法高亮和丰富的编辑快捷按钮，可导出 Markdown 和 HTML 格式。", en: "Support real-time preview, syntax highlighting and rich editing shortcuts, can export Markdown and HTML formats." },
         keywords: { zh: ["markdown", "编辑器", "预览", "语法高亮", "md", "文档", "编辑"], en: ["markdown", "editor", "preview", "syntax highlight", "md", "document", "edit"] },
-        href: "./tools/formatter/markdown_editor.html",
-        category: "dev",
+        href: "./tools/text/markdown_editor.html",
+        category: "text",
         rating: 5
       },
       {
@@ -213,8 +213,8 @@
         title: { zh: "写作助手", en: "Writing Assistant" },
         desc: { zh: "专业的写作助手系统，包含书架管理、分卷分章创作、大纲管理、人物关系图、时间线甘特图和备注区等功能。", en: "Professional writing assistant system with bookshelf management, volume/chapter creation, outline management, character relationship diagram, timeline Gantt chart and notes area." },
         keywords: { zh: ["写作", "助手", "作家", "书架", "大纲", "章节", "分卷", "关系图", "甘特图", "创作", "小说"], en: ["writing", "assistant", "author", "bookshelf", "outline", "chapter", "volume", "relationship", "gantt", "creative", "novel"] },
-        href: "./tools/writing/bookHome.html",
-        category: "writing",
+        href: "./tools/text/writing/bookHome.html",
+        category: "text",
         rating: 5
       }
     ],
@@ -223,7 +223,6 @@
       image: { zh: "图片工具", en: "Image Tools" },
       text: { zh: "文本工具", en: "Text Tools" },
       converter: { zh: "转换工具", en: "Converter Tools" },
-      writing: { zh: "写作工具", en: "Writing Tools" },
       life: { zh: "生活工具", en: "Life Tools" }
     }
   };

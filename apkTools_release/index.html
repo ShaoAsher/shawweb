@@ -676,10 +676,6 @@
         <div class="tools-grid" id="converterTools"></div>
       </div>
 
-      <div class="tab-content" id="tabWriting">
-        <div class="tools-grid" id="writingTools"></div>
-      </div>
-
       <div class="tab-content" id="tabLife">
         <div class="tools-grid" id="lifeTools"></div>
       </div>
@@ -866,7 +862,6 @@
       const imageTools = document.getElementById('imageTools');
       const textTools = document.getElementById('textTools');
       const converterTools = document.getElementById('converterTools');
-      const writingTools = document.getElementById('writingTools');
       const lifeTools = document.getElementById('lifeTools');
       const noResults = document.getElementById('noResults');
       const searchResultsInfo = document.getElementById('searchResultsInfo');
@@ -877,7 +872,6 @@
       if (imageTools) imageTools.innerHTML = '';
       if (textTools) textTools.innerHTML = '';
       if (converterTools) converterTools.innerHTML = '';
-      if (writingTools) writingTools.innerHTML = '';
       if (lifeTools) lifeTools.innerHTML = '';
 
       let toolsToRender = [];
@@ -892,8 +886,6 @@
         toolsToRender = tools.filter(t => t.category === 'text');
       } else if (tabId === 'converter') {
         toolsToRender = tools.filter(t => t.category === 'converter');
-      } else if (tabId === 'writing') {
-        toolsToRender = tools.filter(t => t.category === 'writing');
       } else if (tabId === 'life') {
         toolsToRender = tools.filter(t => t.category === 'life');
       }
@@ -921,9 +913,6 @@
             hasResults = true;
           } else if (tabId === 'converter') {
             converterTools.innerHTML += card;
-            hasResults = true;
-          } else if (tabId === 'writing') {
-            writingTools.innerHTML += card;
             hasResults = true;
           } else if (tabId === 'life') {
             lifeTools.innerHTML += card;
@@ -1019,8 +1008,6 @@
         return tools.filter(t => t.category === 'text').length;
       } else if (tabId === 'converter') {
         return tools.filter(t => t.category === 'converter').length;
-      } else if (tabId === 'writing') {
-        return tools.filter(t => t.category === 'writing').length;
       } else if (tabId === 'life') {
         return tools.filter(t => t.category === 'life').length;
       }
@@ -1059,7 +1046,6 @@
         { id: 'image', icon: '🖼️', name: { zh: '图片工具', en: 'Image Tools' } },
         { id: 'text', icon: '📝', name: { zh: '文本工具', en: 'Text Tools' } },
         { id: 'converter', icon: '🔄', name: { zh: '转换工具', en: 'Converter Tools' } },
-        { id: 'writing', icon: '✍️', name: { zh: '写作工具', en: 'Writing Tools' } },
         { id: 'life', icon: '🌍', name: { zh: '生活工具', en: 'Life Tools' } }
       ];
 
