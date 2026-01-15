@@ -85,6 +85,20 @@
       color: #ffffff !important;
     }
 
+    .btn.btn-secondary {
+      background: var(--color-surface-alt);
+      color: var(--color-text) !important;
+      border: 1px solid var(--color-border);
+    }
+
+    .btn.btn-secondary span {
+      color: var(--color-text) !important;
+    }
+
+    .btn.btn-secondary:hover {
+      background: var(--color-hover);
+    }
+
     .btn:hover {
       box-shadow: var(--shadow-md);
       transform: translateY(-2px);
@@ -422,12 +436,12 @@
         <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; align-items: center;">
           <input type="text" class="search-bar" id="searchInput" placeholder="🔍 搜索书籍..." />
           <button class="btn btn-secondary" onclick="exportAllBooks()"
-            style="background: var(--color-surface-alt); color: var(--color-text); border: 1px solid var(--color-border);">
+            style="border: 1px solid var(--color-border);">
             <span>📤</span>
             <span>导出全部</span>
           </button>
           <button class="btn btn-secondary" onclick="importBooks()"
-            style="background: var(--color-surface-alt); color: var(--color-text); border: 1px solid var(--color-border);">
+            style="border: 1px solid var(--color-border);">
             <span>📥</span>
             <span>导入数据</span>
           </button>
