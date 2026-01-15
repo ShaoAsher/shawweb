@@ -74,6 +74,15 @@
         rating: 5
       },
       {
+        icon: "📖",
+        title: { zh: "在线 Markdown 阅读器", en: "Online Markdown Viewer" },
+        desc: { zh: "支持文件上传和文本粘贴预览，精美界面展示，包含历史记录功能，可导出 Markdown 和 HTML 格式。", en: "Support file upload and text paste preview, beautiful interface display, includes history function, can export Markdown and HTML formats." },
+        keywords: { zh: ["markdown", "阅读器", "预览", "查看器", "md", "文档", "阅读", "上传", "历史记录"], en: ["markdown", "viewer", "reader", "preview", "md", "document", "read", "upload", "history"] },
+        href: "./tools/text/markdown_viewer.html",
+        category: "text",
+        rating: 5
+      },
+      {
         icon: "📱",
         title: { zh: "机型预览信息工具", en: "Device Preview Tool" },
         desc: { zh: "查看主流手机机型详细信息，支持模糊搜索，包含最新iPhone 17系列。", en: "View detailed information of mainstream mobile phone models, support fuzzy search, including the latest iPhone 17 series." },
