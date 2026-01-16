@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
 import '../../data/tools_data.dart';
@@ -75,7 +74,7 @@ class _HomePageState extends State<HomePage>
   void _switchToCategory(String categoryKey) {
     final index = ToolsData.categories.indexWhere((c) => c.key == categoryKey);
     if (index >= 0 && _tabController.index != index) {
-      _tabController.animateTo(index);
+      _tabController.animateTo(index, duration: Duration.zero);
       _controller.setCategory(categoryKey);
       if (_controller.searchQuery.value.isEmpty) {
         _lastSelectedIndex = index;
@@ -107,11 +106,48 @@ class _HomePageState extends State<HomePage>
               ),
             ),
 
-            // Animated TabBar
-            _AnimatedTabBar(
-              controller: _controller,
-              languageService: languageService,
-              tabController: _tabController,
+            // 简单的 TabBar
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.color,
+              indicatorColor: Theme.of(context).primaryColor,
+              tabs: ToolsData.categories.map((category) {
+                final count = _controller.getCategoryCount(category.key);
+                return Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(category.getName(languageService.language.value)),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).primaryColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          count.toString(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
 
             // TabBarView with tools
@@ -173,8 +209,7 @@ class _AppBar extends StatelessWidget {
                 children: [
                   Text(
                     titleText,
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.titleLarge?.color,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -193,12 +228,14 @@ class _AppBar extends StatelessWidget {
               );
             }),
           ),
-          IconButton(
-            icon: const Icon(Icons.language),
-            onPressed: () => DialogUtils.showLanguageDialog(context),
-            tooltip: languageService.language.value == 'en'
-                ? '切换中文'
-                : 'Switch to English',
+          Obx(
+            () => IconButton(
+              icon: const Icon(Icons.language),
+              onPressed: () => DialogUtils.showLanguageDialog(context),
+              tooltip: languageService.language.value == 'en'
+                  ? '切换中文'
+                  : 'Switch to English',
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.palette),
@@ -264,129 +301,6 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-// Animated TabBar Widget
-class _AnimatedTabBar extends StatelessWidget {
-  final HomeController controller;
-  final LanguageService languageService;
-  final TabController tabController;
-
-  const _AnimatedTabBar({
-    required this.controller,
-    required this.languageService,
-    required this.tabController,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Obx(() {
-        return TabBar(
-          controller: tabController,
-          isScrollable: true,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-          tabAlignment: TabAlignment.start,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicator: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withValues(alpha: 0.85),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          indicatorColor: Colors.transparent,
-          dividerColor: Colors.transparent,
-          labelColor: Colors.white,
-          unselectedLabelColor: Theme.of(context).textTheme.bodyLarge?.color,
-          labelStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-          onTap: (index) {
-            final category = ToolsData.categories[index];
-            controller.setCategory(category.key);
-          },
-          tabs: ToolsData.categories.map((category) {
-            final count = controller.getCategoryCount(category.key);
-            final isSelected =
-                controller.selectedCategory.value == category.key;
-            return Tab(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(category.getName(languageService.language.value)),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Colors.white.withValues(alpha: 0.25)
-                            : Theme.of(
-                                context,
-                              ).primaryColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: isSelected
-                            ? Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
-                                width: 1,
-                              )
-                            : null,
-                      ),
-                      child: Text(
-                        count.toString(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      }),
-    );
-  }
-}
-
 // Tools Grid View Widget
 class _ToolsGridView extends StatelessWidget {
   final String category;
@@ -425,11 +339,7 @@ class _ToolsGridView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.search_off,
-                size: 80,
-                color: Colors.grey[400],
-              ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
+              Icon(Icons.search_off, size: 80, color: Colors.grey[400]),
               const SizedBox(height: 24),
               Text(
                 language == 'en' ? 'No tools found' : '未找到相关工具',
@@ -438,7 +348,7 @@ class _ToolsGridView extends StatelessWidget {
                   color: Colors.grey[600],
                   fontWeight: FontWeight.w500,
                 ),
-              ).animate().fadeIn(duration: 400.ms, delay: 200.ms),
+              ),
             ],
           ),
         );
@@ -472,7 +382,6 @@ class _ToolsGridView extends StatelessWidget {
             tool: tool,
             language: language,
             onTap: () => controller.navigateToTool(tool.route),
-            index: index,
             isTablet: isTablet,
           );
         },
@@ -482,260 +391,190 @@ class _ToolsGridView extends StatelessWidget {
 }
 
 // Tool Card Widget
-class _ToolCard extends StatefulWidget {
+class _ToolCard extends StatelessWidget {
   final ToolModel tool;
   final String language;
   final VoidCallback onTap;
-  final int index;
   final bool isTablet;
 
   const _ToolCard({
     required this.tool,
     required this.language,
     required this.onTap,
-    required this.index,
     required this.isTablet,
   });
 
   @override
-  State<_ToolCard> createState() => _ToolCardState();
-}
-
-class _ToolCardState extends State<_ToolCard>
-    with SingleTickerProviderStateMixin {
-  bool _isPressed = false;
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 150),
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() => _isPressed = true);
-        _animationController.forward();
-      },
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        _animationController.reverse();
-        widget.onTap();
-      },
-      onTapCancel: () {
-        setState(() => _isPressed = false);
-        _animationController.reverse();
-      },
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child:
-            Card(
-                  elevation: _isPressed ? 2 : 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Theme.of(context).cardColor,
-                          Theme.of(context).cardColor.withValues(alpha: 0.8),
-                        ],
-                      ),
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).cardColor,
+                Theme.of(context).cardColor.withValues(alpha: 0.8),
+              ],
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Background decoration
+              Positioned(
+                top: -20,
+                right: -20,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                        Colors.transparent,
+                      ],
                     ),
-                    child: Stack(
+                  ),
+                ),
+              ),
+              // Content
+              Padding(
+                padding: EdgeInsets.all(isTablet ? 20 : 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icon and Rating
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Background decoration
-                        Positioned(
-                          top: -20,
-                          right: -20,
+                        SizedBox(
+                          width: isTablet ? 56 : 48,
+                          height: isTablet ? 56 : 48,
                           child: Container(
-                            width: 100,
-                            height: 100,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                                 colors: [
+                                  Theme.of(context).primaryColor,
                                   Theme.of(
                                     context,
-                                  ).primaryColor.withValues(alpha: 0.1),
-                                  Colors.transparent,
+                                  ).primaryColor.withValues(alpha: 0.7),
                                 ],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                tool.icon,
+                                style: TextStyle(fontSize: isTablet ? 28 : 24),
                               ),
                             ),
                           ),
                         ),
-                        // Content
-                        Padding(
-                          padding: EdgeInsets.all(widget.isTablet ? 20 : 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Icon and Rating
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: widget.isTablet ? 56 : 48,
-                                    height: widget.isTablet ? 56 : 48,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: [
-                                            Theme.of(context).primaryColor,
-                                            Theme.of(context).primaryColor
-                                                .withValues(alpha: 0.7),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Theme.of(context)
-                                                .primaryColor
-                                                .withValues(alpha: 0.3),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          widget.tool.icon,
-                                          style: TextStyle(
-                                            fontSize: widget.isTablet ? 28 : 24,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8),
-                                      child: _buildRating(widget.tool.rating),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: widget.isTablet ? 16 : 12),
-                              // Title
-                              Text(
-                                widget.tool.getTitle(widget.language),
-                                style: TextStyle(
-                                  fontSize: widget.isTablet ? 18 : 16,
-                                  fontWeight: FontWeight.bold,
-                                  height: 1.2,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: widget.isTablet ? 10 : 8),
-                              // Description
-                              Flexible(
-                                child: Text(
-                                  widget.tool.getDesc(widget.language),
-                                  style: TextStyle(
-                                    fontSize: widget.isTablet ? 13 : 12,
-                                    color: Colors.grey[600],
-                                    height: 1.3,
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              SizedBox(height: widget.isTablet ? 10 : 8),
-                              // Category Badge and Arrow
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Theme.of(context).primaryColor
-                                                .withValues(alpha: 0.15),
-                                            Theme.of(context).primaryColor
-                                                .withValues(alpha: 0.1),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        ToolsData.categories
-                                            .firstWhere(
-                                              (c) =>
-                                                  c.key == widget.tool.category,
-                                            )
-                                            .getName(widget.language),
-                                        style: TextStyle(
-                                          fontSize: widget.isTablet ? 11 : 10,
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 14,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ],
-                              ),
-                            ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: _buildRating(tool.rating),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                )
-                .animate()
-                .fadeIn(duration: 300.ms, delay: (widget.index * 50).ms)
-                .slideY(
-                  begin: 0.2,
-                  end: 0,
-                  duration: 400.ms,
-                  delay: (widget.index * 50).ms,
-                  curve: Curves.easeOutCubic,
-                )
-                .scale(
-                  begin: const Offset(0.9, 0.9),
-                  end: const Offset(1, 1),
-                  duration: 400.ms,
-                  delay: (widget.index * 50).ms,
-                  curve: Curves.easeOutCubic,
+                    SizedBox(height: isTablet ? 16 : 12),
+                    // Title
+                    Text(
+                      tool.getTitle(language),
+                      style: TextStyle(
+                        fontSize: isTablet ? 18 : 16,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: isTablet ? 10 : 8),
+                    // Description
+                    Flexible(
+                      child: Text(
+                        tool.getDesc(language),
+                        style: TextStyle(
+                          fontSize: isTablet ? 13 : 12,
+                          color: Colors.grey[600],
+                          height: 1.3,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(height: isTablet ? 10 : 8),
+                    // Category Badge and Arrow
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.15),
+                                  Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.1),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              ToolsData.categories
+                                  .firstWhere((c) => c.key == tool.category)
+                                  .getName(language),
+                              style: TextStyle(
+                                fontSize: isTablet ? 11 : 10,
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

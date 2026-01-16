@@ -50,4 +50,25 @@ class ToastUtils {
       ),
     );
   }
+
+  /// 显示成功 toast
+  ///
+  /// [message] 成功消息
+  static void showSuccess(String message) {
+    Get.snackbar(
+      '',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+      icon: const Icon(
+        Icons.check_circle_outline,
+        color: Colors.white,
+        size: 20,
+      ),
+    );
+  }
 }

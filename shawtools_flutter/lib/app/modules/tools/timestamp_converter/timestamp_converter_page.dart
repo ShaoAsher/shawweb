@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../../theme/app_theme.dart';
 import '../../../widgets/tool_page_wrapper.dart';
 import 'timestamp_converter_controller.dart';
 
@@ -17,107 +16,65 @@ class TimestampConverterPage extends GetView<TimestampConverterController> {
     return ToolPageWrapper(
       title: '时间戳转换工具',
       titleEn: 'Timestamp Converter',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _StatusBar(controller: controller),
-                SizedBox(height: isTablet ? 16 : 12),
-                _SectionCard(
-                  icon: Icons.schedule,
-                  title: '时间戳转日期',
-                  child: _TimestampToDateSection(
-                    controller: controller,
-                    isTablet: isTablet,
-                  ),
-                ),
-                SizedBox(height: isTablet ? 16 : 12),
-                _SectionCard(
-                  icon: Icons.event,
-                  title: '日期转时间戳',
-                  child: _DateToTimestampSection(
-                    controller: controller,
-                    isTablet: isTablet,
-                  ),
-                ),
-                SizedBox(height: isTablet ? 16 : 12),
-                _SectionCard(
-                  icon: Icons.access_time_filled_rounded,
-                  title: '当前时间',
-                  child: _CurrentTimeSection(
-                    controller: controller,
-                    isTablet: isTablet,
-                  ),
-                ),
+      child: DefaultTabController(
+        length: 3,
+        child: Column(
+          children: [
+            TabBar(
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.color,
+              indicatorColor: Theme.of(context).primaryColor,
+              tabs: const [
+                Tab(icon: Icon(Icons.schedule), text: '时间戳转日期'),
+                Tab(icon: Icon(Icons.event), text: '日期转时间戳'),
+                Tab(icon: Icon(Icons.access_time_filled_rounded), text: '当前时间'),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _StatusBar extends StatelessWidget {
-  final TimestampConverterController controller;
-
-  const _StatusBar({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final text = controller.statusText.value;
-      final type = controller.statusType.value;
-      if (text.isEmpty || type == null) {
-        return const SizedBox.shrink();
-      }
-      final theme = Theme.of(context);
-      final color = type == TimestampStatusType.success
-          ? AppTheme.getSuccessColorFromContext(context)
-          : AppTheme.getErrorColorFromContext(context);
-      final background = color.withValues(alpha: 0.08);
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.4)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              type == TimestampStatusType.success
-                  ? Icons.check_circle
-                  : Icons.error_outline,
-              size: 18,
-              color: color,
-            ),
-            const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                text,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: controller.clearStatus,
-              icon: Icon(
-                Icons.close,
-                size: 18,
-                color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+              child: TabBarView(
+                children: [
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _SectionCard(
+                      icon: Icons.schedule,
+                      title: '时间戳转日期',
+                      child: _TimestampToDateSection(
+                        controller: controller,
+                        isTablet: isTablet,
+                      ),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _SectionCard(
+                      icon: Icons.event,
+                      title: '日期转时间戳',
+                      child: _DateToTimestampSection(
+                        controller: controller,
+                        isTablet: isTablet,
+                      ),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _SectionCard(
+                      icon: Icons.access_time_filled_rounded,
+                      title: '当前时间',
+                      child: _CurrentTimeSection(
+                        controller: controller,
+                        isTablet: isTablet,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
 

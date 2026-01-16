@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../utils/getx_dialog_utils.dart';
 import '../../../widgets/gradient_action_button.dart';
 import '../../../widgets/tool_page_wrapper.dart';
 import 'json_formatter_controller.dart';
@@ -36,12 +37,8 @@ class JsonFormatterPage extends GetView<JsonFormatterController> {
   }
 
   void _showPreviewModal(BuildContext context, bool isTablet) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) =>
-          _PreviewModal(controller: controller, isTablet: isTablet),
+    GetXDialogUtils.showBottomSheet(
+      child: _PreviewModal(controller: controller, isTablet: isTablet),
     );
   }
 }
@@ -351,7 +348,7 @@ class _PreviewModal extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => GetXDialogUtils.close(),
                       tooltip: '关闭',
                     ),
                   ],

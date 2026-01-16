@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../utils/getx_dialog_utils.dart';
 import '../../../widgets/gradient_action_button.dart';
 import '../../../widgets/tool_page_wrapper.dart';
 import 'qrcode_generator_controller.dart';
@@ -267,12 +268,11 @@ class _QRCodeTab extends StatelessWidget {
                               ),
                             ),
                             onTap: () async {
-                              final color = await showDialog<Color>(
-                                context: context,
-                                builder: (context) => _ColorPickerDialog(
-                                  initialColor: controller.qrcodeColor.value,
-                                ),
-                              );
+                              final color =
+                                  await GetXDialogUtils.showColorPicker(
+                                    initialColor: controller.qrcodeColor.value,
+                                    title: '选择二维码颜色',
+                                  );
                               if (color != null) {
                                 controller.qrcodeColor.value = color;
                               }
@@ -294,12 +294,12 @@ class _QRCodeTab extends StatelessWidget {
                               ),
                             ),
                             onTap: () async {
-                              final color = await showDialog<Color>(
-                                context: context,
-                                builder: (context) => _ColorPickerDialog(
-                                  initialColor: controller.qrcodeBgColor.value,
-                                ),
-                              );
+                              final color =
+                                  await GetXDialogUtils.showColorPicker(
+                                    initialColor:
+                                        controller.qrcodeBgColor.value,
+                                    title: '选择背景色',
+                                  );
                               if (color != null) {
                                 controller.qrcodeBgColor.value = color;
                               }
@@ -713,12 +713,11 @@ class _BarcodeTab extends StatelessWidget {
                               ),
                             ),
                             onTap: () async {
-                              final color = await showDialog<Color>(
-                                context: context,
-                                builder: (context) => _ColorPickerDialog(
-                                  initialColor: controller.barcodeColor.value,
-                                ),
-                              );
+                              final color =
+                                  await GetXDialogUtils.showColorPicker(
+                                    initialColor: controller.barcodeColor.value,
+                                    title: '选择条形码颜色',
+                                  );
                               if (color != null) {
                                 controller.barcodeColor.value = color;
                               }
@@ -740,12 +739,12 @@ class _BarcodeTab extends StatelessWidget {
                               ),
                             ),
                             onTap: () async {
-                              final color = await showDialog<Color>(
-                                context: context,
-                                builder: (context) => _ColorPickerDialog(
-                                  initialColor: controller.barcodeBgColor.value,
-                                ),
-                              );
+                              final color =
+                                  await GetXDialogUtils.showColorPicker(
+                                    initialColor:
+                                        controller.barcodeBgColor.value,
+                                    title: '选择条形码背景色',
+                                  );
                               if (color != null) {
                                 controller.barcodeBgColor.value = color;
                               }
@@ -896,77 +895,6 @@ class _StylePreset extends StatelessWidget {
             Text(label),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _ColorPickerDialog extends StatelessWidget {
-  final Color initialColor;
-
-  const _ColorPickerDialog({required this.initialColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('选择颜色'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('常用颜色'),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  [
-                    _ColorItem(color: Colors.black),
-                    _ColorItem(color: Colors.white),
-                    _ColorItem(color: Colors.red),
-                    _ColorItem(color: Colors.green),
-                    _ColorItem(color: Colors.blue),
-                    _ColorItem(color: Colors.yellow),
-                    _ColorItem(color: Colors.orange),
-                    _ColorItem(color: Colors.purple),
-                    _ColorItem(color: Colors.pink),
-                    _ColorItem(color: Colors.cyan),
-                    _ColorItem(color: Colors.teal),
-                    _ColorItem(color: Colors.indigo),
-                  ].map((item) {
-                    return GestureDetector(
-                      onTap: () => Navigator.of(context).pop(item.color),
-                      child: item,
-                    );
-                  }).toList(),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('取消'),
-        ),
-      ],
-    );
-  }
-}
-
-class _ColorItem extends StatelessWidget {
-  final Color color;
-
-  const _ColorItem({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey),
       ),
     );
   }

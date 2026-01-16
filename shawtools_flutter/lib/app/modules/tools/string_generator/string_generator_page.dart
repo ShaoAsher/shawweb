@@ -15,18 +15,58 @@ class StringGeneratorPage extends GetView<StringGeneratorController> {
     return ToolPageWrapper(
       title: '多种字符串生成器',
       titleEn: 'String Generator',
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(isTablet ? 24 : 16),
+      child: DefaultTabController(
+        length: 4,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _CardGenerator(controller: controller, isTablet: isTablet),
-            SizedBox(height: isTablet ? 24 : 16),
-            _UDIDGenerator(controller: controller, isTablet: isTablet),
-            SizedBox(height: isTablet ? 24 : 16),
-            _PackageGenerator(controller: controller, isTablet: isTablet),
-            SizedBox(height: isTablet ? 24 : 16),
-            _OtherGenerator(controller: controller, isTablet: isTablet),
+            TabBar(
+              isScrollable: true,
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.color,
+              indicatorColor: Theme.of(context).primaryColor,
+              tabs: const [
+                Tab(icon: Icon(Icons.credit_card), text: '银行卡号'),
+                Tab(icon: Icon(Icons.fingerprint), text: 'UDID'),
+                Tab(icon: Icon(Icons.apps), text: '包名'),
+                Tab(icon: Icon(Icons.category), text: '其他'),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _CardGenerator(
+                      controller: controller,
+                      isTablet: isTablet,
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _UDIDGenerator(
+                      controller: controller,
+                      isTablet: isTablet,
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _PackageGenerator(
+                      controller: controller,
+                      isTablet: isTablet,
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    padding: EdgeInsets.all(isTablet ? 24 : 16),
+                    child: _OtherGenerator(
+                      controller: controller,
+                      isTablet: isTablet,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

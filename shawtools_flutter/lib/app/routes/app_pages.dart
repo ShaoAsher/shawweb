@@ -10,9 +10,13 @@ import '../modules/tools/ip_query/ip_query_binding.dart';
 import '../modules/tools/ip_query/ip_query_page.dart';
 import '../modules/tools/json_formatter/json_formatter_binding.dart';
 import '../modules/tools/json_formatter/json_formatter_page.dart';
+import '../modules/tools/json_to_model/json_to_model_binding.dart';
+import '../modules/tools/json_to_model/json_to_model_page.dart';
 import '../modules/tools/placeholder_tool_page.dart';
 import '../modules/tools/qrcode_generator/qrcode_generator_binding.dart';
 import '../modules/tools/qrcode_generator/qrcode_generator_page.dart';
+import '../modules/tools/speed_test/speed_test_binding.dart';
+import '../modules/tools/speed_test/speed_test_page.dart';
 import '../modules/tools/string_encryptor/string_encryptor_binding.dart';
 import '../modules/tools/string_encryptor/string_encryptor_page.dart';
 import '../modules/tools/string_generator/string_generator_binding.dart';
@@ -62,10 +66,8 @@ class AppPages {
     ),
     GetPage(
       name: Routes.jsonModel,
-      page: () => const PlaceholderToolPage(
-        title: 'JSON 转 Model',
-        titleEn: 'JSON to Model',
-      ),
+      page: () => const JsonToModelPage(),
+      binding: JsonToModelBinding(),
     ),
     GetPage(
       name: Routes.device,
@@ -161,10 +163,8 @@ class AppPages {
     ),
     GetPage(
       name: Routes.speed,
-      page: () => const PlaceholderToolPage(
-        title: '网络测速',
-        titleEn: 'Network Speed Test',
-      ),
+      page: () => const SpeedTestPage(),
+      binding: SpeedTestBinding(),
     ),
   ];
 }

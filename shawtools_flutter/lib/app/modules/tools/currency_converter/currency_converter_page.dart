@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../utils/getx_dialog_utils.dart';
 import '../../../widgets/gradient_action_button.dart';
 import '../../../widgets/tool_page_wrapper.dart';
 import 'currency_converter_controller.dart';
@@ -294,85 +295,73 @@ Future<void> _showCurrencyPicker(
   required bool isFrom,
 }) async {
   final theme = Theme.of(context);
-  await showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (ctx) {
-      String query = '';
-      return StatefulBuilder(
-        builder: (context, setState) {
-          final all = controller.currencies;
-          final lower = query.toLowerCase();
-          final filtered = all.where((c) {
-            if (lower.isEmpty) return true;
-            return c.code.toLowerCase().contains(lower) ||
-                c.name.toLowerCase().contains(lower);
-          });
-          final items = filtered.toList()
-            ..sort((a, b) => a.code.compareTo(b.code));
-          final selectedCode = isFrom
-              ? controller.fromCurrency.value
-              : controller.toCurrency.value;
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.85,
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(top: 12, bottom: 16),
-                  decoration: BoxDecoration(
-                    color: theme.dividerColor.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          isFrom ? '选择来源货币' : '选择目标货币',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+  String query = '';
+  await GetXDialogUtils.showBottomSheet<void>(
+    child: StatefulBuilder(
+      builder: (context, setState) {
+        final all = controller.currencies;
+        final lower = query.toLowerCase();
+        final filtered = all.where((c) {
+          if (lower.isEmpty) return true;
+          return c.code.toLowerCase().contains(lower) ||
+              c.name.toLowerCase().contains(lower);
+        });
+        final items = filtered.toList()
+          ..sort((a, b) => a.code.compareTo(b.code));
+        final selectedCode = isFrom
+            ? controller.fromCurrency.value
+            : controller.toCurrency.value;
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        isFrom ? '选择来源货币' : '选择目标货币',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TextField(
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search),
-                      hintText: '搜索货币名称或代码',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: theme.colorScheme.surface,
                     ),
-                    onChanged: (v) {
-                      setState(() {
-                        query = v.trim();
-                      });
-                    },
-                  ),
+                    IconButton(
+                      onPressed: () => GetXDialogUtils.close(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
                 ),
-                Expanded(
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: '搜索货币名称或代码',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: theme.colorScheme.surface,
+                  ),
+                  onChanged: (v) {
+                    setState(() {
+                      query = v.trim();
+                    });
+                  },
+                ),
+              ),
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: Get.height * 0.6),
                   child: items.isEmpty
                       ? Center(
                           child: Column(
@@ -487,19 +476,19 @@ Future<void> _showCurrencyPicker(
                                   } else {
                                     controller.setToCurrency(code);
                                   }
-                                  Navigator.of(context).pop();
+                                  GetXDialogUtils.close();
                                 },
                               ),
                             );
                           },
                         ),
                 ),
-              ],
-            ),
-          );
-        },
-      );
-    },
+              ),
+            ],
+          ),
+        );
+      },
+    ),
   );
 }
 
