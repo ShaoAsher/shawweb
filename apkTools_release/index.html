@@ -820,6 +820,12 @@
       // 更新活动页签（搜索页签不更新activeTab，保持原页签）
       if (tabId !== 'search') {
         activeTab = tabId;
+        // 保存页签状态到 sessionStorage
+        try {
+          sessionStorage.setItem('homeActiveTab', tabId);
+        } catch (e) {
+          console.warn('无法保存页签状态:', e);
+        }
       }
 
       // 更新页签按钮状态（搜索时不更新按钮状态）
@@ -1040,6 +1046,23 @@
         return;
       }
 
+      // 从 sessionStorage 读取之前选择的页签
+      let savedTab = 'all';
+      try {
+        savedTab = sessionStorage.getItem('homeActiveTab') || 'all';
+      } catch (e) {
+        console.warn('无法读取页签状态:', e);
+      }
+      
+      // 验证页签是否有效
+      const validTabs = ['all', 'dev', 'image', 'text', 'converter', 'life'];
+      if (!validTabs.includes(savedTab)) {
+        savedTab = 'all';
+      }
+      
+      // 设置活动页签
+      activeTab = savedTab;
+
       const tabConfigs = [
         { id: 'all', icon: '🌟', name: { zh: '全部', en: 'All' } },
         { id: 'dev', icon: '💻', name: { zh: '开发工具', en: 'Development Tools' } },
@@ -1055,7 +1078,7 @@
         const button = document.createElement('button');
         button.className = 'tab-btn';
         button.dataset.tab = tab.id;
-        if (tab.id === 'all') {
+        if (tab.id === savedTab) {
           button.classList.add('active');
         }
         const tabName = typeof tab.name === 'object' ? (tab.name[currentLang] || tab.name.zh) : tab.name;
@@ -1208,6 +1231,8 @@
       console.log('初始化应用，工具数量:', tools.length);
       initTabs();
       updateTabCounts(); // 更新页签数量显示
+      // 切换到保存的页签，确保页签内容和按钮状态都正确
+      switchTab(activeTab);
       renderTools();
       initQuickLinks();
 
