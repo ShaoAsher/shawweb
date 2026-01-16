@@ -1,44 +1,278 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown 编译模式</title>
   <link rel="stylesheet" href="../../../assets/css/theme.css">
   <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-style">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    id="hljs-style">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
-    .container { max-width: 1400px; display: flex; flex-direction: column; height: 100vh; }
-    .home-btn { position: absolute; top: var(--spacing-lg); left: var(--spacing-lg); width: 40px; height: 40px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: var(--color-text-on-primary); text-decoration: none; font-size: var(--font-size-large); transition: all .3s; z-index: 10; }
-    .home-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); transform: scale(1.1); }
-    .header h1 { font-size: var(--font-size-xlarge); margin-bottom: var(--spacing-sm); }
-    .header p { opacity: 0.9; font-size: var(--font-size-small); }
-    .content { padding: var(--spacing-xl); flex: 1; display: flex; flex-direction: column; gap: var(--spacing-lg); overflow: hidden; min-height: 0; }
-    .action-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: linear-gradient(135deg, rgba(102,126,234,0.18), rgba(118,75,162,0.18)); border: 1px solid var(--color-border); border-radius: var(--radius-md); position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow-sm); backdrop-filter: saturate(140%) blur(6px); }
-    .topbar-title { font-weight: var(--font-weight-semibold); color: var(--color-text); display: flex; align-items: center; gap: var(--spacing-sm); }
-    .action-group { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
-    .toolbar-btn { background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text-on-surface-alt); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-size-small); transition: all 0.2s; display: flex; align-items: center; gap: var(--spacing-xs); white-space: nowrap; position: relative; }
-    .toolbar-btn:hover { background: var(--color-hover); border-color: var(--color-primary); transform: translateY(-1px); }
-    .toolbar-btn::after { content: attr(data-title); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding: 4px 8px; background: rgba(0,0,0,0.8); color: #fff; font-size: 12px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; margin-bottom: 5px; z-index: 21; }
-    .toolbar-btn:hover::after { opacity: 1; }
-    .editor-preview-wrapper { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--spacing-lg); align-items: stretch; flex: 1; min-height: 0; }
-    @media (max-width: 1024px){ .editor-preview-wrapper { grid-template-columns: 1fr; } }
-    .editor-section, .preview-section { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; min-height: 0; overflow: hidden; height: 640px; }
-    .section-header { padding: var(--spacing-md); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
-    .editor-shortcuts-bar { padding: var(--spacing-xs) var(--spacing-md); border-bottom: 1px solid var(--color-border); background: var(--color-surface-alt); display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
-    .editor-shortcuts-label { font-size: var(--font-size-small); color: var(--color-text-secondary); margin-right: var(--spacing-sm); }
-    .editor-shortcuts { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); }
-    .editor-shortcuts .toolbar-btn { padding: 4px 8px; min-width: 32px; justify-content: center; }
-    .preview-offset-bar { padding: var(--spacing-xs) var(--spacing-md); border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
-    .editor-textarea { flex: 1; padding: var(--spacing-md); border: none; background: var(--color-surface); color: var(--color-text); font-family: 'Courier New', Consolas, monospace; font-size: var(--font-size-base); line-height: 1.6; resize: none; outline: none; overflow-y: auto; }
-    .preview-content { flex: 1; padding: var(--spacing-xl); overflow-y: auto; background: var(--color-surface); color: var(--color-text); line-height: 1.8; }
-    .btn { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); color: var(--color-text-on-primary); border: none; padding: var(--spacing-sm) var(--spacing-xl); border-radius: var(--radius-sm); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); cursor: pointer; transition: all 0.2s; }
-    .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .btn-secondary { background: var(--color-surface-alt); color: var(--color-text-on-surface-alt); border: 1px solid var(--color-border); }
-    .btn-secondary:hover { background: var(--color-hover); }
+    .container {
+      max-width: 1400px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-primary);
+      text-decoration: none;
+      font-size: var(--font-size-large);
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: var(--font-size-small);
+    }
+
+    .content {
+      padding: var(--spacing-xl);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.18), rgba(118, 75, 162, 0.18));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: saturate(140%) blur(6px);
+    }
+
+    .topbar-title {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+
+    .toolbar-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-on-surface-alt);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--font-size-small);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .toolbar-btn:hover {
+      background: var(--color-hover);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+    }
+
+    .toolbar-btn::after {
+      content: attr(data-title);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      font-size: 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      margin-bottom: 5px;
+      z-index: 21;
+    }
+
+    .toolbar-btn:hover::after {
+      opacity: 1;
+    }
+
+    .editor-preview-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--spacing-lg);
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .editor-preview-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .editor-section,
+    .preview-section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      height: 640px;
+    }
+
+    .section-header {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--spacing-sm);
+      min-height: 40px;
+      box-sizing: border-box;
+    }
+
+    .char-count {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .editor-shortcuts-bar {
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface-alt);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      min-height: 30px;
+      box-sizing: border-box;
+    }
+
+    .editor-shortcuts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .editor-shortcuts .toolbar-btn {
+      padding: 2px 5px;
+      min-width: 24px;
+      height: 22px;
+      font-size: 11px;
+      line-height: 1;
+      justify-content: center;
+      border-radius: 3px;
+    }
+
+    .preview-offset-bar {
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      min-height: 30px;
+      box-sizing: border-box;
+    }
+
+    .editor-textarea {
+      flex: 1;
+      padding: var(--spacing-md);
+      border: none;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: var(--font-size-base);
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      overflow-y: auto;
+    }
+
+    .preview-content {
+      flex: 1;
+      padding: var(--spacing-xl);
+      overflow-y: auto;
+      background: var(--color-surface);
+      color: var(--color-text);
+      line-height: 1.8;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text-on-primary);
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-xl);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--color-surface-alt);
+      color: var(--color-text-on-surface-alt);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-hover);
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
@@ -65,10 +299,9 @@
         <div class="editor-section">
           <div class="section-header">
             <span>编辑区</span>
-            <span id="charCount" style="font-size:var(--font-size-small);color:var(--color-text-secondary);">0 字符</span>
+            <span id="charCount" class="char-count">0 字符</span>
           </div>
           <div class="editor-shortcuts-bar">
-            <span class="editor-shortcuts-label">格式快捷键</span>
             <div class="editor-shortcuts">
               <button class="toolbar-btn" data-i="h1" data-title="一级标题 H1">H1</button>
               <button class="toolbar-btn" data-i="h2" data-title="二级标题 H2">H2</button>
@@ -94,66 +327,409 @@
           <div id="preview" class="preview-content"></div>
         </div>
       </div>
-      
+
     </div>
   </div>
 
   <script src="../../../assets/js/themes.js"></script>
   <script src="../../../assets/js/theme-ui.js"></script>
   <script>
-    function getMarkdownTitle(content){ const lines=content.split('\n'); for(let i=0;i<lines.length;i++){ const line=lines[i].trim(); if(line.startsWith('# ')) return line.substring(2).trim(); if(line.startsWith('## ')) return line.substring(3).trim(); } return null; }
-    function formatFileSize(bytes){ if(bytes<1024) return bytes+' B'; if(bytes<1024*1024) return (bytes/1024).toFixed(1)+' KB'; return (bytes/(1024*1024)).toFixed(1)+' MB'; }
-    function saveHistoryItem(content){ const title=getMarkdownTitle(content)||'未命名文档'; const item={ id:Date.now(), title:title, content:content, fileName:null, type:'compile', timestamp:new Date().toISOString(), size:content.length }; let list=[]; const saved=localStorage.getItem('markdownHistory'); if(saved){ try{ const parsed=JSON.parse(saved); list=Array.isArray(parsed)?parsed:[]; }catch(e){ list=[]; } } list=list.filter(h=>h.content!==content); list.unshift(item); if(list.length>100) list=list.slice(0,100); localStorage.setItem('markdownHistory',JSON.stringify(list)); }
-    marked.setOptions({ breaks:true, gfm:true, headerIds:true, mangle:false });
-    const editor=document.getElementById('editor'); const preview=document.getElementById('preview'); const charCount=document.getElementById('charCount');
-    const shortcutHistory=[];
-    function updateCharCount(){ const count=editor.value.length; charCount.textContent=count.toLocaleString()+' 字符'; }
-    function pushShortcutHistory(){ if(!editor||!preview) return; shortcutHistory.push({ value:editor.value, selectionStart:editor.selectionStart, selectionEnd:editor.selectionEnd, editorScrollTop:editor.scrollTop, previewScrollTop:preview.scrollTop }); if(shortcutHistory.length>100) shortcutHistory.shift(); }
-    let headingSegments=[];
-    function buildHeadingMapping(){ headingSegments=[]; const text=editor.value||''; const lines=text.split('\n'); const editorHeadings=[]; let acc=0; for(let i=0;i<lines.length;i++){ const line=lines[i]; const m=line.match(/^(#+)\s+(.*)$/); if(m){ const title=m[2].trim(); if(title){ editorHeadings.push({ charIndex:acc, title:title }); } } acc+=line.length+1; } const domHs=preview.querySelectorAll('h1,h2,h3,h4,h5,h6'); const pvHeadings=[]; domHs.forEach(h=>{ const pr=preview.getBoundingClientRect(); const tr=h.getBoundingClientRect(); const off=tr.top-pr.top+preview.scrollTop; const t=h.textContent.trim(); pvHeadings.push({ title:t, offset:off }); }); let p=0; const pvUsed=new Set(); const totalLen=text.length; const pvBottom=preview.scrollHeight-preview.clientHeight; for(let i=0;i<editorHeadings.length;i++){ const eh=editorHeadings[i]; const nextChar=(i+1<editorHeadings.length)?editorHeadings[i+1].charIndex:totalLen; let startOffset=null; for(let j=p;j<pvHeadings.length;j++){ if(pvUsed.has(j)) continue; const t=pvHeadings[j].title; if(t===eh.title||t.startsWith(eh.title)||eh.title.startsWith(t)){ startOffset=pvHeadings[j].offset; pvUsed.add(j); p=j+1; break; } } if(startOffset===null){ for(let j=0;j<pvHeadings.length;j++){ if(pvUsed.has(j)) continue; const t=pvHeadings[j].title; if(t===eh.title||t.startsWith(eh.title)||eh.title.startsWith(t)){ startOffset=pvHeadings[j].offset; pvUsed.add(j); break; } } } let endOffset=pvBottom; if(i+1<editorHeadings.length){ const nxt=editorHeadings[i+1]; let found=null; for(let j=p;j<pvHeadings.length;j++){ if(pvUsed.has(j)) continue; const t=pvHeadings[j].title; if(t===nxt.title||t.startsWith(nxt.title)||nxt.title.startsWith(t)){ found=pvHeadings[j].offset; break; } } if(found===null){ for(let j=0;j<pvHeadings.length;j++){ const t=pvHeadings[j].title; if(t===nxt.title||t.startsWith(nxt.title)||nxt.title.startsWith(t)){ found=pvHeadings[j].offset; break; } } } if(found!==null) endOffset=found; }
-      headingSegments.push({ startChar:eh.charIndex, endChar:nextChar, startOffset:startOffset, endOffset:endOffset });
-    } }
-    function computePreviewOffsetByCharIndex(ci){ if(!preview) return null; const psh=preview.scrollHeight-preview.clientHeight; const totalLen=(editor.value||'').length; if(totalLen<=0||psh<=0) return 0; if(!headingSegments||headingSegments.length===0){ const ratio=ci/totalLen; return ratio*psh; } let seg=null; for(let i=0;i<headingSegments.length;i++){ const s=headingSegments[i]; if(ci>=s.startChar && ci<s.endChar){ seg=s; break; } } if(!seg){ seg=headingSegments[headingSegments.length-1]; }
-      if(seg.startOffset==null||seg.endOffset==null){ const ratio=ci/totalLen; return ratio*psh; }
-      const span=seg.endChar-seg.startChar; const local=span>0?(ci-seg.startChar)/span:0; const off=seg.startOffset+(seg.endOffset-seg.startOffset)*Math.max(0,Math.min(1,local)); return off;
+    function getMarkdownTitle(content) { const lines = content.split('\n'); for (let i = 0; i < lines.length; i++) { const line = lines[i].trim(); if (line.startsWith('# ')) return line.substring(2).trim(); if (line.startsWith('## ')) return line.substring(3).trim(); } return null; }
+    function formatFileSize(bytes) { if (bytes < 1024) return bytes + ' B'; if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'; return (bytes / (1024 * 1024)).toFixed(1) + ' MB'; }
+    function saveHistoryItem(content) { const title = getMarkdownTitle(content) || '未命名文档'; const item = { id: Date.now(), title: title, content: content, fileName: null, type: 'compile', timestamp: new Date().toISOString(), size: content.length }; let list = []; const saved = localStorage.getItem('markdownHistory'); if (saved) { try { const parsed = JSON.parse(saved); list = Array.isArray(parsed) ? parsed : []; } catch (e) { list = []; } } list = list.filter(h => h.content !== content); list.unshift(item); if (list.length > 100) list = list.slice(0, 100); localStorage.setItem('markdownHistory', JSON.stringify(list)); }
+    marked.setOptions({ breaks: true, gfm: true, headerIds: true, mangle: false });
+    const editor = document.getElementById('editor'); const preview = document.getElementById('preview'); const charCount = document.getElementById('charCount');
+    const shortcutHistory = [];
+    function updateCharCount() { const count = editor.value.length; charCount.textContent = count.toLocaleString() + ' 字符'; }
+    function pushShortcutHistory() { if (!editor || !preview) return; shortcutHistory.push({ value: editor.value, selectionStart: editor.selectionStart, selectionEnd: editor.selectionEnd, editorScrollTop: editor.scrollTop, previewScrollTop: preview.scrollTop }); if (shortcutHistory.length > 100) shortcutHistory.shift(); }
+    let isSyncingScroll = false;
+    function getEditorLineHeight() {
+      if (!editor) return 20;
+      const style = window.getComputedStyle(editor);
+      const lineHeight = parseFloat(style.lineHeight);
+      if (isNaN(lineHeight)) {
+        const fontSize = parseFloat(style.fontSize) || 16;
+        return fontSize * 1.6;
+      }
+      return lineHeight;
     }
-    function getHeadingOffsetForScroll(ci){ if(!headingSegments||headingSegments.length===0) return null; let seg=headingSegments[0]; for(let i=0;i<headingSegments.length;i++){ const s=headingSegments[i]; if(ci>=s.startChar){ seg=s; } else { break; } } if(!seg||seg.startOffset==null) return null; return seg.startOffset; }
-    function syncScroll(){ if(!editor||!preview) return; const esh=editor.scrollHeight-editor.clientHeight; const psh=preview.scrollHeight-preview.clientHeight; if(esh<=0||psh<=0) return; const topRatio=editor.scrollTop/esh; const totalLen=(editor.value||'').length; const ci=Math.floor(topRatio*totalLen); let off=null; const hOff=getHeadingOffsetForScroll(ci); if(hOff!=null){ off=hOff; } else { off=computePreviewOffsetByCharIndex(ci); } const marginTop=32; off=Math.max(0, Math.min(psh, off-marginTop)); preview.scrollTop=off; }
-    function updatePreview(){ const markdown=editor.value; if(markdown.trim()){ const html=marked.parse(markdown); preview.innerHTML=html; preview.querySelectorAll('pre code').forEach((block)=>{ hljs.highlightElement(block); }); } else { preview.innerHTML='<div style="color:var(--color-text-secondary);font-style:italic;">预览内容将显示在这里...</div>'; } buildHeadingMapping(); const caret=editor.selectionStart||0; const off=computePreviewOffsetByCharIndex(caret); preview.scrollTop=off; }
-    function insertText(type){ const textarea=editor; const start=textarea.selectionStart; const end=textarea.selectionEnd; const selected=textarea.value.substring(start,end); let insert='';
+    function getCharPositionInEditor(charIndex) {
+      if (!editor || !editor.value) return { top: 0, line: 0 };
+      const text = editor.value;
+      if (charIndex < 0) charIndex = 0;
+      if (charIndex >= text.length) charIndex = text.length - 1;
+      const textBefore = text.substring(0, charIndex);
+      const lines = textBefore.split('\n');
+      const lineNum = lines.length - 1;
+      const allLines = text.split('\n');
+      if (lineNum >= allLines.length) {
+        const lineHeight = getEditorLineHeight();
+        return { top: (allLines.length - 1) * lineHeight, line: allLines.length - 1 };
+      }
+      const lineHeight = getEditorLineHeight();
+      let top = 0;
+      for (let i = 0; i < lineNum; i++) {
+        top += lineHeight;
+      }
+      const charInLine = lineNum === 0 ? charIndex : charIndex - (lines.slice(0, -1).join('\n').length + lines.slice(0, -1).length);
+      return { top: top, line: lineNum, charInLine: charInLine };
+    }
+    function getEditorCharIndexAtScrollTop() {
+      if (!editor || !editor.value) return 0;
+      const scrollTop = editor.scrollTop;
+      const lineHeight = getEditorLineHeight();
+      const lines = editor.value.split('\n');
+      const visibleLineIndex = Math.floor(scrollTop / lineHeight);
+      let charIndex = 0;
+      for (let i = 0; i < Math.min(visibleLineIndex, lines.length); i++) {
+        charIndex += lines[i].length + 1;
+      }
+      return Math.max(0, Math.min(editor.value.length - 1, charIndex));
+    }
+    function createMarkerElement(charIndex) {
+      const marker = document.createElement('span');
+      marker.id = 'scroll-marker-' + Date.now();
+      marker.style.position = 'absolute';
+      marker.style.visibility = 'hidden';
+      marker.style.pointerEvents = 'none';
+      marker.textContent = '\u200B';
+      return marker;
+    }
+    function getPreviewOffsetByCharIndex(charIndex) {
+      if (!preview || !editor || !preview.children.length) return 0;
+      const text = editor.value || '';
+      if (text.length === 0) return 0;
+      if (charIndex < 0) charIndex = 0;
+      if (charIndex >= text.length) charIndex = text.length - 1;
+
+      const lines = text.split('\n');
+      let charCount = 0;
+      let targetLineIndex = -1;
+      for (let i = 0; i < lines.length; i++) {
+        const lineLength = lines[i].length;
+        if (charIndex >= charCount && charIndex <= charCount + lineLength) {
+          targetLineIndex = i;
+          break;
+        }
+        charCount += lineLength + 1;
+      }
+
+      if (targetLineIndex < 0 || targetLineIndex >= lines.length) {
+        const maxScroll = preview.scrollHeight - preview.clientHeight;
+        return Math.max(0, maxScroll);
+      }
+
+      const targetLine = lines[targetLineIndex];
+      const targetLineText = targetLine.trim();
+      const previewRect = preview.getBoundingClientRect();
+      const previewElements = Array.from(preview.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, pre, blockquote, table, hr'));
+      let bestOffset = null;
+      let bestScore = 0;
+
+      for (let i = 0; i < previewElements.length; i++) {
+        const element = previewElements[i];
+        const elementText = element.textContent || '';
+        const elementTextClean = elementText.trim().replace(/\s+/g, ' ');
+        const targetLineClean = targetLineText.replace(/\s+/g, ' ');
+
+        if (!targetLineClean || !elementTextClean) continue;
+
+        let score = 0;
+        if (elementTextClean === targetLineClean) {
+          score = 1000;
+        } else if (elementTextClean.includes(targetLineClean)) {
+          score = 800;
+        } else if (targetLineClean.includes(elementTextClean)) {
+          score = 700;
+        } else {
+          const minLen = Math.min(elementTextClean.length, targetLineClean.length, 30);
+          if (minLen > 5) {
+            let matchCount = 0;
+            for (let j = 0; j < minLen; j++) {
+              if (elementTextClean[j] === targetLineClean[j]) matchCount++;
+              else break;
+            }
+            if (matchCount > 10) score = 400 + matchCount;
+            if (elementTextClean.substring(0, 15) === targetLineClean.substring(0, 15)) {
+              score = Math.max(score, 600);
+            }
+          }
+        }
+
+        if (score > bestScore) {
+          try {
+            const rect = element.getBoundingClientRect();
+            if (rect.height > 0) {
+              const offset = rect.top - previewRect.top + preview.scrollTop;
+              bestScore = score;
+              bestOffset = Math.max(0, offset - 50);
+            }
+          } catch (e) { }
+        }
+      }
+
+      if (bestOffset !== null && bestScore > 300) {
+        return bestOffset;
+      }
+
+      const ratio = charIndex / Math.max(1, text.length);
+      const maxScroll = preview.scrollHeight - preview.clientHeight;
+      return Math.max(0, ratio * maxScroll);
+    }
+    function getPreviewCharIndexAtScrollTop() {
+      if (!preview || !editor) return 0;
+      const scrollTop = preview.scrollTop;
+      const previewRect = preview.getBoundingClientRect();
+      const targetY = scrollTop + previewRect.top + previewRect.height * 0.15;
+      let bestNode = null;
+      let bestDistance = Infinity;
+      function findClosestElement(element, depth = 0) {
+        if (depth > 15) return;
+        if (!element) return;
+        try {
+          if (element.nodeType === Node.TEXT_NODE && element.textContent && element.textContent.trim()) {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            range.collapse(true);
+            const rect = range.getBoundingClientRect();
+            if (rect.height > 0) {
+              const elementY = rect.top;
+              const distance = Math.abs(elementY - targetY);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestNode = element;
+              }
+            }
+          } else if (element.nodeType === Node.ELEMENT_NODE) {
+            const rect = element.getBoundingClientRect();
+            if (rect.height > 0 && rect.width > 0) {
+              const elementY = rect.top;
+              const distance = Math.abs(elementY - targetY);
+              if (distance < bestDistance + 50) {
+                if (element.childNodes && element.childNodes.length > 0) {
+                  for (let i = 0; i < element.childNodes.length; i++) {
+                    findClosestElement(element.childNodes[i], depth + 1);
+                  }
+                } else {
+                  const range = document.createRange();
+                  range.selectNodeContents(element);
+                  range.collapse(true);
+                  const rect2 = range.getBoundingClientRect();
+                  if (rect2.height > 0) {
+                    bestDistance = distance;
+                    bestNode = element;
+                  }
+                }
+              }
+            }
+          }
+        } catch (e) { }
+      }
+      findClosestElement(preview);
+      if (bestNode && bestNode.textContent) {
+        const nodeText = bestNode.textContent.trim();
+        if (nodeText && nodeText.length > 0) {
+          const text = editor.value || '';
+          if (text.length === 0) return 0;
+          const nodeTextClean = nodeText.replace(/\s+/g, ' ').substring(0, Math.min(100, nodeText.length));
+          const lines = text.split('\n');
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line && line.length > 0) {
+              const lineClean = line.replace(/\s+/g, ' ').substring(0, Math.min(100, line.length));
+              if (lineClean === nodeTextClean || nodeTextClean.includes(lineClean) || lineClean.includes(nodeTextClean) ||
+                (lineClean.length > 10 && nodeTextClean.length > 10 &&
+                  (lineClean.substring(0, Math.min(30, lineClean.length)) === nodeTextClean.substring(0, Math.min(30, nodeTextClean.length))))) {
+                let charIndex = 0;
+                for (let j = 0; j < i; j++) {
+                  charIndex += lines[j].length + 1;
+                }
+                const charInLine = Math.min(charIndex + line.indexOf(nodeTextClean.substring(0, Math.min(20, nodeTextClean.length))), charIndex + lines[i].length);
+                return Math.max(0, Math.min(text.length - 1, charInLine));
+              }
+            }
+          }
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line && line.length > 0 && (nodeTextClean.substring(0, 15) === line.substring(0, 15) || line.substring(0, 15) === nodeTextClean.substring(0, 15))) {
+              let charIndex = 0;
+              for (let j = 0; j < i; j++) {
+                charIndex += lines[j].length + 1;
+              }
+              return Math.max(0, Math.min(text.length - 1, charIndex));
+            }
+          }
+        }
+      }
+      const text = editor.value || '';
+      if (text.length === 0) return 0;
+      const maxScroll = preview.scrollHeight - preview.clientHeight;
+      const ratio = Math.max(0, Math.min(1, scrollTop / Math.max(1, maxScroll)));
+      return Math.floor(ratio * text.length);
+    }
+    let scrollTimeout = null;
+    let isUserScrolling = false;
+    let lastScrollTop = 0;
+
+    function syncScroll() {
+      if (!editor || !preview || isSyncingScroll || !preview.children.length) return;
+      const currentScrollTop = editor.scrollTop;
+      if (Math.abs(currentScrollTop - lastScrollTop) < 1) return;
+      lastScrollTop = currentScrollTop;
+      isUserScrolling = true;
+      isSyncingScroll = true;
+      if (scrollTimeout) {
+        cancelAnimationFrame(scrollTimeout);
+      }
+      scrollTimeout = requestAnimationFrame(() => {
+        const charIndex = getEditorCharIndexAtScrollTop();
+        const previewOffset = getPreviewOffsetByCharIndex(charIndex);
+        if (previewOffset !== null && previewOffset !== undefined) {
+          preview.scrollTop = previewOffset;
+        }
+        scrollTimeout = null;
+        setTimeout(() => {
+          isSyncingScroll = false;
+          isUserScrolling = false;
+        }, 50);
+      });
+    }
+
+    let caretSyncTimeout = null;
+    let lastCaretPosition = -1;
+
+    function syncPreviewToCaret() {
+      if (!editor || !preview || isSyncingScroll || isUserScrolling || !preview.children.length) return;
+      const caret = editor.selectionStart || 0;
+      if (caret === lastCaretPosition) return;
+      lastCaretPosition = caret;
+
+      if (caretSyncTimeout) {
+        clearTimeout(caretSyncTimeout);
+      }
+      caretSyncTimeout = setTimeout(() => {
+        if (isSyncingScroll || isUserScrolling) {
+          caretSyncTimeout = null;
+          return;
+        }
+        isSyncingScroll = true;
+        requestAnimationFrame(() => {
+          const previewOffset = getPreviewOffsetByCharIndex(caret);
+          if (previewOffset !== null && previewOffset !== undefined) {
+            preview.scrollTop = previewOffset;
+          }
+          caretSyncTimeout = null;
+          setTimeout(() => { isSyncingScroll = false; }, 50);
+        });
+      }, 150);
+    }
+    function syncScrollFromPreview() {
+      if (!editor || !preview || isSyncingScroll || !preview.children.length) return;
+      isSyncingScroll = true;
+      requestAnimationFrame(() => {
+        const charIndex = getPreviewCharIndexAtScrollTop();
+        const editorPos = getCharPositionInEditor(charIndex);
+        const editorScrollTop = Math.max(0, editorPos.top - 50);
+        editor.scrollTop = editorScrollTop;
+        setTimeout(() => { isSyncingScroll = false; }, 30);
+      });
+    }
+    function scrollToPosition(charIndex) {
+      if (!editor || !preview) return;
+      isSyncingScroll = true;
+      isUserScrolling = false;
+      const editorPos = getCharPositionInEditor(charIndex);
+      const editorScrollTop = Math.max(0, editorPos.top - 100);
+      editor.scrollTop = editorScrollTop;
+      lastScrollTop = editorScrollTop;
+      setTimeout(() => {
+        const previewOffset = getPreviewOffsetByCharIndex(charIndex);
+        if (previewOffset !== null) {
+          preview.scrollTop = previewOffset;
+        }
+        setTimeout(() => {
+          isSyncingScroll = false;
+        }, 100);
+      }, 150);
+    }
+    function updatePreview() {
+      if (isSyncingScroll) return;
+      const markdown = editor.value;
+      if (markdown.trim()) {
+        const html = marked.parse(markdown);
+        preview.innerHTML = html;
+        preview.querySelectorAll('pre code').forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      } else {
+        preview.innerHTML = '<div style="color:var(--color-text-secondary);font-style:italic;">预览内容将显示在这里...</div>';
+      }
+      setTimeout(() => {
+        if (!isUserScrolling) {
+          syncPreviewToCaret();
+        }
+      }, 200);
+    }
+    function insertText(type) {
+      const textarea = editor; const start = textarea.selectionStart; const end = textarea.selectionEnd; const selected = textarea.value.substring(start, end); let insert = '';
       pushShortcutHistory();
-      if(type==='h1'){ insert=`# ${selected||'标题 1'}`; }
-      else if(type==='h2'){ insert=`## ${selected||'标题 2'}`; }
-      else if(type==='h3'){ insert=`### ${selected||'标题 3'}`; }
-      else if(type==='bold'){ insert=`**${selected||'粗体文本'}**`; }
-      else if(type==='italic'){ insert=`*${selected||'斜体文本'}*`; }
-      else if(type==='link'){ insert=`[${selected||'链接文本'}](https://example.com)`; }
-      else if(type==='image'){ insert=`![${selected||'图片描述'}](https://example.com/image.png)`; }
-      else if(type==='code'){ insert=`\`${selected||'代码'}\``; }
-      else if(type==='codeblock'){ insert=`\`\`\`\n${selected||'代码块'}\n\`\`\``; }
-      else if(type==='quote'){ insert=`> ${selected||'引用内容'}`; }
-      else if(type==='list'){ insert=`- ${selected||'列表项'}`; }
-      else if(type==='olist'){ insert=`1. ${selected||'列表项'}`; }
-      else if(type==='table'){ insert=`| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| 内容1 | 内容2 | 内容3 |`; }
-      else if(type==='hr'){ insert=`\n---\n`; }
-      textarea.focus(); if(typeof textarea.setRangeText==='function'){ textarea.setRangeText(insert,start,end,'end'); } else { const newText=textarea.value.substring(0,start)+insert+textarea.value.substring(end); textarea.value=newText; const newPos=start+insert.length; textarea.setSelectionRange(newPos,newPos); }
-      updatePreview(); updateCharCount();
+      if (type === 'h1') { insert = `# ${selected || '标题 1'}`; }
+      else if (type === 'h2') { insert = `## ${selected || '标题 2'}`; }
+      else if (type === 'h3') { insert = `### ${selected || '标题 3'}`; }
+      else if (type === 'bold') { insert = `**${selected || '粗体文本'}**`; }
+      else if (type === 'italic') { insert = `*${selected || '斜体文本'}*`; }
+      else if (type === 'link') { insert = `[${selected || '链接文本'}](https://example.com)`; }
+      else if (type === 'image') { insert = `![${selected || '图片描述'}](https://example.com/image.png)`; }
+      else if (type === 'code') { insert = `\`${selected || '代码'}\``; }
+      else if (type === 'codeblock') { insert = `\`\`\`\n${selected || '代码块'}\n\`\`\``; }
+      else if (type === 'quote') { insert = `> ${selected || '引用内容'}`; }
+      else if (type === 'list') { insert = `- ${selected || '列表项'}`; }
+      else if (type === 'olist') { insert = `1. ${selected || '列表项'}`; }
+      else if (type === 'table') { insert = `| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| 内容1 | 内容2 | 内容3 |`; }
+      else if (type === 'hr') { insert = `\n---\n`; }
+      textarea.focus(); let newPos = start; if (typeof textarea.setRangeText === 'function') { textarea.setRangeText(insert, start, end, 'end'); newPos = textarea.selectionStart; } else { const newText = textarea.value.substring(0, start) + insert + textarea.value.substring(end); textarea.value = newText; newPos = start + insert.length; textarea.setSelectionRange(newPos, newPos); }
+      updatePreview(); updateCharCount(); setTimeout(() => { scrollToPosition(newPos); }, 150);
     }
-    document.querySelectorAll('.editor-shortcuts .toolbar-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ insertText(btn.getAttribute('data-i')); }); });
-    editor.addEventListener('input',()=>{ updatePreview(); updateCharCount(); });
-    editor.addEventListener('scroll',()=>{ syncScroll(); });
-    editor.addEventListener('keydown',(e)=>{ if((e.metaKey||e.ctrlKey)&&!e.shiftKey&&(e.key==='z'||e.key==='Z')){ if(shortcutHistory.length>0){ e.preventDefault(); const last=shortcutHistory.pop(); editor.value=last.value; editor.selectionStart=last.selectionStart; editor.selectionEnd=last.selectionEnd; editor.scrollTop=last.editorScrollTop||0; updatePreview(); updateCharCount(); preview.scrollTop=last.previewScrollTop||0; return; } }
-      if(e.key==='Tab'){ e.preventDefault(); const start=editor.selectionStart; const end=editor.selectionEnd; pushShortcutHistory(); if(typeof editor.setRangeText==='function'){ editor.setRangeText('    ',start,end,'end'); } else { editor.value=editor.value.substring(0,start)+'    '+editor.value.substring(end); editor.selectionStart=editor.selectionEnd=start+4; } updatePreview(); updateCharCount(); } });
-    const saveBtn=document.getElementById('saveHistoryBtn'); if(saveBtn){ saveBtn.addEventListener('click',()=>{ const content=editor.value||''; if(!content.trim()){ alert('没有可保存的内容'); return; } saveHistoryItem(content); alert('已保存到历史记录'); }); }
-    const goToPreview = ()=>{ const content=editor.value||''; if(!content.trim()){ alert('请先输入内容'); return; } const title=getMarkdownTitle(content)||'未命名文档'; try{ sessionStorage.setItem('markdownContent',content); sessionStorage.setItem('markdownTitle',title); sessionStorage.setItem('markdownMode','preview'); }catch(e){} window.location.href='markdownPreview.html'; };
-    const openPreviewBtn=document.getElementById('openPreviewBtn'); if(openPreviewBtn){ openPreviewBtn.addEventListener('click', goToPreview); }
-    const switchPreviewBtn=document.getElementById('switchPreviewBtn'); if(switchPreviewBtn){ switchPreviewBtn.addEventListener('click', goToPreview); }
-    const copyBtn=document.getElementById('copyBtn'); if(copyBtn){ copyBtn.addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText(editor.value||''); alert('内容已复制到剪贴板！'); }catch(err){ const ta=document.createElement('textarea'); ta.value=editor.value||''; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); alert('内容已复制到剪贴板！'); }catch(e){ alert('复制失败，请手动复制'); } document.body.removeChild(ta); } }); }
-    const downloadMdBtn=document.getElementById('downloadMdBtn'); if(downloadMdBtn){ downloadMdBtn.addEventListener('click',()=>{ const content=editor.value||''; const blob=new Blob([content],{type:'text/markdown;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; const title=getMarkdownTitle(content)||'markdown'; a.download=`${title}-${Date.now()}.md`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }); }
-    const downloadHtmlBtn=document.getElementById('downloadHtmlBtn'); if(downloadHtmlBtn){ downloadHtmlBtn.addEventListener('click',()=>{ const html=marked.parse(editor.value||''); const fullHtml='<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Markdown 导出</title>\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">\n<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;line-height:1.8;color:#333;}pre{background:#f5f5f5;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f5f5f5;padding:2px 6px;border-radius:4px;}blockquote{border-left:4px solid #667eea;padding-left:20px;margin:20px 0;color:#666;background:#f8f9fa;padding:15px 20px;}table{width:100%;border-collapse:collapse;margin:20px 0;}table th,table td{border:1px solid #ddd;padding:8px;}table th{background:#f8f9fa;}img{max-width:100%;height:auto;}</style>\n</head>\n<body>\n'+html+'\n<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>\n<script>document.querySelectorAll("pre code").forEach(function(b){hljs.highlightElement(b);});<\/script>\n</body>\n</html>'; const blob=new Blob([fullHtml],{type:'text/html;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; const title=getMarkdownTitle(editor.value||'')||'markdown'; a.download=title+'-'+Date.now()+'.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }); }
-    const backMarkdownHomeBtn=document.getElementById('backMarkdownHomeBtn'); if(backMarkdownHomeBtn){ backMarkdownHomeBtn.addEventListener('click',()=>{ window.location.href='markdownHome.html'; }); }
-    const themeBtn=document.getElementById('themeBtn'); if(themeBtn){ themeBtn.addEventListener('click',()=>{ if(window.openThemeModal){ window.openThemeModal(); } }); }
-    let stored=''; try{ stored=sessionStorage.getItem('markdownContent')||''; }catch(e){ stored=''; } if(stored&&stored.trim()){ editor.value=stored; updatePreview(); updateCharCount(); } else { updatePreview(); updateCharCount(); }
+    document.querySelectorAll('.editor-shortcuts .toolbar-btn').forEach(btn => { btn.addEventListener('click', () => { insertText(btn.getAttribute('data-i')); }); });
+    editor.addEventListener('input', () => { updatePreview(); updateCharCount(); });
+    editor.addEventListener('scroll', () => {
+      if (!isSyncingScroll) {
+        syncScroll();
+      }
+    });
+    editor.addEventListener('click', (e) => {
+      setTimeout(() => {
+        if (!isSyncingScroll && !isUserScrolling) {
+          syncPreviewToCaret();
+        }
+      }, 50);
+    });
+    let keyupTimeout = null;
+    editor.addEventListener('keyup', (e) => {
+      if (keyupTimeout) clearTimeout(keyupTimeout);
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'PageUp' || e.key === 'PageDown' || e.key === 'Home' || e.key === 'End') {
+        keyupTimeout = setTimeout(() => {
+          if (!isSyncingScroll && !isUserScrolling) {
+            syncPreviewToCaret();
+          }
+        }, 100);
+      }
+    });
+    editor.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) { if (shortcutHistory.length > 0) { e.preventDefault(); const last = shortcutHistory.pop(); editor.value = last.value; editor.selectionStart = last.selectionStart; editor.selectionEnd = last.selectionEnd; editor.scrollTop = last.editorScrollTop || 0; updatePreview(); updateCharCount(); preview.scrollTop = last.previewScrollTop || 0; return; } }
+      if (e.key === 'Tab') { e.preventDefault(); const start = editor.selectionStart; const end = editor.selectionEnd; pushShortcutHistory(); if (typeof editor.setRangeText === 'function') { editor.setRangeText('    ', start, end, 'end'); } else { editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end); editor.selectionStart = editor.selectionEnd = start + 4; } updatePreview(); updateCharCount(); }
+    });
+    const saveBtn = document.getElementById('saveHistoryBtn'); if (saveBtn) { saveBtn.addEventListener('click', () => { const content = editor.value || ''; if (!content.trim()) { alert('没有可保存的内容'); return; } saveHistoryItem(content); alert('已保存到历史记录'); }); }
+    const goToPreview = () => { const content = editor.value || ''; if (!content.trim()) { alert('请先输入内容'); return; } const title = getMarkdownTitle(content) || '未命名文档'; try { sessionStorage.setItem('markdownContent', content); sessionStorage.setItem('markdownTitle', title); sessionStorage.setItem('markdownMode', 'preview'); } catch (e) { } window.location.href = 'markdownPreview.html'; };
+    const openPreviewBtn = document.getElementById('openPreviewBtn'); if (openPreviewBtn) { openPreviewBtn.addEventListener('click', goToPreview); }
+    const switchPreviewBtn = document.getElementById('switchPreviewBtn'); if (switchPreviewBtn) { switchPreviewBtn.addEventListener('click', goToPreview); }
+    const copyBtn = document.getElementById('copyBtn'); if (copyBtn) { copyBtn.addEventListener('click', async () => { try { await navigator.clipboard.writeText(editor.value || ''); alert('内容已复制到剪贴板！'); } catch (err) { const ta = document.createElement('textarea'); ta.value = editor.value || ''; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); alert('内容已复制到剪贴板！'); } catch (e) { alert('复制失败，请手动复制'); } document.body.removeChild(ta); } }); }
+    const downloadMdBtn = document.getElementById('downloadMdBtn'); if (downloadMdBtn) { downloadMdBtn.addEventListener('click', () => { const content = editor.value || ''; const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; const title = getMarkdownTitle(content) || 'markdown'; a.download = `${title}-${Date.now()}.md`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }); }
+    const downloadHtmlBtn = document.getElementById('downloadHtmlBtn'); if (downloadHtmlBtn) { downloadHtmlBtn.addEventListener('click', () => { const html = marked.parse(editor.value || ''); const fullHtml = '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Markdown 导出</title>\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">\n<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;line-height:1.8;color:#333;}pre{background:#f5f5f5;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f5f5f5;padding:2px 6px;border-radius:4px;}blockquote{border-left:4px solid #667eea;padding-left:20px;margin:20px 0;color:#666;background:#f8f9fa;padding:15px 20px;}table{width:100%;border-collapse:collapse;margin:20px 0;}table th,table td{border:1px solid #ddd;padding:8px;}table th{background:#f8f9fa;}img{max-width:100%;height:auto;}</style>\n</head>\n<body>\n' + html + '\n<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>\n<script>document.querySelectorAll("pre code").forEach(function(b){hljs.highlightElement(b);});<\/script>\n</body>\n</html>'; const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; const title = getMarkdownTitle(editor.value || '') || 'markdown'; a.download = title + '-' + Date.now() + '.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }); }
+    const backMarkdownHomeBtn = document.getElementById('backMarkdownHomeBtn'); if (backMarkdownHomeBtn) { backMarkdownHomeBtn.addEventListener('click', () => { window.location.href = 'markdownHome.html'; }); }
+    const themeBtn = document.getElementById('themeBtn'); if (themeBtn) { themeBtn.addEventListener('click', () => { if (window.openThemeModal) { window.openThemeModal(); } }); }
+    let stored = ''; try { stored = sessionStorage.getItem('markdownContent') || ''; } catch (e) { stored = ''; } if (stored && stored.trim()) { editor.value = stored; updatePreview(); updateCharCount(); } else { updatePreview(); updateCharCount(); }
   </script>
 </body>
+
 </html>
