@@ -135,11 +135,11 @@ class AppTheme {
 
   // ========== JSON 语法高亮颜色 ==========
   static const Map<String, Color> _jsonColors = {
-    'key': Color(0xFF0969DA),
-    'string': Color(0xFF0A3069),
-    'number': Color(0xFF0550AE),
-    'boolean': Color(0xFFCF222E),
-    'null': Color(0xFF6E7781),
+      'key': Color(0xFF0969DA),
+      'string': Color(0xFF0A3069),
+      'number': Color(0xFF0550AE),
+      'boolean': Color(0xFFCF222E),
+      'null': Color(0xFF6E7781),
   };
 
   // ========== 主题描述 ==========
