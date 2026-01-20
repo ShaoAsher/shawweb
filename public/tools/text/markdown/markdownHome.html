@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown 编辑器</title>
+  <link rel="stylesheet" href="../../../assets/css/theme.css">
+  <style>
+    .container { max-width: 1400px; display: flex; flex-direction: column; min-height: calc(100vh - 40px); }
+    .home-btn { position: absolute; top: var(--spacing-lg); left: var(--spacing-lg); width: 40px; height: 40px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: var(--color-text-on-primary); text-decoration: none; font-size: var(--font-size-large); transition: all .3s; z-index: 10; }
+    .home-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); transform: scale(1.1); }
+    .header h1 { font-size: var(--font-size-xlarge); margin-bottom: var(--spacing-sm); }
+    .header p { opacity: 0.9; font-size: var(--font-size-small); }
+    .content { padding: var(--spacing-xl); flex: 1; display: flex; flex-direction: column; gap: var(--spacing-xl); }
+    .hero { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-xl); padding: var(--spacing-lg) var(--spacing-xl); border-radius: var(--radius-lg); background: radial-gradient(circle at top left, rgba(102,126,234,0.28), transparent 55%), radial-gradient(circle at bottom right, rgba(118,75,162,0.24), transparent 55%), var(--color-surface); border: 1px solid var(--color-border); }
+    .hero-main { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .hero-title { font-size: var(--font-size-xlarge); font-weight: var(--font-weight-bold); }
+    .hero-subtitle { font-size: var(--font-size-small); color: var(--color-text-secondary); }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-top: var(--spacing-sm); }
+    .hero-tag { padding: 4px 10px; border-radius: 999px; font-size: var(--font-size-small); background: var(--color-surface-alt); color: var(--color-text-secondary); border: 1px solid rgba(255,255,255,0.04); }
+    .hero-actions { display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-sm); min-width: 220px; }
+    .hero-primary { display: flex; gap: var(--spacing-sm); }
+    .hero-stat { font-size: var(--font-size-small); color: var(--color-text-secondary); }
+    .home-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr); gap: var(--spacing-xl); align-items: flex-start; }
+    @media (max-width: 1024px) { .hero { flex-direction: column; align-items: flex-start; } .hero-actions { align-items: flex-start; } .home-layout { grid-template-columns: 1fr; } }
+    .panel { background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .panel-header { padding: var(--spacing-md) var(--spacing-lg); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-md); }
+    .panel-title { display: flex; flex-direction: column; gap: 4px; }
+    .panel-title-main { font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); display: flex; align-items: center; gap: var(--spacing-xs); }
+    .panel-title-sub { font-size: var(--font-size-small); color: var(--color-text-secondary); }
+    .panel-header-extra { font-size: var(--font-size-small); color: var(--color-text-secondary); white-space: nowrap; }
+    .panel-body { padding: var(--spacing-lg); display: flex; flex-direction: column; gap: var(--spacing-lg); }
+    .import-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr); gap: var(--spacing-lg); align-items: stretch; }
+    @media (max-width: 1024px) { .import-grid { grid-template-columns: 1fr; } }
+    .upload-card { border-radius: var(--radius-md); border: 1px dashed var(--color-border); padding: var(--spacing-xl); background: var(--color-surface-alt); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-sm); cursor: pointer; transition: all 0.25s; text-align: center; position: relative; overflow: hidden; }
+    .upload-card:hover { border-color: var(--color-primary); background: var(--color-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .upload-card-icon { font-size: 40px; margin-bottom: var(--spacing-xs); }
+    .upload-card-title { font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); }
+    .upload-card-text { font-size: var(--font-size-small); color: var(--color-text-secondary); }
+    .upload-card-hint { margin-top: var(--spacing-xs); font-size: var(--font-size-small); color: var(--color-text-secondary); opacity: 0.9; }
+    .file-input { display: none; }
+    .editor-textarea { width: 100%; min-height: 220px; padding: var(--spacing-md); border: 2px solid var(--color-border); border-radius: var(--radius-md); font-family: 'Courier New', Consolas, monospace; font-size: var(--font-size-base); line-height: 1.6; background: var(--color-surface); color: var(--color-text); resize: vertical; transition: all 0.3s; }
+    .editor-textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 4px var(--color-shadow-primary); }
+    .action-buttons { display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md); flex-wrap: wrap; }
+    .btn { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); color: var(--color-text-on-primary); border: none; padding: var(--spacing-sm) var(--spacing-xl); border-radius: var(--radius-sm); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); cursor: pointer; transition: all 0.2s; }
+    .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn:active { transform: translateY(0); }
+    .btn-secondary { background: var(--color-surface-alt); color: var(--color-text-on-surface-alt); border: 1px solid var(--color-border); }
+    .btn-secondary:hover { background: var(--color-hover); }
+    .history-list { display: flex; flex-direction: column; gap: var(--spacing-sm); max-height: 520px; overflow-y: auto; }
+    .history-empty { padding: var(--spacing-lg); border-radius: var(--radius-md); background: var(--color-surface-alt); color: var(--color-text-secondary); font-size: var(--font-size-small); }
+    .history-item { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); border-radius: var(--radius-md); background: var(--color-surface-alt); border: 1px solid var(--color-border); cursor: pointer; transition: all 0.18s; }
+    .history-item:hover { transform: translateY(-1px); border-color: var(--color-primary); box-shadow: var(--shadow-sm); background: var(--color-hover); }
+    .history-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .history-title-row { display: flex; align-items: center; gap: var(--spacing-xs); font-size: var(--font-size-small); }
+    .history-type { padding: 2px 6px; border-radius: 999px; font-size: 10px; font-weight: var(--font-weight-semibold); text-transform: uppercase; letter-spacing: 0.04em; }
+    .history-type-file { background: var(--color-primary); color: var(--color-text-on-primary); }
+    .history-type-paste { background: var(--color-success); color: var(--color-text-on-primary); }
+    .history-filename { font-weight: var(--font-weight-semibold); color: var(--color-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-meta { font-size: var(--font-size-small); color: var(--color-text-secondary); display: flex; gap: var(--spacing-md); flex-wrap: wrap; }
+    .history-actions { display: flex; gap: var(--spacing-xs); align-items: center; }
+    .history-btn { border: none; border-radius: var(--radius-sm); padding: 4px 10px; font-size: var(--font-size-small); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.18s; background: var(--color-surface); color: var(--color-text-secondary); }
+    .history-btn.primary { background: var(--color-primary); color: var(--color-text-on-primary); }
+  </style>
+  <script>
+    function formatFileSize(bytes){ if(bytes<1024) return bytes+' B'; if(bytes<1024*1024) return (bytes/1024).toFixed(1)+' KB'; return (bytes/(1024*1024)).toFixed(1)+' MB'; }
+    function escapeHtml(text){ const div=document.createElement('div'); div.textContent=text; return div.innerHTML; }
+    function getMarkdownTitle(content){ const lines=content.split('\n'); for(let i=0;i<lines.length;i++){ const line=lines[i].trim(); if(line.startsWith('# ')) return line.substring(2).trim(); if(line.startsWith('## ')) return line.substring(3).trim(); } return null; }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../../../index.html" class="home-btn" title="返回项目首页">🏠</a>
+      <h1>📖 Markdown 编辑器</h1>
+      <p>导入或粘贴 Markdown，支持编辑、预览、历史与导出</p>
+    </div>
+    <div class="content">
+      <section class="hero">
+        <div class="hero-main">
+          <div class="hero-title">markdown 编辑器</div>
+          <div class="hero-subtitle">一站式导入、编辑、预览和管理 Markdown 文档</div>
+          <div class="hero-tags">
+            <span class="hero-tag">📁 导入文件</span>
+            <span class="hero-tag">📋 导入文字</span>
+            <span class="hero-tag">🕒 历史记录</span>
+            <span class="hero-tag">🛠️ 编译模式</span>
+            <span class="hero-tag">👁️ 预览模式</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="home-layout">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-main"><span>📥 导入文件与文字</span></div>
+              <div class="panel-title-sub">支持拖拽上传 .md/.markdown 文件，或直接粘贴 Markdown 文本</div>
+            </div>
+            <div class="panel-header-extra">保存后可进入编译/预览模式</div>
+          </div>
+          <div class="panel-body">
+            <div class="import-grid">
+              <div>
+                <div class="upload-card" id="uploadCard">
+                  <div class="upload-card-icon">📄</div>
+                  <div class="upload-card-title">拖拽 Markdown 文件到此处</div>
+                  <div class="upload-card-text">或点击选择本地文件</div>
+                  <div class="upload-card-hint">支持 .md /.markdown /.txt</div>
+                  <input type="file" id="fileInput" class="file-input" accept=".md,.markdown,.txt,text/markdown,text/plain">
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:var(--font-size-base);font-weight:var(--font-weight-semibold);">📝 粘贴或输入 Markdown 文本</span>
+                  <span id="charCount" style="font-size:var(--font-size-small);color:var(--color-text-secondary);">0 字符</span>
+                </div>
+                <textarea id="textInput" class="editor-textarea" placeholder="在此粘贴或输入 Markdown 文本，将自动保存到历史记录中。"></textarea>
+                <div class="action-buttons">
+                  <button class="btn" id="openCompileBtn">进入编译模式</button>
+                  <button class="btn btn-secondary" id="openPreviewBtn">进入预览模式</button>
+                  <button class="btn btn-secondary" id="saveToHistoryBtn">仅保存到历史</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-title-main"><span>🕒 历史记录</span></div>
+              <div class="panel-title-sub">最近打开的文件与粘贴内容自动保存在本地浏览器</div>
+            </div>
+            <div class="panel-header-extra">
+              <button class="btn btn-secondary" id="clearHistoryBtn" style="padding:4px 12px;font-size:var(--font-size-small);">清空历史</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="history-list" id="historyList">
+              <div class="history-empty" id="historyEmpty">暂无历史记录，导入文件或粘贴文本后将自动出现在这里。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
+  <script>
+    let markdownHistory=[];
+    let uploadCardElement,fileInputElement,textInputElement,historyListElement,historyEmptyElement,heroHistoryStatElement,charCountElement;
+    let openCompileBtnElement,openPreviewBtnElement,saveToHistoryBtnElement,clearHistoryBtnElement,heroImportBtnElement,heroPasteBtnElement;
+
+    function updateCharCount(){ if(!charCountElement||!textInputElement) return; const count=textInputElement.value.length; charCountElement.textContent=count.toLocaleString()+' 字符'; }
+    function loadHistory(){ const saved=localStorage.getItem('markdownHistory'); if(saved){ try{ const parsed=JSON.parse(saved); markdownHistory=Array.isArray(parsed)?parsed:[]; }catch(e){ markdownHistory=[]; } } else { markdownHistory=[]; } renderHistory(); }
+    function saveHistory(){ try{ if(markdownHistory.length>100){ markdownHistory=markdownHistory.slice(0,100); } localStorage.setItem('markdownHistory',JSON.stringify(markdownHistory)); }catch(e){} }
+    function addToHistory(content,fileName,type){ if(!content||!content.trim()) return null; const title=getMarkdownTitle(content)||fileName||'未命名文档'; const item={ id:Date.now(), title:title, content:content, fileName:fileName||null, type:type||'paste', timestamp:new Date().toISOString(), size:content.length }; markdownHistory=markdownHistory.filter(h=>!(h.content===content&&h.fileName===fileName)); markdownHistory.unshift(item); saveHistory(); renderHistory(); return item; }
+    function updateHistoryStat(){ const count=markdownHistory.length; if(heroHistoryStatElement){ heroHistoryStatElement.textContent='历史记录 '+count.toString()+' 条'; } }
+    function renderHistory(){ if(!historyListElement||!historyEmptyElement) return; if(!markdownHistory.length){ historyEmptyElement.style.display='block'; historyListElement.innerHTML=''; historyListElement.appendChild(historyEmptyElement); updateHistoryStat(); return; } historyEmptyElement.style.display='none'; let html=''; markdownHistory.forEach(item=>{ const date=new Date(item.timestamp); const dateStr=date.toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}); const type=item.type||'paste'; const typeText=type==='file'?'文件':'粘贴'; const typeClass=type==='file'?'history-type-file':'history-type-paste'; const size=formatFileSize(item.size||0); html+= '<div class="history-item" data-id="'+item.id+'">'+
+      '<div class="history-main">'+
+      '<div class="history-title-row"><span class="history-type '+typeClass+'">'+typeText+'</span><span class="history-filename">'+escapeHtml(item.title||'')+'</span></div>'+
+      '<div class="history-meta"><span>📅 '+dateStr+'</span><span>📏 '+size+'</span></div>'+
+      '</div>'+
+      '<div class="history-actions">'+
+      '<button class="history-btn primary" data-action="compile">编译模式</button>'+
+      '<button class="history-btn" data-action="preview">预览模式</button>'+
+      '<button class="history-btn" data-action="delete">删除</button>'+
+      '</div>'+
+      '</div>'; }); historyListElement.innerHTML=html; updateHistoryStat(); }
+    function deleteHistoryItem(id){ markdownHistory=markdownHistory.filter(h=>h.id!==id); saveHistory(); renderHistory(); }
+    function clearHistory(){ if(!markdownHistory.length) return; if(!confirm('确定要清空所有历史记录吗？此操作不可恢复！')) return; markdownHistory=[]; saveHistory(); renderHistory(); }
+    function goToMode(mode,content,title){ if(!content||!content.trim()){ alert('没有可处理的内容'); return; } const finalTitle=title||getMarkdownTitle(content)||'未命名文档'; try{ sessionStorage.setItem('markdownContent',content); sessionStorage.setItem('markdownTitle',finalTitle); sessionStorage.setItem('markdownMode',mode); }catch(e){} if(mode==='compile'){ window.location.href='markdownCompile.html'; } else { window.location.href='markdownPreview.html'; } }
+    function handleFile(file){ if(!file){ alert('没有选择文件'); return; } const fileName=file.name||''; const validExt=fileName.match(/\.(md|markdown|txt)$/i); if(!validExt){ alert('请上传 .md、.markdown 或 .txt 文件'); return; } const reader=new FileReader(); reader.onload=function(e){ const content=e.target.result||''; if(!content.trim()){ alert('文件内容为空'); return; } if(textInputElement){ textInputElement.value=content; updateCharCount(); } const item=addToHistory(content,fileName,'file'); const title=(item&&item.title)||fileName||'未命名文档'; goToMode('preview',content,title); }; reader.onerror=function(){ alert('文件读取失败，请重试'); }; reader.readAsText(file,'UTF-8'); }
+    function initEvents(){
+      if(uploadCardElement&&fileInputElement){ uploadCardElement.addEventListener('click',function(){ fileInputElement.click(); }); uploadCardElement.addEventListener('dragover',function(e){ e.preventDefault(); e.stopPropagation(); uploadCardElement.classList.add('dragover'); }); uploadCardElement.addEventListener('dragleave',function(e){ e.preventDefault(); e.stopPropagation(); uploadCardElement.classList.remove('dragover'); }); uploadCardElement.addEventListener('drop',function(e){ e.preventDefault(); e.stopPropagation(); uploadCardElement.classList.remove('dragover'); const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(file){ handleFile(file); } }); fileInputElement.addEventListener('change',function(e){ const file=e.target.files&&e.target.files[0]; if(file){ handleFile(file); } }); }
+      if(textInputElement){ textInputElement.addEventListener('input',function(){ updateCharCount(); }); textInputElement.addEventListener('paste',function(){ setTimeout(function(){ updateCharCount(); },10); }); }
+      if(openCompileBtnElement){ openCompileBtnElement.addEventListener('click',function(){ if(!textInputElement) return; const content=textInputElement.value||''; if(!content.trim()){ alert('请先粘贴或输入 Markdown 内容'); return; } const item=addToHistory(content,null,'paste'); const title=(item&&item.title)||getMarkdownTitle(content)||'未命名文档'; goToMode('compile',content,title); }); }
+      if(openPreviewBtnElement){ openPreviewBtnElement.addEventListener('click',function(){ if(!textInputElement) return; const content=textInputElement.value||''; if(!content.trim()){ alert('请先粘贴或输入 Markdown 内容'); return; } const item=addToHistory(content,null,'paste'); const title=(item&&item.title)||getMarkdownTitle(content)||'未命名文档'; goToMode('preview',content,title); }); }
+      if(saveToHistoryBtnElement){ saveToHistoryBtnElement.addEventListener('click',function(){ if(!textInputElement) return; const content=textInputElement.value||''; if(!content.trim()){ alert('没有可保存的内容'); return; } addToHistory(content,null,'paste'); alert('已保存到历史记录'); }); }
+      if(clearHistoryBtnElement){ clearHistoryBtnElement.addEventListener('click',function(){ clearHistory(); }); }
+      if(historyListElement){ historyListElement.addEventListener('click',function(e){ const itemElement=e.target.closest('.history-item'); if(!itemElement) return; const id=parseInt(itemElement.getAttribute('data-id')||'0',10); if(!id) return; const item=markdownHistory.find(h=>h.id===id); if(!item) return; const actionBtn=e.target.closest('.history-btn'); if(actionBtn){ const action=actionBtn.getAttribute('data-action'); if(action==='delete'){ deleteHistoryItem(id); } else if(action==='compile'){ goToMode('compile',item.content,item.title); } else if(action==='preview'){ goToMode('preview',item.content,item.title); } } else { goToMode('preview',item.content,item.title); } }); }
+      if(heroImportBtnElement){ heroImportBtnElement.addEventListener('click',function(){ if(fileInputElement) fileInputElement.click(); }); }
+      if(heroPasteBtnElement&&textInputElement){ heroPasteBtnElement.addEventListener('click',function(){ textInputElement.focus(); }); }
+    }
+    function init(){ uploadCardElement=document.getElementById('uploadCard'); fileInputElement=document.getElementById('fileInput'); textInputElement=document.getElementById('textInput'); historyListElement=document.getElementById('historyList'); historyEmptyElement=document.getElementById('historyEmpty'); heroHistoryStatElement=document.getElementById('heroHistoryStat'); charCountElement=document.getElementById('charCount'); openCompileBtnElement=document.getElementById('openCompileBtn'); openPreviewBtnElement=document.getElementById('openPreviewBtn'); saveToHistoryBtnElement=document.getElementById('saveToHistoryBtn'); clearHistoryBtnElement=document.getElementById('clearHistoryBtn'); heroImportBtnElement=document.getElementById('heroImportBtn'); heroPasteBtnElement=document.getElementById('heroPasteBtn'); loadHistory(); updateCharCount(); initEvents(); }
+    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',init); } else { init(); }
+  </script>
+</body>
+</html>

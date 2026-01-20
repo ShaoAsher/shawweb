@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的书架</title>
+  <link rel="stylesheet" href="../../../assets/css/theme.css">
+  <style>
+    .container {
+      max-width: 1400px;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-primary);
+      text-decoration: none;
+      font-size: var(--font-size-large);
+      transition: all .3s;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: var(--font-size-small);
+    }
+
+    .content {
+      padding: var(--spacing-xl);
+    }
+
+    .bookshelf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xl);
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+
+    .bookshelf-title {
+      font-size: var(--font-size-xlarge);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: #ffffff !important;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .btn span {
+      color: #ffffff !important;
+    }
+
+    .btn.btn-secondary {
+      background: var(--color-surface-alt);
+      color: var(--color-text) !important;
+      border: 1px solid var(--color-border);
+    }
+
+    .btn.btn-secondary span {
+      color: var(--color-text) !important;
+    }
+
+    .btn.btn-secondary:hover {
+      background: var(--color-hover);
+    }
+
+    .btn:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .search-bar {
+      width: 100%;
+      max-width: 400px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .search-bar:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
+    }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+    }
+
+    .book-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-primary);
+    }
+
+    .book-cover {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: var(--color-text-on-primary);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .book-info {
+      flex: 1;
+    }
+
+    .book-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-xs);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .book-author {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .book-category {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--color-surface-alt);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .book-actions {
+      display: flex;
+      gap: var(--spacing-xs);
+      margin-top: var(--spacing-sm);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .book-card:hover .book-actions {
+      opacity: 1;
+    }
+
+    .book-action-btn {
+      flex: 1;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--font-size-small);
+      color: var(--color-text);
+      transition: all 0.2s;
+    }
+
+    .book-action-btn:hover {
+      background: var(--color-hover);
+      border-color: var(--color-primary);
+    }
+
+    .book-action-btn.delete {
+      color: var(--color-error);
+    }
+
+    .book-action-btn.delete:hover {
+      background: var(--color-error);
+      color: var(--color-text-on-primary);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--spacing-xxl);
+      color: var(--color-text-light);
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: var(--spacing-md);
+      opacity: 0.5;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--color-border);
+    }
+
+    .modal-header {
+      font-size: var(--font-size-large);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--spacing-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--color-text);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: var(--font-size-xlarge);
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--color-text);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      font-family: var(--font-family);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+    }
+
+    .cover-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .cover-preview {
+      width: 120px;
+      height: 160px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 2px solid var(--color-border);
+    }
+
+    .cover-upload-btn {
+      padding: var(--spacing-xs) var(--spacing-md);
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--font-size-small);
+      color: var(--color-text);
+    }
+
+    .keywords-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      min-height: 50px;
+    }
+
+    .keyword-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: 4px 8px;
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
+    }
+
+    .keyword-tag .remove {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: flex-end;
+      margin-top: var(--spacing-lg);
+    }
+
+    @media (max-width: 768px) {
+      .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="icon" href="data:,">
+  <script src="../../../assets/js/tools.js"></script>
+  <script src="../../../assets/js/themes.js"></script>
+  <script src="../../../assets/js/theme-ui.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../../../index.html" class="home-btn">🏠</a>
+      <h1></h1>
+      <p></p>
+    </div>
+    <div class="content">
+      <div class="bookshelf-header">
+        <h2 class="bookshelf-title">📚 我的书架</h2>
+        <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; align-items: center;">
+          <input type="text" class="search-bar" id="searchInput" placeholder="🔍 搜索书籍..." />
+          <button class="btn btn-secondary" onclick="exportAllBooks()"
+            style="border: 1px solid var(--color-border);">
+            <span>📤</span>
+            <span>导出全部</span>
+          </button>
+          <button class="btn btn-secondary" onclick="importBooks()"
+            style="border: 1px solid var(--color-border);">
+            <span>📥</span>
+            <span>导入数据</span>
+          </button>
+          <button class="btn" onclick="showAddBookModal()">
+            <span>➕</span>
+            <span>添加新书</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="books-grid" id="booksGrid"></div>
+    </div>
+  </div>
+
+  <!-- 添加/编辑书籍模态框 -->
+  <div class="modal" id="bookModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="modalTitle">添加新书</span>
+        <button class="modal-close" onclick="closeBookModal()">&times;</button>
+      </div>
+      <form id="bookForm">
+        <div class="form-group">
+          <label class="form-label">书名 *</label>
+          <input type="text" class="form-input" id="bookTitle" required placeholder="请输入书名" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">作者名 *</label>
+            <input type="text" class="form-input" id="bookAuthor" required placeholder="请输入作者名" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">书本分类</label>
+            <select class="form-select" id="bookCategory">
+              <option value="">请选择分类</option>
+              <option value="小说">小说</option>
+              <option value="散文">散文</option>
+              <option value="诗歌">诗歌</option>
+              <option value="剧本">剧本</option>
+              <option value="传记">传记</option>
+              <option value="历史">历史</option>
+              <option value="科幻">科幻</option>
+              <option value="奇幻">奇幻</option>
+              <option value="悬疑">悬疑</option>
+              <option value="言情">言情</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">封面</label>
+          <div class="cover-upload">
+            <img id="coverPreview" class="cover-preview" src="" alt="封面预览" style="display: none;" />
+            <input type="file" id="coverInput" accept="image/*" style="display: none;" />
+            <button type="button" class="cover-upload-btn" onclick="document.getElementById('coverInput').click()">
+              选择封面图片
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">简介</label>
+          <textarea class="form-textarea" id="bookDescription" placeholder="请输入书籍简介..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">关键词</label>
+          <div class="keywords-input" id="keywordsContainer">
+            <input type="text" id="keywordInput" placeholder="输入关键词后按回车添加"
+              style="border: none; flex: 1; min-width: 150px;" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeBookModal()">取消</button>
+          <button type="submit" class="btn">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let books = [];
+    let currentBookId = null;
+    let searchQuery = '';
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBooks();
+      renderBooks();
+      setupSearch();
+      setupKeywordInput();
+      setupCoverUpload();
+    });
+
+    // 加载书籍数据
+    function loadBooks() {
+      const saved = localStorage.getItem('writingAssistant_books');
+      if (saved) {
+        books = JSON.parse(saved);
+      }
+    }
+
+    // 保存书籍数据
+    function saveBooks() {
+      localStorage.setItem('writingAssistant_books', JSON.stringify(books));
+    }
+
+    // 渲染书籍列表
+    function renderBooks() {
+      const grid = document.getElementById('booksGrid');
+      const filteredBooks = books.filter(book => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return book.title.toLowerCase().includes(query) ||
+          book.author.toLowerCase().includes(query) ||
+          (book.description && book.description.toLowerCase().includes(query)) ||
+          (book.keywords && book.keywords.some(k => k.toLowerCase().includes(query)));
+      });
+
+      if (filteredBooks.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state-icon">📚</div>
+            <div>${books.length === 0 ? '书架空空如也，添加第一本书吧！' : '没有找到匹配的书籍'}</div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filteredBooks.map(book => `
+        <div class="book-card" onclick="openBook('${book.id}')">
+          <div class="book-cover">
+            ${book.cover ? `<img src="${book.cover}" alt="${book.title}" />` : '<span>📖</span>'}
+          </div>
+          <div class="book-info">
+            <div class="book-title">${book.title}</div>
+            <div class="book-author">${book.author}</div>
+            ${book.category ? `<span class="book-category">${book.category}</span>` : ''}
+          </div>
+          <div class="book-actions" onclick="event.stopPropagation()">
+            <button class="book-action-btn" onclick="editBook('${book.id}')">编辑</button>
+            <button class="book-action-btn" onclick="exportBookAsTxt('${book.id}')" title="导出为TXT">📄</button>
+            <button class="book-action-btn delete" onclick="deleteBook('${book.id}')">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 设置搜索
+    function setupSearch() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderBooks();
+      });
+    }
+
+    // 显示添加书籍模态框
+    function showAddBookModal() {
+      currentBookId = null;
+      document.getElementById('modalTitle').textContent = '添加新书';
+      document.getElementById('bookForm').reset();
+      document.getElementById('coverPreview').style.display = 'none';
+      document.getElementById('keywordsContainer').innerHTML = '<input type="text" id="keywordInput" placeholder="输入关键词后按回车添加" style="border: none; flex: 1; min-width: 150px;" />';
+      setupKeywordInput();
+      document.getElementById('bookModal').classList.add('show');
+    }
+
+    // 编辑书籍
+    function editBook(bookId) {
+      event.stopPropagation();
+      const book = books.find(b => b.id === bookId);
+      if (!book) return;
+
+      currentBookId = bookId;
+      document.getElementById('modalTitle').textContent = '编辑书籍';
+      document.getElementById('bookTitle').value = book.title;
+      document.getElementById('bookAuthor').value = book.author;
+      document.getElementById('bookCategory').value = book.category || '';
+      document.getElementById('bookDescription').value = book.description || '';
+
+      if (book.cover) {
+        document.getElementById('coverPreview').src = book.cover;
+        document.getElementById('coverPreview').style.display = 'block';
+      } else {
+        document.getElementById('coverPreview').style.display = 'none';
+      }
+
+      // 渲染关键词
+      const keywordsContainer = document.getElementById('keywordsContainer');
+      keywordsContainer.innerHTML = '';
+      if (book.keywords && book.keywords.length > 0) {
+        book.keywords.forEach(keyword => {
+          const tag = document.createElement('span');
+          tag.className = 'keyword-tag';
+          tag.innerHTML = `${keyword} <span class="remove" onclick="removeKeyword(this)">×</span>`;
+          keywordsContainer.appendChild(tag);
+        });
+      }
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'keywordInput';
+      input.placeholder = '输入关键词后按回车添加';
+      input.style.cssText = 'border: none; flex: 1; min-width: 150px;';
+      keywordsContainer.appendChild(input);
+      setupKeywordInput();
+
+      document.getElementById('bookModal').classList.add('show');
+    }
+
+    // 关闭模态框
+    function closeBookModal() {
+      document.getElementById('bookModal').classList.remove('show');
+      currentBookId = null;
+    }
+
+    // 设置关键词输入
+    function setupKeywordInput() {
+      const keywordInput = document.getElementById('keywordInput');
+      if (!keywordInput) return;
+
+      keywordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const keyword = keywordInput.value.trim();
+          if (keyword) {
+            addKeyword(keyword);
+            keywordInput.value = '';
+          }
+        }
+      });
+    }
+
+    // 添加关键词
+    function addKeyword(keyword) {
+      const container = document.getElementById('keywordsContainer');
+      const tag = document.createElement('span');
+      tag.className = 'keyword-tag';
+      tag.innerHTML = `${keyword} <span class="remove" onclick="removeKeyword(this)">×</span>`;
+      container.insertBefore(tag, container.lastElementChild);
+    }
+
+    // 移除关键词
+    function removeKeyword(element) {
+      element.parentElement.remove();
+    }
+
+    // 设置封面上传
+    function setupCoverUpload() {
+      const coverInput = document.getElementById('coverInput');
+      coverInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            document.getElementById('coverPreview').src = event.target.result;
+            document.getElementById('coverPreview').style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // 保存书籍
+    document.getElementById('bookForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('bookTitle').value.trim();
+      const author = document.getElementById('bookAuthor').value.trim();
+      const category = document.getElementById('bookCategory').value;
+      const description = document.getElementById('bookDescription').value.trim();
+      const cover = document.getElementById('coverPreview').src || '';
+      const keywords = Array.from(document.querySelectorAll('.keyword-tag'))
+        .map(tag => tag.textContent.replace('×', '').trim())
+        .filter(k => k);
+
+      if (!title || !author) {
+        alert('请填写书名和作者名');
+        return;
+      }
+
+      const bookData = {
+        id: currentBookId || Date.now().toString(),
+        title,
+        author,
+        category: category || null,
+        description: description || null,
+        cover: cover && cover !== window.location.href ? cover : null,
+        keywords: keywords.length > 0 ? keywords : null,
+        createdAt: currentBookId ? books.find(b => b.id === currentBookId).createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (currentBookId) {
+        const index = books.findIndex(b => b.id === currentBookId);
+        if (index !== -1) {
+          books[index] = bookData;
+        }
+      } else {
+        books.push(bookData);
+      }
+
+      saveBooks();
+      renderBooks();
+      closeBookModal();
+    });
+
+    // 删除书籍
+    function deleteBook(bookId) {
+      event.stopPropagation();
+      if (!confirm('确定要删除这本书吗？相关的创作内容也会被删除。')) return;
+
+      books = books.filter(b => b.id !== bookId);
+      // 删除相关的创作数据
+      localStorage.removeItem(`writingAssistant_book_${bookId}`);
+      saveBooks();
+      renderBooks();
+    }
+
+    // 打开书籍（跳转到创作页面）
+    function openBook(bookId) {
+      window.location.href = `bookEditor.html?bookId=${bookId}`;
+    }
+
+    // 导出全部书籍数据
+    function exportAllBooks() {
+      try {
+        const exportData = {
+          version: '1.0',
+          exportDate: new Date().toISOString(),
+          books: [],
+          bookContents: []
+        };
+
+        // 导出书籍信息
+        books.forEach(book => {
+          exportData.books.push(book);
+
+          // 导出每本书的创作内容
+          const bookContent = localStorage.getItem(`writingAssistant_book_${book.id}`);
+          if (bookContent) {
+            exportData.bookContents.push({
+              bookId: book.id,
+              content: JSON.parse(bookContent)
+            });
+          }
+        });
+
+        // 生成JSON字符串
+        const jsonData = JSON.stringify(exportData, null, 2);
+
+        // 创建并下载文件
+        const blob = new Blob([jsonData], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `写作助手备份_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        alert(`成功导出 ${books.length} 本书籍的数据！`);
+      } catch (error) {
+        console.error('导出失败:', error);
+        alert('导出失败：' + error.message);
+      }
+    }
+
+    // 导出单本书为TXT格式
+    function exportBookAsTxt(bookId) {
+      const book = books.find(b => b.id === bookId);
+      if (!book) {
+        alert('书籍不存在');
+        return;
+      }
+
+      const bookContent = localStorage.getItem(`writingAssistant_book_${bookId}`);
+      if (!bookContent) {
+        alert('这本书还没有创作内容');
+        return;
+      }
+
+      const content = JSON.parse(bookContent);
+      let txtContent = '';
+
+      // 书籍信息
+      txtContent += `书名：${book.title}\n`;
+      txtContent += `作者：${book.author}\n`;
+      if (book.category) txtContent += `分类：${book.category}\n`;
+      if (book.description) txtContent += `简介：${book.description}\n`;
+      txtContent += '\n' + '='.repeat(50) + '\n\n';
+
+      // 大纲
+      if (content.outline) {
+        txtContent += '【大纲】\n';
+        txtContent += content.outline + '\n\n';
+        txtContent += '='.repeat(50) + '\n\n';
+      }
+
+      // 章节内容
+      if (content.chapters && content.chapters.length > 0) {
+        const volumes = content.volumes || [];
+
+        volumes.forEach(volume => {
+          const volumeChapters = content.chapters.filter(ch => ch.volumeId === volume.id);
+          if (volumeChapters.length > 0) {
+            txtContent += `\n【${volume.name}】\n\n`;
+            volumeChapters.forEach(chapter => {
+              txtContent += `${chapter.name}\n`;
+              if (chapter.title) txtContent += `标题：${chapter.title}\n`;
+              if (chapter.content) {
+                const textContent = chapter.content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+                txtContent += textContent + '\n\n';
+              }
+              txtContent += '-'.repeat(30) + '\n\n';
+            });
+          }
+        });
+
+        // 独立章节
+        const ungroupedChapters = content.chapters.filter(ch => !ch.volumeId);
+        if (ungroupedChapters.length > 0) {
+          ungroupedChapters.forEach(chapter => {
+            txtContent += `${chapter.name}\n`;
+            if (chapter.title) txtContent += `标题：${chapter.title}\n`;
+            if (chapter.content) {
+              const textContent = chapter.content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+              txtContent += textContent + '\n\n';
+            }
+            txtContent += '-'.repeat(30) + '\n\n';
+          });
+        }
+      }
+
+      // 备注
+      if (content.notes) {
+        txtContent += '\n' + '='.repeat(50) + '\n\n';
+        txtContent += '【备注】\n';
+        txtContent += content.notes + '\n';
+      }
+
+      // 下载文件
+      const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${book.title}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 导入数据
+    function importBooks() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,.txt';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const content = event.target.result;
+
+            if (file.name.endsWith('.json')) {
+              // JSON格式导入
+              const importData = JSON.parse(content);
+
+              if (!importData.books || !Array.isArray(importData.books)) {
+                throw new Error('无效的导入文件格式');
+              }
+
+              if (!confirm(`确定要导入 ${importData.books.length} 本书籍吗？\n这将覆盖现有的同名书籍。`)) {
+                return;
+              }
+
+              // 导入书籍
+              importData.books.forEach(importBook => {
+                const existingIndex = books.findIndex(b => b.id === importBook.id);
+                if (existingIndex !== -1) {
+                  books[existingIndex] = importBook;
+                } else {
+                  books.push(importBook);
+                }
+              });
+
+              // 导入创作内容
+              if (importData.bookContents && Array.isArray(importData.bookContents)) {
+                importData.bookContents.forEach(({ bookId, content }) => {
+                  localStorage.setItem(`writingAssistant_book_${bookId}`, JSON.stringify(content));
+                });
+              }
+
+              saveBooks();
+              renderBooks();
+              alert(`成功导入 ${importData.books.length} 本书籍！`);
+            } else if (file.name.endsWith('.txt')) {
+              // TXT格式导入 - 提示用户
+              alert('TXT文件导入功能正在开发中，请使用JSON格式导入完整数据。\n\n您可以使用"导出全部"功能导出JSON格式的完整数据。');
+            }
+          } catch (error) {
+            console.error('导入失败:', error);
+            alert('导入失败：' + error.message + '\n\n请确保文件格式正确。');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+
+    // 点击模态框外部关闭
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        closeBookModal();
+      }
+    });
+  </script>
+</body>
+
+</html>

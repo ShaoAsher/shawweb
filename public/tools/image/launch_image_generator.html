@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>启动图生成工具 - iOS & Android</title>
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <style>
+    /* 继承theme.css的基础样式 */
+    /* 以下是工具页面特定的样式覆盖 */
+
+    .container {
+      max-width: 1200px;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-primary);
+      text-decoration: none;
+      font-size: var(--font-size-large);
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: var(--font-size-small);
+    }
+
+    .content {
+      padding: var(--spacing-xl);
+    }
+
+    .form-section {
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-section h2 {
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--spacing-sm);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-small);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
+      transition: border-color 0.3s;
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
+    }
+
+    .form-group small {
+      display: block;
+      color: var(--color-text-secondary);
+      margin-top: var(--spacing-xs);
+      font-size: var(--font-size-small);
+    }
+
+    .file-upload-area {
+      border: 3px dashed var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-xxl);
+      text-align: center;
+      background: var(--color-hover);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .file-upload-area:hover {
+      background: var(--color-surface-alt);
+      border-color: var(--color-primary-dark);
+    }
+
+    .file-upload-area.dragover {
+      background: var(--color-hover);
+      border-color: var(--color-primary);
+    }
+
+    .file-upload-area input[type="file"] {
+      display: none;
+    }
+
+    .file-upload-icon {
+      font-size: 48px;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+
+    .file-upload-text {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-base);
+      margin-bottom: 10px;
+    }
+
+    .file-upload-hint {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-small);
+    }
+
+    .preview-section {
+      margin-top: var(--spacing-lg);
+    }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .image-preview-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .image-preview-container .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(220, 53, 69, 0.9);
+      color: var(--color-text-on-primary);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: var(--font-size-large);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-preview-container .delete-btn:hover {
+      background: rgba(220, 53, 69, 1);
+      transform: scale(1.1);
+    }
+
+    .platform-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .platform-tab {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      transition: all 0.3s;
+    }
+
+    .platform-tab.active {
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      border-color: var(--color-primary);
+    }
+
+    .platform-tab:hover {
+      border-color: var(--color-primary);
+    }
+
+    .sizes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .size-item {
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: var(--spacing-md);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .size-item:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .size-item.selected {
+      border-color: var(--color-primary);
+      background: #f8f9ff;
+    }
+
+    .size-label {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .size-dimensions {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .size-radio {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--color-text-on-primary);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--color-secondary);
+      color: var(--color-text-on-primary);
+
+      color: var(--color-text-on-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .color-picker-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .color-picker {
+      width: 60px;
+      height: 40px;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .color-picker input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      margin-top: 15px;
+      display: none;
+    }
+
+    .status-message.success {
+      background: var(--color-surface-alt);
+      color: var(--color-success);
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .status-message.error {
+      background: var(--color-surface-alt);
+      color: var(--color-error);
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .status-message.info {
+      background: var(--color-surface-alt);
+      color: var(--color-text);
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 4px solid var(--color-border);
+      border-top: 4px solid var(--color-primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .preview-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .preview-item {
+      text-align: center;
+    }
+
+    .preview-item canvas {
+      border: none;
+      border-radius: 0;
+      max-width: 300px;
+      max-height: 600px;
+      width: auto !important;
+      height: auto !important;
+      display: block;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    .preview-item-label {
+      margin-top: 8px;
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+    }
+
+    .preview-item canvas {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .preview-item canvas:hover {
+      transform: scale(1.05);
+    }
+
+    /* 全屏预览模态框 */
+    .fullscreen-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10000;
+      cursor: pointer;
+    }
+
+    .fullscreen-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fullscreen-modal img,
+    .fullscreen-modal canvas {
+      max-width: 90vw;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 0;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .fullscreen-modal .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--color-text-on-primary);
+      border: 2px solid var(--color-border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .fullscreen-modal .close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    /* 输出格式选择样式 */
+    .format-icon {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 1.2em;
+    }
+
+    .output-format-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .format-option {
+      position: relative;
+    }
+
+    .format-radio {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .format-label {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .format-label::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .format-label:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .format-label:hover::before {
+      opacity: 1;
+    }
+
+    .format-option:has(.format-radio:checked) .format-label,
+    .format-option.format-selected .format-label {
+      border-color: var(--color-primary);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .format-option:has(.format-radio:checked) .format-label::before,
+    .format-option.format-selected .format-label::before {
+      opacity: 1;
+    }
+
+    .format-icon-wrapper {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border-radius: var(--radius-md);
+      transition: all 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .format-option:has(.format-radio:checked) .format-icon-wrapper,
+    .format-option.format-selected .format-icon-wrapper {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      transform: scale(1.05);
+    }
+
+    .format-svg {
+      width: 32px;
+      height: 32px;
+      color: var(--color-primary);
+      transition: all 0.3s;
+    }
+
+    .format-option:has(.format-radio:checked) .format-svg,
+    .format-option.format-selected .format-svg {
+      color: var(--color-primary-dark);
+      transform: scale(1.1);
+    }
+
+    .format-content {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .format-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+
+    .format-option:has(.format-radio:checked) .format-title,
+    .format-option.format-selected .format-title {
+      color: var(--color-primary-dark);
+    }
+
+    .format-desc {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+      transition: color 0.3s;
+    }
+
+    .format-check {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      color: var(--color-primary);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .format-option:has(.format-radio:checked) .format-check,
+    .format-option.format-selected .format-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .format-check svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 640px) {
+      .output-format-container {
+        grid-template-columns: 1fr;
+      }
+
+      .format-label {
+        padding: 16px;
+        gap: 12px;
+      }
+
+      .format-icon-wrapper {
+        width: 48px;
+        height: 48px;
+      }
+
+      .format-svg {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../../index.html" class="home-btn" title="返回首页">🏠</a>
+      <h1>🚀 启动图生成工具</h1>
+      <p>一键生成 iOS 和 Android 各机型启动图，支持图片居中、不变形、背景填充</p>
+    </div>
+
+    <div class="content">
+      <!-- 图片上传区域 -->
+      <div class="form-section">
+        <h2>📸 上传图片</h2>
+        <div class="file-upload-area" id="uploadArea">
+          <div class="file-upload-icon">📁</div>
+          <div class="file-upload-text">点击或拖拽图片到此处</div>
+          <div class="file-upload-hint">支持 JPG、PNG、WEBP 格式</div>
+          <input type="file" id="imageInput" accept="image/*">
+        </div>
+        <div id="imagePreview" style="display: none;">
+          <div class="image-preview-container">
+            <img id="previewImage" class="preview-image" alt="预览">
+            <button class="delete-btn" id="deleteImageBtn" title="删除图片">×</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 平台选择 -->
+      <div class="form-section">
+        <h2>📱 选择平台</h2>
+        <div class="platform-tabs">
+          <div class="platform-tab active" data-platform="ios">iOS</div>
+          <div class="platform-tab" data-platform="android">Android</div>
+        </div>
+      </div>
+
+      <!-- 背景设置 -->
+      <div class="form-section">
+        <h2>🎨 填充说明</h2>
+        <div class="form-group">
+          <small style="color: var(--color-text-secondary);">工具会自动检测图片边缘的主要颜色，并使用该颜色填充空白区域，确保图片内容居中且不变形。</small>
+        </div>
+      </div>
+
+      <!-- 尺寸选择 -->
+      <div class="form-section">
+        <h2>📐 选择尺寸（单选）</h2>
+        <div id="sizesContainer"></div>
+      </div>
+
+      <!-- 输出格式 -->
+      <div class="form-section" id="outputFormatSection" style="display: none;">
+        <h2>
+          <span class="format-icon">🧩</span>
+          输出格式（Android）
+        </h2>
+        <div class="output-format-container">
+          <div class="format-option" data-format="png">
+            <input type="radio" name="output-format" id="outputFormatPng" class="format-radio" value="png" checked>
+            <label for="outputFormatPng" class="format-label">
+              <div class="format-icon-wrapper">
+                <svg class="format-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
+                  <path d="M9 9h6v6H9z" stroke="currentColor" stroke-width="1.5" fill="none" />
+                </svg>
+              </div>
+              <div class="format-content">
+                <div class="format-title">普通 PNG</div>
+                <div class="format-desc">标准图片格式，适用于普通场景</div>
+              </div>
+              <div class="format-check">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="currentColor" />
+                  <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </label>
+          </div>
+          <div class="format-option" data-format="nine">
+            <input type="radio" name="output-format" id="outputFormatNine" class="format-radio" value="nine">
+            <label for="outputFormatNine" class="format-label">
+              <div class="format-icon-wrapper">
+                <svg class="format-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="20" height="20" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
+                  <path d="M2 2h4v4H2z" fill="currentColor" opacity="0.6" />
+                  <path d="M18 2h4v4h-4z" fill="currentColor" opacity="0.6" />
+                  <path d="M2 18h4v4H2z" fill="currentColor" opacity="0.6" />
+                  <path d="M18 18h4v4h-4z" fill="currentColor" opacity="0.6" />
+                  <rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.5" fill="none" />
+                </svg>
+              </div>
+              <div class="format-content">
+                <div class="format-title">.9.png（Nine‑Patch）</div>
+                <div class="format-desc">Android 九宫格图片，支持智能拉伸</div>
+              </div>
+              <div class="format-check">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="currentColor" />
+                  <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="form-section">
+        <button class="btn btn-primary" id="generateBtn" disabled>生成启动图</button>
+        <button class="btn btn-secondary" id="downloadBtn" disabled style="margin-left: 10px;">下载图片</button>
+      </div>
+
+      <!-- 状态消息 -->
+      <div class="status-message" id="statusMessage"></div>
+
+      <!-- 加载动画 -->
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>正在生成启动图...</div>
+      </div>
+
+      <!-- 预览区域 -->
+      <div class="form-section" id="previewSection" style="display: none;">
+        <h2>👀 预览（点击图片可全屏查看）</h2>
+        <div class="preview-container" id="previewContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全屏预览模态框 -->
+  <div class="fullscreen-modal" id="fullscreenModal">
+    <button class="close-btn" id="closeFullscreenBtn">×</button>
+    <div id="fullscreenContent"></div>
+  </div>
+
+  <script>
+    // 平台尺寸配置
+    const platformSizes = {
+      ios: [
+        { name: 'iPhone 14 Pro Max', width: 1290, height: 2796, scale: 3 },
+        { name: 'iPhone 14 Pro', width: 1179, height: 2556, scale: 3 },
+        { name: 'iPhone 14 Plus', width: 1284, height: 2778, scale: 3 },
+        { name: 'iPhone 14', width: 1170, height: 2532, scale: 3 },
+        { name: 'iPhone 13 Pro Max', width: 1284, height: 2778, scale: 3 },
+        { name: 'iPhone 13 Pro', width: 1170, height: 2532, scale: 3 },
+        { name: 'iPhone 13', width: 1170, height: 2532, scale: 3 },
+        { name: 'iPhone 13 mini', width: 1080, height: 2340, scale: 3 },
+        { name: 'iPhone 12 Pro Max', width: 1284, height: 2778, scale: 3 },
+        { name: 'iPhone 12 Pro', width: 1170, height: 2532, scale: 3 },
+        { name: 'iPhone 12', width: 1170, height: 2532, scale: 3 },
+        { name: 'iPhone 12 mini', width: 1080, height: 2340, scale: 3 },
+        { name: 'iPhone 11 Pro Max', width: 1242, height: 2688, scale: 3 },
+        { name: 'iPhone 11 Pro', width: 1125, height: 2436, scale: 3 },
+        { name: 'iPhone 11', width: 828, height: 1792, scale: 2 },
+        { name: 'iPhone XS Max', width: 1242, height: 2688, scale: 3 },
+        { name: 'iPhone XS', width: 1125, height: 2436, scale: 3 },
+        { name: 'iPhone XR', width: 828, height: 1792, scale: 2 },
+        { name: 'iPhone X', width: 1125, height: 2436, scale: 3 },
+        { name: 'iPhone 8 Plus', width: 1242, height: 2208, scale: 3 },
+        { name: 'iPhone 8', width: 750, height: 1334, scale: 2 },
+        { name: 'iPad Pro 12.9"', width: 2048, height: 2732, scale: 2 },
+        { name: 'iPad Pro 11"', width: 1668, height: 2388, scale: 2 },
+        { name: 'iPad Air', width: 1640, height: 2360, scale: 2 },
+        { name: 'iPad', width: 1620, height: 2160, scale: 2 },
+        { name: 'iPad mini', width: 1536, height: 2048, scale: 2 }
+      ],
+      android: [
+        { name: 'Android 手机竖屏 (480x762)', width: 480, height: 762 },
+        { name: 'Android 手机竖屏 (720x1242)', width: 720, height: 1242 },
+        { name: 'Android 手机竖屏 (1080x1882)', width: 1080, height: 1882 },
+        { name: 'Android 手机竖屏 (1080x1920)', width: 1080, height: 1920 },
+        { name: 'Android 手机横屏 (1920x1080)', width: 1920, height: 1080 },
+        { name: 'Android 平板竖屏 (1200x1920)', width: 1200, height: 1920 },
+        { name: 'Android 平板横屏 (1920x1200)', width: 1920, height: 1200 }
+      ]
+    };
+
+    let currentPlatform = 'ios';
+    let originalImage = null;
+    let selectedSize = null;
+    let generatedImage = null;
+
+    // DOM 元素
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const sizesContainer = document.getElementById('sizesContainer');
+    const platformTabs = document.querySelectorAll('.platform-tab');
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const loading = document.getElementById('loading');
+    const previewSection = document.getElementById('previewSection');
+    const previewContainer = document.getElementById('previewContainer');
+    const deleteImageBtn = document.getElementById('deleteImageBtn');
+    const fullscreenModal = document.getElementById('fullscreenModal');
+    const fullscreenContent = document.getElementById('fullscreenContent');
+    const closeFullscreenBtn = document.getElementById('closeFullscreenBtn');
+    const outputFormatSection = document.getElementById('outputFormatSection');
+    const outputFormatPng = document.getElementById('outputFormatPng');
+    const outputFormatNine = document.getElementById('outputFormatNine');
+    let outputFormat = 'png';
+
+    // 初始化
+    function init() {
+      renderSizes();
+      setupEventListeners();
+      updateOutputFormatVisibility();
+    }
+
+    // 设置事件监听
+    function setupEventListeners() {
+      // 文件上传
+      uploadArea.addEventListener('click', () => imageInput.click());
+      uploadArea.addEventListener('dragover', handleDragOver);
+      uploadArea.addEventListener('dragleave', handleDragLeave);
+      uploadArea.addEventListener('drop', handleDrop);
+      imageInput.addEventListener('change', handleFileSelect);
+
+      // 平台切换
+      platformTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          platformTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentPlatform = tab.dataset.platform;
+          renderSizes();
+          outputFormat = currentPlatform === 'android' ? 'nine' : 'png';
+          if (outputFormatPng && outputFormatNine) {
+            outputFormatPng.checked = outputFormat === 'png';
+            outputFormatNine.checked = outputFormat === 'nine';
+            updateFormatVisualState();
+          }
+          updateOutputFormatVisibility();
+          selectedSize = null;
+          generatedImage = null;
+          previewSection.style.display = 'none';
+          previewContainer.innerHTML = '';
+          downloadBtn.disabled = true;
+          updateGenerateButton();
+        });
+      });
+
+      // 生成按钮
+      generateBtn.addEventListener('click', generateImage);
+      downloadBtn.addEventListener('click', downloadImage);
+
+      // 更新格式选项的视觉状态
+      const updateFormatVisualState = () => {
+        const formatOptions = document.querySelectorAll('.format-option');
+        formatOptions.forEach(option => {
+          const radio = option.querySelector('.format-radio');
+          if (radio && radio.checked) {
+            option.classList.add('format-selected');
+          } else {
+            option.classList.remove('format-selected');
+          }
+        });
+      };
+
+      if (outputFormatPng && outputFormatNine) {
+        outputFormatPng.addEventListener('change', () => {
+          if (outputFormatPng.checked) {
+            outputFormat = 'png';
+            updateFormatVisualState();
+          }
+        });
+        outputFormatNine.addEventListener('change', () => {
+          if (outputFormatNine.checked) {
+            outputFormat = 'nine';
+            updateFormatVisualState();
+          }
+        });
+
+        // 初始化视觉状态
+        updateFormatVisualState();
+      }
+
+      // 删除图片
+      deleteImageBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetImage();
+      });
+
+      // 全屏预览
+      fullscreenModal.addEventListener('click', (e) => {
+        if (e.target === fullscreenModal || e.target === closeFullscreenBtn) {
+          closeFullscreen();
+        }
+      });
+
+      // ESC 键关闭全屏
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && fullscreenModal.classList.contains('active')) {
+          closeFullscreen();
+        }
+      });
+    }
+
+    function updateOutputFormatVisibility() {
+      if (!outputFormatSection) return;
+      outputFormatSection.style.display = currentPlatform === 'android' ? 'block' : 'none';
+      if (currentPlatform === 'android') {
+        outputFormat = outputFormat || 'nine';
+        if (outputFormatPng && outputFormatNine) {
+          outputFormatPng.checked = outputFormat === 'png';
+          outputFormatNine.checked = outputFormat === 'nine';
+        }
+      }
+    }
+
+    // 拖拽处理
+    function handleDragOver(e) {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    }
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showStatus('请选择图片文件', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          originalImage = img;
+          previewImage.src = e.target.result;
+          // 隐藏上传区域，显示预览
+          uploadArea.style.display = 'none';
+          imagePreview.style.display = 'block';
+          showStatus('图片加载成功', 'success');
+          updateGenerateButton();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetImage() {
+      originalImage = null;
+      previewImage.src = '';
+      uploadArea.style.display = 'block';
+      imagePreview.style.display = 'none';
+      imageInput.value = '';
+      selectedSize = null;
+      generatedImage = null;
+      previewSection.style.display = 'none';
+      previewContainer.innerHTML = '';
+      downloadBtn.disabled = true;
+      // 清除所有radio选中状态
+      const radios = document.querySelectorAll('.size-radio');
+      radios.forEach(radio => radio.checked = false);
+      updateGenerateButton();
+      showStatus('已清除图片', 'info');
+    }
+
+    // 渲染尺寸列表
+    function renderSizes() {
+      const sizes = platformSizes[currentPlatform];
+      sizesContainer.innerHTML = '<div class="sizes-grid"></div>';
+      const grid = sizesContainer.querySelector('.sizes-grid');
+
+      sizes.forEach((size, index) => {
+        const sizeKey = `${size.width}x${size.height}`;
+        const item = document.createElement('div');
+        item.className = 'size-item';
+        const radioId = `size-radio-${currentPlatform}-${index}`;
+        item.innerHTML = `
+                    <div class="size-label">${size.name}</div>
+                    <div class="size-dimensions">${size.width} × ${size.height}</div>
+                    <input type="radio" class="size-radio" name="size-radio" id="${radioId}" data-index="${index}" data-key="${sizeKey}">
+                    <label for="${radioId}" style="cursor: pointer; margin-left: 5px;">选择</label>
+                `;
+        grid.appendChild(item);
+
+        const radio = item.querySelector('.size-radio');
+        radio.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            selectedSize = sizeKey;
+            updateGenerateButton();
+          }
+        });
+      });
+    }
+
+    // 更新生成按钮状态
+    function updateGenerateButton() {
+      const hasImage = originalImage !== null;
+      const hasSelection = selectedSize !== null;
+      generateBtn.disabled = !(hasImage && hasSelection);
+    }
+
+    // 生成图片（单选，一次只生成一张）
+    async function generateImage() {
+      if (!originalImage || !selectedSize) {
+        showStatus('请先上传图片并选择尺寸', 'error');
+        return;
+      }
+
+      loading.classList.add('active');
+      generateBtn.disabled = true;
+      previewContainer.innerHTML = '';
+
+      const sizes = platformSizes[currentPlatform];
+      const size = sizes.find(s => `${s.width}x${s.height}` === selectedSize);
+
+      if (!size) {
+        showStatus('选择的尺寸无效', 'error');
+        loading.classList.remove('active');
+        generateBtn.disabled = false;
+        return;
+      }
+
+      try {
+        const { canvas, contentRect } = await generateLaunchImage(
+          originalImage,
+          size.width,
+          size.height
+        );
+
+        // 验证生成的图片尺寸（必须完全匹配）
+        if (canvas.width !== size.width || canvas.height !== size.height) {
+          console.error(`尺寸不匹配: 期望 ${size.width}x${size.height}, 实际 ${canvas.width}x${canvas.height}`);
+          throw new Error(`图片尺寸不匹配: 期望 ${size.width}x${size.height}, 实际 ${canvas.width}x${canvas.height}`);
+        }
+
+        generatedImage = {
+          canvas,
+          name: size.name,
+          width: size.width,
+          height: size.height,
+          contentRect
+        };
+
+        // 添加预览（使用手机模型框架）
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+
+        // 创建手机模型预览
+        const previewCanvas = createPhonePreview(canvas, size, 300);
+
+        // 添加点击全屏预览
+        previewCanvas.addEventListener('click', () => {
+          showFullscreen(canvas, size);
+        });
+
+        previewItem.appendChild(previewCanvas);
+        const label = document.createElement('div');
+        label.className = 'preview-item-label';
+        label.textContent = `${size.name} (${size.width}×${size.height})`;
+        previewItem.appendChild(label);
+        previewContainer.appendChild(previewItem);
+
+        previewSection.style.display = 'block';
+        downloadBtn.disabled = false;
+        showStatus(`成功生成启动图: ${size.name}`, 'success');
+      } catch (error) {
+        console.error('生成失败:', error);
+        showStatus('生成失败: ' + error.message, 'error');
+      } finally {
+        loading.classList.remove('active');
+        generateBtn.disabled = false;
+      }
+    }
+
+    // 生成启动图核心函数
+    // 要求：中间内容不变形、不拉伸，通过边缘填充纯色（类似气泡的不变形拉伸效果）
+    function generateLaunchImage(image, targetWidth, targetHeight) {
+      return new Promise((resolve) => {
+        // 确保目标尺寸是整数
+        const finalWidth = Math.floor(targetWidth);
+        const finalHeight = Math.floor(targetHeight);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = finalWidth;
+        canvas.height = finalHeight;
+        const ctx = canvas.getContext('2d');
+
+        // 获取原始图片尺寸
+        const originalWidth = image.naturalWidth || image.width;
+        const originalHeight = image.naturalHeight || image.height;
+
+        // 计算原始图片的宽高比
+        const originalAspect = originalWidth / originalHeight;
+
+        // 计算宽度和高度的缩放比例
+        const widthScale = finalWidth / originalWidth;
+        const heightScale = finalHeight / originalHeight;
+
+        // 使用较小的缩放比例，确保图片完全在目标尺寸内（contain 模式）
+        // 这样无论原图大小，都不会超出目标尺寸，也不会变形
+        const scale = Math.min(widthScale, heightScale);
+
+        // 计算缩放后的尺寸（保持原图比例）
+        const scaledWidth = originalWidth * scale;
+        const scaledHeight = originalHeight * scale;
+
+        // 验证：确保缩放后的尺寸不超过目标尺寸
+        if (scaledWidth > finalWidth || scaledHeight > finalHeight) {
+          console.error('缩放计算错误:', {
+            original: `${originalWidth}x${originalHeight}`,
+            target: `${finalWidth}x${finalHeight}`,
+            scaled: `${scaledWidth}x${scaledHeight}`,
+            scale: scale
+          });
+        }
+
+        // 计算居中位置
+        const drawX = (finalWidth - scaledWidth) / 2;
+        const drawY = (finalHeight - scaledHeight) / 2;
+
+        // 先从原始图片检测边缘颜色（在缩放前检测，确保准确性）
+        const edgeColor = detectEdgeColorFromOriginalImage(image);
+
+        // 填充背景色（使用检测到的边缘颜色）
+        ctx.fillStyle = `rgb(${edgeColor.r}, ${edgeColor.g}, ${edgeColor.b})`;
+        ctx.fillRect(0, 0, finalWidth, finalHeight);
+
+        // 使用高质量图像渲染
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        // 绘制原图（居中，不变形，不拉伸）
+        // 使用精确的尺寸和位置，确保不变形
+        ctx.drawImage(
+          image,
+          0, 0, originalWidth, originalHeight,
+          drawX, drawY, scaledWidth, scaledHeight
+        );
+
+        const contentRect = {
+          x: Math.round(drawX),
+          y: Math.round(drawY),
+          width: Math.round(scaledWidth),
+          height: Math.round(scaledHeight)
+        };
+
+        resolve({ canvas, contentRect });
+      });
+    }
+
+    // 从原始图片检测边缘的主要颜色（纯色）
+    // 类似气泡效果：检测图片边缘像素，计算平均颜色用于填充
+    function detectEdgeColorFromOriginalImage(image) {
+      // 创建一个临时canvas来读取原始图片的像素数据
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = image.width;
+      tempCanvas.height = image.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(image, 0, 0);
+
+      const imageData = tempCtx.getImageData(0, 0, image.width, image.height);
+      const data = imageData.data;
+
+      let rSum = 0, gSum = 0, bSum = 0, count = 0;
+      const edgeWidth = Math.max(1, Math.floor(Math.min(image.width, image.height) * 0.05)); // 边缘宽度为图片尺寸的5%
+
+      // 采样左边缘
+      for (let x = 0; x < edgeWidth && x < image.width; x++) {
+        for (let y = 0; y < image.height; y++) {
+          const index = (y * image.width + x) * 4;
+          if (data[index + 3] > 0) { // 非透明像素
+            rSum += data[index];
+            gSum += data[index + 1];
+            bSum += data[index + 2];
+            count++;
+          }
+        }
+      }
+
+      // 采样右边缘
+      for (let x = Math.max(0, image.width - edgeWidth); x < image.width; x++) {
+        for (let y = 0; y < image.height; y++) {
+          const index = (y * image.width + x) * 4;
+          if (data[index + 3] > 0) {
+            rSum += data[index];
+            gSum += data[index + 1];
+            bSum += data[index + 2];
+            count++;
+          }
+        }
+      }
+
+      // 采样顶部边缘（避免与左右边缘重复计算）
+      for (let y = 0; y < edgeWidth && y < image.height; y++) {
+        for (let x = edgeWidth; x < image.width - edgeWidth; x++) {
+          const index = (y * image.width + x) * 4;
+          if (data[index + 3] > 0) {
+            rSum += data[index];
+            gSum += data[index + 1];
+            bSum += data[index + 2];
+            count++;
+          }
+        }
+      }
+
+      // 采样底部边缘（避免与左右边缘重复计算）
+      for (let y = Math.max(0, image.height - edgeWidth); y < image.height; y++) {
+        for (let x = edgeWidth; x < image.width - edgeWidth; x++) {
+          const index = (y * image.width + x) * 4;
+          if (data[index + 3] > 0) {
+            rSum += data[index];
+            gSum += data[index + 1];
+            bSum += data[index + 2];
+            count++;
+          }
+        }
+      }
+
+      // 计算平均颜色
+      if (count > 0) {
+        return {
+          r: Math.round(rSum / count),
+          g: Math.round(gSum / count),
+          b: Math.round(bSum / count)
+        };
+      }
+
+      // 如果没有检测到边缘颜色，返回白色
+      return { r: 255, g: 255, b: 255 };
+    }
+
+    // 生成 Android Nine-Patch (.9.png)
+    function createNinePatchFromCanvas(imageCanvas, contentRect) {
+      const w = imageCanvas.width;
+      const h = imageCanvas.height;
+      const nineCanvas = document.createElement('canvas');
+      nineCanvas.width = w + 2;
+      nineCanvas.height = h + 2;
+      const ctx = nineCanvas.getContext('2d');
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      ctx.clearRect(0, 0, nineCanvas.width, nineCanvas.height);
+      ctx.drawImage(imageCanvas, 1, 1);
+
+      ctx.fillStyle = '#000';
+      // 只标注边距为可拉伸区域，避免中心内容被拉伸
+      // 添加2像素的安全缓冲距离，防止拉伸到抗锯齿边缘
+      const buffer = 2;
+
+      const cx = Math.max(0, Math.min(w, Math.round(contentRect.x)));
+      const cy = Math.max(0, Math.min(h, Math.round(contentRect.y)));
+      const cw = Math.max(0, Math.min(w - cx, Math.round(contentRect.width)));
+      const ch = Math.max(0, Math.min(h - cy, Math.round(contentRect.height)));
+
+      const leftMargin = cx;
+      const rightMargin = Math.max(0, w - (cx + cw));
+      const topMargin = cy;
+      const bottomMargin = Math.max(0, h - (cy + ch));
+
+      // 顶部（X 方向可拉伸）：左边距与右边距（避开Buffer）
+      // 左侧 stretch：从 0 到 leftMargin - buffer
+      if (leftMargin > buffer) {
+        ctx.fillRect(1, 0, leftMargin - buffer, 1);
+      } else if (leftMargin > 0) {
+        ctx.fillRect(1, 0, leftMargin, 1);
+      }
+
+      // 右侧 stretch：从 cx + cw + buffer 到 w
+      if (rightMargin > buffer) {
+        ctx.fillRect(1 + cx + cw + buffer, 0, rightMargin - buffer, 1);
+      } else if (rightMargin > 0) {
+        ctx.fillRect(1 + cx + cw, 0, rightMargin, 1);
+      }
+
+      // 兜底：如果没画任何拉伸点，就在左上角画一个点
+      if (leftMargin <= buffer && rightMargin <= buffer) {
+        ctx.fillRect(1, 0, 1, 1);
+      }
+
+      // 左侧（Y 方向可拉伸）：上边距与下边距（避开Buffer）
+      // 上侧 stretch
+      if (topMargin > buffer) {
+        ctx.fillRect(0, 1, topMargin - buffer, 1);
+      } else if (topMargin > 0) {
+        ctx.fillRect(0, 1, topMargin, 1);
+      }
+
+      // 下侧 stretch
+      if (bottomMargin > buffer) {
+        ctx.fillRect(0, 1 + cy + ch + buffer, 1, bottomMargin - buffer);
+      } else if (bottomMargin > 0) {
+        ctx.fillRect(0, 1 + cy + ch, 1, bottomMargin);
+      }
+
+      // 兜底
+      if (topMargin <= buffer && bottomMargin <= buffer) {
+        ctx.fillRect(0, 1, 1, 1);
+      }
+
+      // 底部和右侧（内容区域）：设置为全屏，避免限制App内部布局
+      // 通常启动图作为背景，不应该限制Content Padding
+      ctx.fillRect(1, h + 1, w, 1);    // 底部：全宽
+      ctx.fillRect(w + 1, 1, 1, h);    // 右侧：全高
+
+      return nineCanvas;
+    }
+
+
+    // 十六进制颜色转RGB
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 255, g: 255, b: 255 };
+    }
+
+    // 全屏预览（使用手机模型框架）
+    function showFullscreen(canvas, size) {
+      fullscreenContent.innerHTML = '';
+
+      // 计算全屏预览尺寸（根据屏幕大小自适应）
+      const maxWidth = Math.min(window.innerWidth * 0.9, 600);
+      const displayCanvas = createPhonePreview(canvas, size, maxWidth);
+
+      fullscreenContent.appendChild(displayCanvas);
+      fullscreenModal.classList.add('active');
+    }
+
+    // 创建手机模型预览
+    function createPhonePreview(imageCanvas, size, maxWidth) {
+      const canvasAspect = imageCanvas.width / imageCanvas.height;
+      const isPortrait = canvasAspect < 1;
+
+      // 计算手机模型尺寸（包括边框）
+      const borderWidth = maxWidth * 0.08; // 边框宽度
+      const screenWidth = maxWidth - borderWidth * 2;
+      const screenHeight = screenWidth / canvasAspect;
+      const phoneWidth = screenWidth + borderWidth * 2;
+      const phoneHeight = screenHeight + borderWidth * 2;
+
+      // 创建canvas
+      const phoneCanvas = document.createElement('canvas');
+      phoneCanvas.width = phoneWidth;
+      phoneCanvas.height = phoneHeight;
+      const ctx = phoneCanvas.getContext('2d');
+
+      // 使用高质量渲染
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // 绘制手机边框（外框）
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(0, 0, phoneWidth, phoneHeight);
+
+      // 绘制手机边框（内框，更亮的边缘）
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = borderWidth * 0.3;
+      ctx.strokeRect(borderWidth * 0.5, borderWidth * 0.5, phoneWidth - borderWidth, phoneHeight - borderWidth);
+
+      // 绘制屏幕区域（圆角）
+      const cornerRadius = borderWidth * 0.3;
+      ctx.fillStyle = '#000';
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(borderWidth, borderWidth, screenWidth, screenHeight, cornerRadius);
+        ctx.fill();
+      } else {
+        // 兼容性：如果roundRect不存在，使用rect
+        ctx.fillRect(borderWidth, borderWidth, screenWidth, screenHeight);
+      }
+
+      // 绘制启动图到屏幕区域
+      ctx.save();
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(borderWidth, borderWidth, screenWidth, screenHeight, cornerRadius);
+        ctx.clip();
+      }
+      ctx.drawImage(
+        imageCanvas,
+        0, 0, imageCanvas.width, imageCanvas.height,
+        borderWidth, borderWidth, screenWidth, screenHeight
+      );
+      ctx.restore();
+
+      // 根据设备类型绘制特殊元素
+      if (currentPlatform === 'ios') {
+        // 如果是iPhone且有刘海，绘制刘海
+        if (size.name.includes('iPhone') &&
+          (size.name.includes('X') || size.name.includes('11') ||
+            size.name.includes('12') || size.name.includes('13') ||
+            size.name.includes('14'))) {
+          drawNotch(ctx, phoneWidth, borderWidth, screenWidth);
+        }
+
+        // 如果是iPhone 8或更早，绘制Home键
+        if (size.name.includes('iPhone 8') || size.name.includes('iPhone 7') ||
+          size.name.includes('iPhone 6')) {
+          drawHomeButton(ctx, phoneWidth, phoneHeight, borderWidth);
+        }
+      } else if (currentPlatform === 'android') {
+        // Android设备可以添加一些标识，比如虚拟按键区域等
+        // 这里可以根据需要添加
+      }
+
+      // 设置canvas样式
+      phoneCanvas.style.width = phoneWidth + 'px';
+      phoneCanvas.style.height = phoneHeight + 'px';
+      phoneCanvas.style.cursor = 'pointer';
+
+      return phoneCanvas;
+    }
+
+    // 绘制刘海
+    function drawNotch(ctx, phoneWidth, borderWidth, screenWidth) {
+      const notchWidth = screenWidth * 0.25;
+      const notchHeight = borderWidth * 0.6;
+      const notchX = (phoneWidth - notchWidth) / 2;
+      const notchY = borderWidth;
+
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath();
+      ctx.arc(notchX, notchY + notchHeight, notchHeight, Math.PI, 0, false);
+      ctx.arc(notchX + notchWidth, notchY + notchHeight, notchHeight, Math.PI, 0, true);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // 绘制Home键
+    function drawHomeButton(ctx, phoneWidth, phoneHeight, borderWidth) {
+      const buttonSize = borderWidth * 0.8;
+      const buttonX = (phoneWidth - buttonSize) / 2;
+      const buttonY = phoneHeight - borderWidth * 1.5;
+
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.arc(buttonX + buttonSize / 2, buttonY + buttonSize / 2, buttonSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#555';
+      ctx.lineWidth = buttonSize * 0.1;
+      ctx.stroke();
+    }
+
+    // 扩展CanvasRenderingContext2D，添加roundRect方法（如果不存在）
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
+        this.beginPath();
+        this.moveTo(x + radius, y);
+        this.lineTo(x + width - radius, y);
+        this.quadraticCurveTo(x + width, y, x + width, y + radius);
+        this.lineTo(x + width, y + height - radius);
+        this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        this.lineTo(x + radius, y + height);
+        this.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.lineTo(x, y + radius);
+        this.quadraticCurveTo(x, y, x + radius, y);
+        this.closePath();
+      };
+    }
+
+    function closeFullscreen() {
+      fullscreenModal.classList.remove('active');
+      fullscreenContent.innerHTML = '';
+    }
+
+    // 下载图片
+    function downloadImage() {
+      if (!generatedImage) {
+        showStatus('没有可下载的图片', 'error');
+        return;
+      }
+
+      const platformName = currentPlatform === 'ios' ? 'iOS' : 'Android';
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const link = document.createElement('a');
+      if (currentPlatform === 'android') {
+        if (outputFormat === 'nine') {
+          const ninePatchCanvas = createNinePatchFromCanvas(generatedImage.canvas, generatedImage.contentRect || { x: 0, y: 0, width: generatedImage.width, height: generatedImage.height });
+          link.download = `${platformName}_${generatedImage.name.replace(/\s+/g, '_')}_${generatedImage.width}x${generatedImage.height}_${timestamp}.9.png`;
+          link.href = ninePatchCanvas.toDataURL('image/png');
+        } else {
+          link.download = `${platformName}_${generatedImage.name.replace(/\s+/g, '_')}_${generatedImage.width}x${generatedImage.height}_${timestamp}.png`;
+          link.href = generatedImage.canvas.toDataURL('image/png');
+        }
+      } else {
+        link.download = `${platformName}_${generatedImage.name.replace(/\s+/g, '_')}_${generatedImage.width}x${generatedImage.height}_${timestamp}.png`;
+        link.href = generatedImage.canvas.toDataURL('image/png');
+      }
+      link.click();
+
+      showStatus('图片下载已开始', 'success');
+    }
+
+    // 显示状态消息
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${type}`;
+      setTimeout(() => {
+        statusMessage.className = 'status-message';
+      }, 5000);
+    }
+
+    // 初始化
+    init();
+  </script>
+  <script src="../../assets/js/tools.js"></script>
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
+</body>
+
+</html>

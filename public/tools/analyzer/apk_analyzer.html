@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK 信息提取工具</title>
+<link rel="stylesheet" href="../../assets/css/theme.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
+    <style>
+        /* 继承theme.css的基础样式 */
+        /* 以下是工具页面特定的样式覆盖 */
+
+        .container {
+            max-width: 900px;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: var(--spacing-lg);
+            left: var(--spacing-lg);
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-on-primary);
+            text-decoration: none;
+            font-size: var(--font-size-large);
+            transition: all .3s;
+            z-index: 10;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .header h1 {
+            font-size: var(--font-size-xlarge);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: var(--font-size-small);
+        }
+
+        .content {
+            padding: var(--spacing-xl);
+        }
+
+        .upload-area {
+            border: 3px dashed var(--color-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xxl);
+            text-align: center;
+            background: var(--color-background-alt);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background: var(--color-surface-alt);
+            border-color: var(--color-primary-dark);
+        }
+
+        .upload-area.dragover {
+            background: var(--color-hover);
+            border-color: var(--color-primary);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .upload-text {
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: var(--color-text-on-primary);
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-xl);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: var(--spacing-xl);
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-item {
+            background: var(--color-background-alt);
+            border-left: 4px solid var(--color-primary);
+            padding: var(--spacing-md) var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--radius-sm);
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            font-size: var(--font-size-small);
+        }
+
+        .result-value-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .result-value {
+            color: var(--color-text);
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background: var(--color-surface);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--color-border);
+            flex: 1;
+            white-space: pre-line;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid var(--color-border);
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            background: var(--color-surface-alt);
+            border-left: 4px solid var(--color-error);
+            color: var(--color-error);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .copy-btn {
+            background: var(--color-primary);
+            color: var(--color-text-on-primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../../index.html" class="home-btn" title="返回首页">🏠</a>
+            <h1>📦 APK 信息提取工具</h1>
+            <p>解析 APK，读取包名与证书指纹等信息，支持拖拽上传与结果复制。</p>
+        </div>
+        <div class="content">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📦</div>
+                <div class="upload-text">点击选择文件或拖拽文件到此处</div>
+                <div style="font-size: var(--font-size-small); color: var(--color-text-secondary); margin-top: 10px;">支持格式：APK (.apk) | Keystore (.keystore) |
+                    JKS (.jks)</div>
+                <input type="file" id="fileInput" class="file-input" accept=".apk,.keystore,.jks">
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>正在解析 APK 文件...</div>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <div class="results" id="results">
+                <div class="result-item">
+                    <div class="result-label">公钥（大整数格式）</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="publicKey">-</div>
+                        <button class="copy-btn" data-target="publicKey">复制</button>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">MD5 指纹</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="md5">-</div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="copy-btn" data-target="md5" data-style="space">复制空格</button>
+                            <button class="copy-btn" data-target="md5" data-style="colon">复制冒号</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">SHA1 指纹</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="sha1">-</div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="copy-btn" data-target="sha1" data-style="space">复制空格</button>
+                            <button class="copy-btn" data-target="sha1" data-style="colon">复制冒号</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">SHA256 指纹</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="sha256">-</div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="copy-btn" data-target="sha256" data-style="space">复制空格</button>
+                            <button class="copy-btn" data-target="sha256" data-style="colon">复制冒号</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-item" id="aliasItem" style="display: none;">
+                    <div class="result-label">密钥别名 (keyAlias)</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="alias">-</div>
+                        <button class="copy-btn" data-target="alias">复制</button>
+                    </div>
+                </div>
+                <div class="result-item" id="storePasswordItem" style="display: none;">
+                    <div class="result-label">密钥库密码 (storePassword)</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="storePassword">-</div>
+                        <button class="copy-btn" data-target="storePassword">复制</button>
+                    </div>
+                </div>
+                <div class="result-item" id="keyPasswordItem" style="display: none;">
+                    <div class="result-label">密钥密码 (keyPassword)</div>
+                    <div class="result-value-wrapper">
+                        <div class="result-value" id="keyPassword">-</div>
+                        <button class="copy-btn" data-target="keyPassword">复制</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const error = document.getElementById('error');
+
+        // 点击上传区域
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // 文件选择
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        async function handleFile(file) {
+            const fileName = file.name.toLowerCase();
+            const isAPK = fileName.endsWith('.apk');
+            const isKeystore = fileName.endsWith('.keystore') || fileName.endsWith('.jks');
+
+            if (!isAPK && !isKeystore) {
+                showError('请选择 APK、Keystore 或 JKS 文件');
+                return;
+            }
+
+            loading.classList.add('show');
+            results.classList.remove('show');
+            error.classList.remove('show');
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                console.log('文件大小:', arrayBuffer.byteLength, '字节');
+
+                if (isAPK) {
+                    await analyzeAPK(arrayBuffer);
+                } else if (isKeystore) {
+                    await analyzeKeystore(arrayBuffer, file.name);
+                }
+            } catch (err) {
+                console.error('解析错误:', err);
+                showError('解析失败: ' + err.message + (err.stack ? '\n' + err.stack : ''));
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        async function analyzeAPK(arrayBuffer) {
+            try {
+                console.log('开始加载 ZIP...');
+                const zip = await JSZip.loadAsync(arrayBuffer);
+
+                // 提取签名信息
+                console.log('开始提取签名信息...');
+                const signatureInfo = await extractSignatureInfo(zip, arrayBuffer);
+                console.log('签名信息:', signatureInfo);
+                // 尝试从历史记录中匹配密码信息（使用原始数据）
+                const md5Formatted = window.lastHashData ? window.lastHashData.md5 : (signatureInfo.md5 ? signatureInfo.md5.replace(/[\s:]/g, '').toUpperCase() : null);
+                const matchedInfo = signatureInfo.publicKey ? findMatchingHistory(signatureInfo.publicKey, md5Formatted) : null;
+
+                document.getElementById('publicKey').textContent = signatureInfo.publicKey || '-';
+                document.getElementById('md5').textContent = signatureInfo.md5 || '-';
+                document.getElementById('sha1').textContent = signatureInfo.sha1 || '-';
+                document.getElementById('sha256').textContent = signatureInfo.sha256 || '-';
+
+                // 显示 keyAlias
+                const keyAlias = matchedInfo ? (matchedInfo.keyAlias || matchedInfo.alias) : (signatureInfo.alias || null);
+                if (keyAlias) {
+                    document.getElementById('alias').textContent = keyAlias;
+                    document.getElementById('aliasItem').style.display = 'block';
+                } else {
+                    document.getElementById('aliasItem').style.display = 'none';
+                }
+
+                // 显示 storePassword
+                if (matchedInfo && matchedInfo.storePassword) {
+                    document.getElementById('storePassword').textContent = matchedInfo.storePassword || matchedInfo.password || '未找到';
+                    document.getElementById('storePasswordItem').style.display = 'block';
+                } else {
+                    document.getElementById('storePassword').textContent = '未找到（无法从 APK 中提取，请查看历史记录）';
+                    document.getElementById('storePasswordItem').style.display = 'block';
+                }
+
+                // 显示 keyPassword
+                if (matchedInfo && matchedInfo.keyPassword) {
+                    document.getElementById('keyPassword').textContent = matchedInfo.keyPassword;
+                    document.getElementById('keyPasswordItem').style.display = 'block';
+                } else {
+                    document.getElementById('keyPassword').textContent = '未找到（无法从 APK 中提取，请查看历史记录）';
+                    document.getElementById('keyPasswordItem').style.display = 'block';
+                }
+
+                results.classList.add('show');
+
+                // 检查是否有信息缺失
+                if (!signatureInfo.publicKey || !signatureInfo.md5) {
+                    showError('警告: 部分签名信息提取失败，可能是使用了新的签名方案（v2/v3）');
+                }
+            } catch (err) {
+                console.error('APK 解析错误:', err);
+                throw new Error('APK 解析错误: ' + err.message);
+            }
+        }
+
+        async function extractSignatureInfo(zip, arrayBuffer) {
+            const info = {
+                publicKey: null,
+                md5: null,
+                sha256: null
+            };
+
+            try {
+                // 方法1: 查找 META-INF 中的证书文件
+                console.log('查找 META-INF 中的证书文件...');
+                let certData = null;
+                let certFileName = null;
+
+                // 列出所有 META-INF 文件
+                const metaInfFiles = Object.keys(zip.files).filter(f => f.startsWith('META-INF/'));
+                console.log('META-INF 文件:', metaInfFiles);
+
+                for (const filename of metaInfFiles) {
+                    if (filename.endsWith('.RSA') || filename.endsWith('.DSA') || filename.endsWith('.EC')) {
+                        console.log('找到证书文件:', filename);
+                        const file = zip.file(filename);
+                        if (file) {
+                            certData = await file.async('uint8array');
+                            certFileName = filename;
+                            console.log('证书文件大小:', certData.length, '字节');
+                            break;
+                        }
+                    }
+                }
+
+                // 方法2: 如果没找到，尝试从 APK Signature Block 中提取
+                if (!certData) {
+                    console.log('未找到 META-INF 证书，尝试从签名块提取...');
+                    certData = await extractFromSignatureBlock(arrayBuffer);
+                }
+
+                if (certData && certData.length > 0) {
+                    console.log('开始计算哈希值...');
+                    // 计算哈希
+                    const md5Hash = await calculateHash(certData, 'MD5');
+                    const sha1Hash = await calculateHash(certData, 'SHA-1');
+                    const sha256Hash = await calculateHash(certData, 'SHA-256');
+
+                    // 保存原始数据（转换为十六进制字符串，去除分隔符）
+                    window.lastHashData = {
+                        md5: Array.from(md5Hash).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(),
+                        sha1: Array.from(sha1Hash).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(),
+                        sha256: Array.from(sha256Hash).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()
+                    };
+
+                    // formatHash 现在返回两种格式
+                    info.md5 = formatHash(md5Hash);
+                    info.sha1 = formatHash(sha1Hash);
+                    info.sha256 = formatHash(sha256Hash);
+
+                    console.log('MD5:', info.md5);
+                    console.log('SHA1:', info.sha1);
+                    console.log('SHA256:', info.sha256);
+
+                    // 提取公钥
+                    console.log('开始提取公钥...');
+                    info.publicKey = await extractPublicKey(certData);
+                    console.log('公钥长度:', info.publicKey ? info.publicKey.length : 0);
+                } else {
+                    console.warn('未找到证书数据');
+                    // 即使没有证书，也计算整个 APK 的哈希
+                    const md5Hash = await calculateHash(new Uint8Array(arrayBuffer), 'MD5');
+                    const sha1Hash = await calculateHash(new Uint8Array(arrayBuffer), 'SHA-1');
+                    const sha256Hash = await calculateHash(new Uint8Array(arrayBuffer), 'SHA-256');
+                    // 保存原始数据（转换为十六进制字符串，去除分隔符）
+                    window.lastHashData = {
+                        md5: Array.from(md5Hash).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(),
+                        sha1: Array.from(sha1Hash).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(),
+                        sha256: Array.from(sha256Hash).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()
+                    };
+
+                    // formatHash 现在返回两种格式，加上后缀
+                    const md5Both = formatHash(md5Hash);
+                    const sha1Both = formatHash(sha1Hash);
+                    const sha256Both = formatHash(sha256Hash);
+                    info.md5 = md5Both + '\n(整个 APK)';
+                    info.sha1 = sha1Both + '\n(整个 APK)';
+                    info.sha256 = sha256Both + '\n(整个 APK)';
+                }
+            } catch (err) {
+                console.error('提取签名信息失败:', err);
+                throw err;
+            }
+
+            return info;
+        }
+
+        // 分析 Keystore/JKS 文件
+        async function analyzeKeystore(arrayBuffer, fileName) {
+            try {
+                console.log('开始分析 Keystore 文件...');
+
+                // 提示用户输入密码
+                const password = prompt('请输入 Keystore 密码（如果为空则尝试空密码）:');
+                // 如果用户取消，password 为 null；如果用户确认但为空字符串，则尝试空密码
+                const inputPassword = password === null ? null : (password || '');
+
+                // 将 ArrayBuffer 转换为字符串（PKCS#12 格式）
+                const p12Der = new Uint8Array(arrayBuffer);
+                const p12String = String.fromCharCode.apply(null, p12Der);
+
+                try {
+                    // 解析 PKCS#12 格式
+                    const p12Asn1 = forge.asn1.fromDer(p12String);
+                    const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, inputPassword === null ? false : inputPassword);
+
+                    // 获取所有安全对象（证书和私钥）
+                    const bags = p12.getBags({ bagType: forge.pki.oids.certBag });
+
+                    if (!bags || bags[forge.pki.oids.certBag].length === 0) {
+                        throw new Error('未找到证书，请检查密码是否正确');
+                    }
+
+                    // 获取第一个证书
+                    const cert = bags[forge.pki.oids.certBag][0].cert;
+
+                    // 获取别名（如果有）
+                    let alias = null;
+                    try {
+                        const friendlyNames = p12.getBags({ bagType: forge.pki.oids.friendlyName });
+                        if (friendlyNames && friendlyNames[forge.pki.oids.friendlyName].length > 0) {
+                            alias = friendlyNames[forge.pki.oids.friendlyName][0].friendlyName;
+                        }
+                    } catch (e) {
+                        console.warn('无法获取别名:', e);
+                    }
+
+                    // 转换为 DER 格式
+                    const certDer = forge.pki.certificateToAsn1(cert);
+                    const certAsn1 = forge.asn1.toDer(certDer).getBytes();
+                    const certBuffer = new Uint8Array(certAsn1.length);
+                    for (let i = 0; i < certAsn1.length; i++) {
+                        certBuffer[i] = certAsn1.charCodeAt(i);
+                    }
+
+                    // 计算哈希
+                    const md5Hash = CryptoJS.MD5(CryptoJS.lib.WordArray.create(certBuffer));
+                    const sha1Hash = CryptoJS.SHA1(CryptoJS.lib.WordArray.create(certBuffer));
+                    const sha256Hash = CryptoJS.SHA256(CryptoJS.lib.WordArray.create(certBuffer));
+
+                    // 提取公钥
+                    const publicKey = cert.publicKey;
+                    let publicKeyModulus = null;
+
+                    if (publicKey && publicKey.n) {
+                        // RSA 公钥
+                        publicKeyModulus = publicKey.n.toString();
+                    } else {
+                        // 尝试从证书数据中提取
+                        publicKeyModulus = await extractPublicKey(certBuffer);
+                    }
+
+                    // 格式化 MD5 用于匹配（md5Hash 是 CryptoJS 对象，需要转换为字符串）
+                    const md5HashStr = md5Hash.toString().replace(/[\s:]/g, '').toUpperCase();
+                    const sha1HashStr = sha1Hash.toString().replace(/[\s:]/g, '').toUpperCase();
+                    const sha256HashStr = sha256Hash.toString().replace(/[\s:]/g, '').toUpperCase();
+                    const md5Formatted = formatHash(md5HashStr, 'space');
+
+                    // 保存原始数据（保存为字符串，去除空格和冒号）
+                    window.lastHashData = {
+                        md5: md5HashStr,
+                        sha1: sha1HashStr,
+                        sha256: sha256HashStr
+                    };
+
+                    // 尝试从历史记录中匹配密码信息
+                    const matchedInfo = findMatchingHistory(publicKeyModulus, md5Formatted);
+
+                    // 如果用户输入了密码且解析成功，优先使用用户输入的密码
+                    // inputPassword 为 null 表示用户取消了输入
+                    const finalStorePassword = inputPassword !== null ? inputPassword : (matchedInfo ? (matchedInfo.storePassword || matchedInfo.password) : null);
+                    const finalKeyPassword = inputPassword !== null ? inputPassword : (matchedInfo ? matchedInfo.keyPassword : null);
+
+                    const signatureInfo = {
+                        publicKey: publicKeyModulus || '无法提取公钥',
+                        md5: formatHash(md5HashStr),
+                        sha1: formatHash(sha1HashStr),
+                        sha256: formatHash(sha256HashStr),
+                        keyAlias: matchedInfo ? (matchedInfo.keyAlias || matchedInfo.alias) : (alias || '未找到别名'),
+                        storePassword: finalStorePassword,
+                        keyPassword: finalKeyPassword
+                    };
+
+                    console.log('签名信息:', signatureInfo);
+                    document.getElementById('publicKey').textContent = signatureInfo.publicKey;
+                    document.getElementById('md5').textContent = signatureInfo.md5;
+                    document.getElementById('sha1').textContent = signatureInfo.sha1;
+                    document.getElementById('sha256').textContent = signatureInfo.sha256;
+
+                    // 显示 keyAlias
+                    document.getElementById('alias').textContent = signatureInfo.keyAlias;
+                    document.getElementById('aliasItem').style.display = 'block';
+
+                    // 显示 storePassword
+                    if (signatureInfo.storePassword !== null && signatureInfo.storePassword !== undefined) {
+                        document.getElementById('storePassword').textContent = signatureInfo.storePassword;
+                        document.getElementById('storePasswordItem').style.display = 'block';
+                    } else {
+                        document.getElementById('storePassword').textContent = '未找到（无法从文件中提取，请查看历史记录）';
+                        document.getElementById('storePasswordItem').style.display = 'block';
+                    }
+
+                    // 显示 keyPassword
+                    if (signatureInfo.keyPassword !== null && signatureInfo.keyPassword !== undefined) {
+                        document.getElementById('keyPassword').textContent = signatureInfo.keyPassword;
+                        document.getElementById('keyPasswordItem').style.display = 'block';
+                    } else {
+                        document.getElementById('keyPassword').textContent = '未找到（无法从文件中提取，请查看历史记录）';
+                        document.getElementById('keyPasswordItem').style.display = 'block';
+                    }
+
+                    results.classList.add('show');
+
+                } catch (err) {
+                    if (err.message.includes('密码') || err.message.includes('password') || err.message.includes('Mac verify')) {
+                        throw new Error('密码错误或文件格式不正确。请确认：\n1. 密码是否正确\n2. 文件是否为有效的 PKCS#12 格式（.keystore/.jks）');
+                    }
+                    throw err;
+                }
+            } catch (err) {
+                console.error('Keystore 解析错误:', err);
+                throw new Error('Keystore 解析错误: ' + err.message);
+            }
+        }
+
+        async function extractFromSignatureBlock(arrayBuffer) {
+            // 尝试从 APK Signature Block v2/v3 中提取证书
+            const view = new DataView(arrayBuffer);
+            const length = arrayBuffer.byteLength;
+            console.log('搜索签名块，文件大小:', length);
+
+            // 查找签名块（从文件末尾开始）
+            // APK Signature Block 的 magic: "APK Sig Block 42" (16字节)
+            const magicBytes = [0x41, 0x50, 0x4B, 0x20, 0x53, 0x69, 0x67, 0x20,
+                0x42, 0x6C, 0x6F, 0x63, 0x6B, 0x20, 0x34, 0x32];
+
+            // 从末尾向前搜索（最多搜索最后 64KB）
+            const searchRange = Math.min(65536, length);
+            for (let i = length - searchRange; i < length - 16; i++) {
+                let match = true;
+                for (let j = 0; j < magicBytes.length; j++) {
+                    if (view.getUint8(i + j) !== magicBytes[j]) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    console.log('找到签名块，位置:', i);
+                    // 找到了签名块，尝试解析
+                    // 签名块结构：size (8 bytes) + block content + size (8 bytes) + magic (16 bytes)
+                    try {
+                        // 读取签名块大小（在 magic 之前 8 字节）
+                        const blockSizeOffset = i - 8;
+                        if (blockSizeOffset >= 0) {
+                            const blockSize = Number(view.getBigUint64(blockSizeOffset, true));
+                            console.log('签名块大小:', blockSize);
+
+                            // 读取签名块内容
+                            const blockStart = blockSizeOffset - Number(blockSize);
+                            if (blockStart >= 0 && blockStart < length) {
+                                const blockData = new Uint8Array(arrayBuffer, blockStart, Number(blockSize));
+
+                                // 在签名块中查找证书
+                                // 证书通常在 ASN.1 DER 格式中，查找 0x30 0x82 (SEQUENCE)
+                                for (let k = 0; k < blockData.length - 100; k++) {
+                                    if (blockData[k] === 0x30 && blockData[k + 1] === 0x82) {
+                                        // 可能是证书开始
+                                        const certLength = (blockData[k + 2] << 8) | blockData[k + 3];
+                                        if (certLength > 500 && certLength < 5000 && k + 4 + certLength <= blockData.length) {
+                                            const certData = blockData.slice(k, k + 4 + certLength);
+                                            console.log('在签名块中找到可能的证书，大小:', certData.length);
+                                            return certData;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('解析签名块失败:', err);
+                    }
+                    return null;
+                }
+            }
+
+            console.log('未找到签名块');
+            return null;
+        }
+
+        async function calculateHash(data, algorithm) {
+            if (algorithm === 'MD5') {
+                // 使用 crypto-js 计算 MD5
+                const wordArray = CryptoJS.lib.WordArray.create(data);
+                const hash = CryptoJS.MD5(wordArray);
+                // 将 WordArray 转换为 Uint8Array
+                const words = hash.words;
+                const sigBytes = hash.sigBytes;
+                const result = new Uint8Array(sigBytes);
+                for (let i = 0; i < sigBytes; i++) {
+                    const byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+                    result[i] = byte;
+                }
+                return result;
+            } else if (algorithm === 'SHA-1') {
+                // 使用 crypto-js 计算 SHA1
+                const wordArray = CryptoJS.lib.WordArray.create(data);
+                const hash = CryptoJS.SHA1(wordArray);
+                const words = hash.words;
+                const sigBytes = hash.sigBytes;
+                const result = new Uint8Array(sigBytes);
+                for (let i = 0; i < sigBytes; i++) {
+                    const byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+                    result[i] = byte;
+                }
+                return result;
+            } else {
+                const hashBuffer = await crypto.subtle.digest(algorithm, data);
+                return new Uint8Array(hashBuffer);
+            }
+        }
+
+
+        function formatHash(hashArray, style = 'both') {
+            // style 可以是 'space', 'colon', 或 'both'
+            let separator = ' ';
+            let colonSeparator = ':';
+
+            let hashString = '';
+            // 如果输入是字符串（来自 CryptoJS），直接格式化
+            if (typeof hashArray === 'string') {
+                // 移除可能存在的空格或冒号
+                hashString = hashArray.replace(/[\s:]/g, '').toUpperCase();
+            } else {
+                // 如果是数组或 Uint8Array，转换为十六进制字符串
+                hashString = Array.from(hashArray)
+                    .map(b => b.toString(16).padStart(2, '0').toUpperCase())
+                    .join('');
+            }
+
+            const spaceFormat = hashString.match(/.{1,2}/g).join(' ');
+            const colonFormat = hashString.match(/.{1,2}/g).join(':');
+
+            if (style === 'space') {
+                return spaceFormat;
+            } else if (style === 'colon') {
+                return colonFormat;
+            } else {
+                // 返回两种格式，用换行分隔
+                return `空格样式: ${spaceFormat}\n冒号样式: ${colonFormat}`;
+            }
+        }
+
+        // 从历史记录中查找匹配的信息
+        function findMatchingHistory(publicKey, md5Hash) {
+            try {
+                const STORAGE_KEY = 'keystore_history';
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return null;
+
+                const history = JSON.parse(stored);
+
+                // 通过公钥匹配（最准确）
+                if (publicKey) {
+                    const matchByPublicKey = history.find(item => {
+                        const itemPublicKey = item.publicKey || '';
+                        // 比较公钥字符串（去除空格）
+                        return itemPublicKey.toString().replace(/\s+/g, '') === publicKey.toString().replace(/\s+/g, '');
+                    });
+                    if (matchByPublicKey) {
+                        console.log('通过公钥匹配到历史记录:', matchByPublicKey.packageName);
+                        return matchByPublicKey;
+                    }
+                }
+
+                // 通过 MD5 匹配（备用方法）
+                if (md5Hash) {
+                    const matchByMd5 = history.find(item => {
+                        const itemMd5 = (item.md5 || '').replace(/\s+/g, '').toUpperCase();
+                        const searchMd5 = md5Hash.replace(/\s+/g, '').toUpperCase();
+                        return itemMd5 === searchMd5;
+                    });
+                    if (matchByMd5) {
+                        console.log('通过 MD5 匹配到历史记录:', matchByMd5.packageName);
+                        return matchByMd5;
+                    }
+                }
+
+                return null;
+            } catch (err) {
+                console.warn('查找历史记录失败:', err);
+                return null;
+            }
+        }
+
+        async function extractPublicKey(certData) {
+            // 解析 X.509 证书并提取 RSA 公钥的 modulus
+            // 这是一个简化的实现，实际需要完整的 ASN.1 解析器
+
+            try {
+                // 查找 RSA 公钥的 modulus (n)
+                // 在 DER 编码的证书中，modulus 通常出现在特定位置
+                // 这里使用简化的搜索方法
+
+                const data = new Uint8Array(certData);
+                // 查找 SEQUENCE 标签和可能的 modulus
+                // 实际应该使用完整的 ASN.1 解析库
+
+                // 作为演示，这里返回一个占位符
+                // 实际应用中应该使用完整的证书解析库
+                return await parseRSAPublicKey(certData);
+            } catch (err) {
+                console.warn('提取公钥失败:', err);
+                return null;
+            }
+        }
+
+        async function parseRSAPublicKey(certData) {
+            // 直接使用备用方法，因为它更可靠
+            return await parseRSAPublicKeyFallback(certData);
+        }
+
+        async function parseRSAPublicKeyFallback(certData) {
+            // 备用方法：尝试在证书数据中查找 RSA modulus
+            // 这是一个启发式方法，可能不总是准确
+            const data = new Uint8Array(certData);
+            console.log('开始解析 RSA 公钥，数据长度:', data.length);
+
+            // RSA modulus 通常是一个大整数，在证书中有特定的 ASN.1 结构
+            // INTEGER 标签是 0x02，后面跟长度（可能是 1 字节或更多）
+
+            let bestModulus = null;
+            let bestModulusSize = 0;
+            let candidateCount = 0;
+
+            // 查找所有可能的 INTEGER 标签
+            for (let i = 0; i < data.length - 10; i++) {
+                if (data[i] === 0x02) { // INTEGER tag
+                    let length;
+                    let offset = i + 1;
+
+                    if (offset >= data.length) continue;
+
+                    // 解析长度（可能是短格式或长格式）
+                    if ((data[offset] & 0x80) === 0) {
+                        // 短格式：长度在 1 字节中
+                        length = data[offset];
+                        offset += 1;
+                    } else {
+                        // 长格式：第一个字节的低 7 位表示后续长度字节数
+                        const lengthBytes = data[offset] & 0x7F;
+                        if (lengthBytes === 0 || lengthBytes > 4 || offset + lengthBytes >= data.length) continue;
+                        offset += 1;
+                        length = 0;
+                        for (let j = 0; j < lengthBytes; j++) {
+                            length = (length << 8) | data[offset + j];
+                        }
+                        offset += lengthBytes;
+                    }
+
+                    // 检查长度是否合理（RSA modulus 通常是 128-512 字节，但也可以是 256, 512, 1024 位等）
+                    if (length >= 128 && length <= 512 && offset + length <= data.length) {
+                        candidateCount++;
+                        const modulusBytes = data.slice(offset, offset + length);
+
+                        // 检查第一个字节，RSA modulus 不应该以 0 开头（除非是负数，但公钥不会是负数）
+                        if (modulusBytes[0] === 0 && length > 128) {
+                            // 跳过前导零
+                            let startIdx = 0;
+                            while (startIdx < modulusBytes.length - 1 && modulusBytes[startIdx] === 0) {
+                                startIdx++;
+                            }
+                            if (startIdx > 0) {
+                                // 使用去掉前导零后的数据
+                                const actualModulusBytes = modulusBytes.slice(startIdx);
+                                if (actualModulusBytes.length < 128) continue;
+
+                                // 转换为大整数
+                                let modulusInt = BigInt(0);
+                                for (let j = 0; j < actualModulusBytes.length; j++) {
+                                    modulusInt = modulusInt * BigInt(256) + BigInt(actualModulusBytes[j]);
+                                }
+
+                                const modulusStr = modulusInt.toString();
+                                if (modulusStr.length > 200 && modulusInt > BigInt('1' + '0'.repeat(200))) {
+                                    if (actualModulusBytes.length > bestModulusSize) {
+                                        bestModulus = modulusInt.toString();
+                                        bestModulusSize = actualModulusBytes.length;
+                                    }
+                                }
+                                continue;
+                            }
+                        }
+
+                        // 转换为大整数
+                        let modulusInt = BigInt(0);
+                        for (let j = 0; j < modulusBytes.length; j++) {
+                            modulusInt = modulusInt * BigInt(256) + BigInt(modulusBytes[j]);
+                        }
+
+                        // 验证是否看起来像 RSA modulus（很大，通常是奇数）
+                        const modulusStr = modulusInt.toString();
+                        if (modulusStr.length > 200 && modulusInt > BigInt('1' + '0'.repeat(200))) {
+                            // 选择最大的符合条件的 modulus（通常是真正的 modulus）
+                            if (length > bestModulusSize) {
+                                bestModulus = modulusInt.toString();
+                                bestModulusSize = length;
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.log('找到', candidateCount, '个候选 modulus，最佳长度:', bestModulusSize);
+
+            if (bestModulus) {
+                return bestModulus;
+            }
+
+            return '无法提取公钥，请确保 APK 已正确签名';
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        // 添加复制功能
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('copy-btn')) {
+                const targetId = e.target.getAttribute('data-target');
+                const style = e.target.getAttribute('data-style');
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    let value = '';
+
+                    // 如果有指定样式，从原始数据格式化
+                    if (style && window.lastHashData) {
+                        const hashKey = targetId; // md5, sha1, sha256
+                        if (window.lastHashData[hashKey]) {
+                            value = formatHash(window.lastHashData[hashKey], style);
+                        }
+                    } else {
+                        // 没有指定样式，复制整个内容
+                        value = targetElement.textContent.trim();
+                    }
+
+                    if (value && value !== '-') {
+                        navigator.clipboard.writeText(value).then(() => {
+                            const originalText = e.target.textContent;
+                            e.target.textContent = '已复制!';
+                            e.target.style.background = '#28a745';
+                            setTimeout(() => {
+                                e.target.textContent = originalText;
+                                e.target.style.background = '';
+                            }, 2000);
+                        }).catch(err => {
+                            console.error('复制失败:', err);
+                            e.target.textContent = '复制失败';
+                            setTimeout(() => {
+                                e.target.textContent = originalText;
+                            }, 2000);
+                        });
+                    }
+                }
+            }
+        });
+    </script>
+    <script src="../../assets/js/tools.js"></script>
+    <script src="../../assets/js/themes.js"></script>
+    <script src="../../assets/js/theme-ui.js"></script>
+</body>
+
+</html>

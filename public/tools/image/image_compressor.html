@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片压缩工具</title>
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <style>
+    /* 继承theme.css的基础样式 */
+    /* 以下是工具页面特定的样式覆盖 */
+
+    .container {
+      max-width: 1000px;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-primary);
+      text-decoration: none;
+      font-size: var(--font-size-large);
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: var(--font-size-small);
+    }
+
+    .content {
+      padding: var(--spacing-xl);
+    }
+
+    .form-section {
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-section h2 {
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--spacing-sm);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-small);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
+      transition: border-color .3s;
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
+    }
+
+    .file-upload-area {
+      border: 3px dashed var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-xxl);
+      text-align: center;
+      background: var(--color-hover);
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .file-upload-area:hover {
+      background: var(--color-surface-alt);
+      border-color: var(--color-primary-dark);
+    }
+
+    .file-upload-area.dragover {
+      background: var(--color-hover);
+      border-color: var(--color-primary);
+    }
+
+    .file-upload-area input[type=file] {
+      display: none;
+    }
+
+    .file-upload-icon {
+      font-size: 48px;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .file-upload-text {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-base);
+      margin-bottom: 10px
+    }
+
+    .file-upload-hint {
+      color: var(--color-text-secondary);
+      font-size: 12px
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--color-text-on-primary);
+      border: none;
+      padding: 14px 35px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+      width: 100%
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .btn-secondary {
+      background: var(--color-secondary);
+      color: var(--color-text-on-primary);
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px
+    }
+
+    .range-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .range-wrapper input[type=range] {
+      flex: 1
+    }
+
+    .info-box {
+      background: var(--color-surface-alt);
+      border-left: 4px solid var(--color-info);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--color-text);
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      margin-top: 15px;
+      display: none
+    }
+
+    .status-message.success {
+      background: var(--color-surface-alt);
+      color: var(--color-success);
+      border: 1px solid #c3e6cb;
+      display: block
+    }
+
+    .status-message.error {
+      background: var(--color-surface-alt);
+      color: var(--color-error);
+      border: 1px solid #f5c6cb;
+      display: block
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none
+    }
+
+    .loading.show {
+      display: block
+    }
+
+    .spinner {
+      border: 4px solid var(--color-border);
+      border-top: 4px solid var(--color-primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .preview-section {
+      margin-top: 20px
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px
+    }
+
+    .preview-card {
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 12px
+    }
+
+    .preview-title {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      margin-bottom: 8px
+    }
+
+    .preview-image {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .1)
+    }
+
+    .meta {
+      font-size: var(--font-size-small);
+      color: var(--color-text-secondary);
+      margin-top: 8px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../../index.html" class="home-btn" title="返回首页">🏠</a>
+      <h1>🗜️ 图片压缩工具</h1>
+      <p>保持比例与清晰度，智能压缩并预览对比</p>
+    </div>
+    <div class="content">
+      <div class="form-section">
+        <h2>上传图片</h2>
+        <div class="file-upload-area" id="uploadArea">
+          <div class="file-upload-icon">📁</div>
+          <div class="file-upload-text">点击或拖拽图片到此处</div>
+          <div class="file-upload-hint">支持 JPG、PNG、WEBP</div>
+          <input type="file" id="imageInput" accept="image/*">
+        </div>
+        <div id="statusMessage" class="status-message"></div>
+      </div>
+
+      <div class="form-section" id="settingsSection" style="display:none;">
+        <h2>压缩设置</h2>
+        <div class="info-box">默认仅在超过限制时缩小尺寸，始终保持原始宽高比例。</div>
+        <div class="controls-grid">
+          <div class="form-group">
+            <label for="maxWidth">最大宽度（像素，可选）</label>
+            <input type="number" id="maxWidth" placeholder="如 1920" min="1">
+          </div>
+          <div class="form-group">
+            <label for="maxHeight">最大高度（像素，可选）</label>
+            <input type="number" id="maxHeight" placeholder="如 1080" min="1">
+          </div>
+          <div class="form-group">
+            <label for="targetSizeKB">目标大小（KB，可选）</label>
+            <input type="number" id="targetSizeKB" placeholder="如 300" min="1">
+          </div>
+          <div class="form-group">
+            <label for="formatSelect">输出格式</label>
+            <select id="formatSelect">
+              <option value="auto">自动</option>
+              <option value="jpeg">JPEG（有损）</option>
+              <option value="png">PNG（无损）</option>
+              <option value="webp">WEBP（有损）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>质量</label>
+            <div class="range-wrapper">
+              <input type="range" id="qualityRange" min="50" max="100" value="92">
+              <span id="qualityLabel">92</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="avoidUpscale" checked>
+            禁止放大（仅缩小）
+          </label>
+        </div>
+        <button class="btn" id="compressBtn">开始压缩</button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>正在压缩图片...</div>
+      </div>
+
+      <div class="form-section preview-section" id="previewSection" style="display:none;">
+        <h2>预览与对比</h2>
+        <div class="preview-grid">
+          <div class="preview-card">
+            <div class="preview-title">原图</div>
+            <img id="originalPreview" class="preview-image" alt="原图预览">
+            <div class="meta" id="originalMeta">-</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-title">压缩后</div>
+            <img id="compressedPreview" class="preview-image" alt="压缩预览">
+            <div class="meta" id="compressedMeta">-</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;">
+          <button class="btn" id="downloadBtn">下载压缩图片</button>
+          <button class="btn btn-secondary" id="resetBtn">重新选择图片</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const statusMessage = document.getElementById('statusMessage');
+    const settingsSection = document.getElementById('settingsSection');
+    const compressBtn = document.getElementById('compressBtn');
+    const loading = document.getElementById('loading');
+    const maxWidthInput = document.getElementById('maxWidth');
+    const maxHeightInput = document.getElementById('maxHeight');
+    const targetSizeKBInput = document.getElementById('targetSizeKB');
+    const formatSelect = document.getElementById('formatSelect');
+    const qualityRange = document.getElementById('qualityRange');
+    const qualityLabel = document.getElementById('qualityLabel');
+    const avoidUpscale = document.getElementById('avoidUpscale');
+    const previewSection = document.getElementById('previewSection');
+    const originalPreview = document.getElementById('originalPreview');
+    const compressedPreview = document.getElementById('compressedPreview');
+    const originalMeta = document.getElementById('originalMeta');
+    const compressedMeta = document.getElementById('compressedMeta');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let originalImage = null;
+    let originalBlob = null;
+    let compressedBlob = null;
+    let compressedExt = 'jpg';
+
+    uploadArea.addEventListener('click', () => imageInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover') });
+    uploadArea.addEventListener('dragleave', e => { e.preventDefault(); uploadArea.classList.remove('dragover') });
+    uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length > 0) handleFile(files[0]) });
+    imageInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleFile(file) });
+
+    qualityRange.addEventListener('input', () => { qualityLabel.textContent = qualityRange.value });
+    formatSelect.addEventListener('change', () => { const v = formatSelect.value; const lossy = v === 'jpeg' || v === 'webp' || v === 'auto'; qualityRange.disabled = !(lossy); qualityLabel.style.opacity = qualityRange.disabled ? 0.5 : 1 });
+
+    resetBtn.addEventListener('click', () => { resetState() });
+    downloadBtn.addEventListener('click', () => { if (!compressedBlob) return; const url = URL.createObjectURL(compressedBlob); const name = `compressed_${Date.now()}.${compressedExt}`; const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url) });
+
+    compressBtn.addEventListener('click', async () => { if (!originalImage) return; loading.classList.add('show'); try { const result = await compressImage(originalImage); compressedBlob = result.blob; compressedExt = result.ext; const url = URL.createObjectURL(compressedBlob); compressedPreview.src = url; const sizeKB = (compressedBlob.size / 1024).toFixed(2); compressedMeta.textContent = `尺寸: ${result.width}×${result.height} | 大小: ${sizeKB} KB | 格式: ${compressedExt.toUpperCase()}`; previewSection.style.display = 'block' } catch (err) { showStatus('压缩失败: ' + err.message, 'error') } finally { loading.classList.remove('show') } });
+
+    function handleFile(file) { if (!file.type.startsWith('image/')) { showStatus('请选择图片文件', 'error'); return } const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { originalImage = img; originalBlob = file; settingsSection.style.display = 'block'; uploadArea.style.display = 'none'; showStatus('图片加载成功', 'success'); const url = e.target.result; originalPreview.src = url; const sizeKB = (file.size / 1024).toFixed(2); originalMeta.textContent = `尺寸: ${img.naturalWidth || img.width}×${img.naturalHeight || img.height} | 大小: ${sizeKB} KB`; previewSection.style.display = 'none' }; img.src = e.target.result }; reader.readAsDataURL(file) }
+
+    function resetState() { originalImage = null; originalBlob = null; compressedBlob = null; compressedExt = 'jpg'; imageInput.value = ''; uploadArea.style.display = 'block'; settingsSection.style.display = 'none'; previewSection.style.display = 'none'; statusMessage.classList.remove('success', 'error'); statusMessage.style.display = 'none' }
+
+    function showStatus(text, type) { statusMessage.textContent = text; statusMessage.className = 'status-message ' + (type || 'success'); statusMessage.style.display = 'block' }
+
+    function getAutoFormat(img, originalType) { const hasAlpha = detectAlpha(img); if (hasAlpha) return 'png'; if (originalType && originalType.includes('png')) return 'png'; return 'jpeg' }
+
+    function detectAlpha(img) { const c = document.createElement('canvas'); c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0); const data = ctx.getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < data.length; i += 4) { if (data[i] !== 255) return true } return false }
+
+    function computeTargetSize(w, h) { const mw = parseInt(maxWidthInput.value) || 0; const mh = parseInt(maxHeightInput.value) || 0; let tw = w, th = h; if (mw > 0 || mh > 0) { const sw = mw > 0 ? mw / w : Infinity; const sh = mh > 0 ? mh / h : Infinity; let scale = Math.min(sw, sh); if (scale === Infinity) scale = 1; if (avoidUpscale.checked) scale = Math.min(scale, 1); tw = Math.max(1, Math.floor(w * scale)); th = Math.max(1, Math.floor(h * scale)) } return { tw, th } }
+
+    async function compressImage(img) { const ow = img.naturalWidth || img.width; const oh = img.naturalHeight || img.height; const { tw, th } = computeTargetSize(ow, oh); const c = document.createElement('canvas'); c.width = tw; c.height = th; const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(img, 0, 0, ow, oh, 0, 0, tw, th); let fmt = formatSelect.value; if (fmt === 'auto') fmt = getAutoFormat(img, originalBlob ? originalBlob.type : null); const targetKB = parseInt(targetSizeKBInput.value) || 0; const targetBytes = targetKB > 0 ? targetKB * 1024 : 0; const maxQ = parseInt(qualityRange.value) / 100; const minQ = 0.7; function toBlobAsync(canvas, mime, quality) { return new Promise(res => canvas.toBlob(b => res(b), mime, quality)) } async function tryBinary(mime, ext) { let low = minQ, high = maxQ, best = null; for (let i = 0; i < 8; i++) { const mid = (low + high) / 2; const blob = await toBlobAsync(c, mime, mid); if (!blob) break; if (targetBytes > 0 && blob.size > targetBytes) { high = mid } else { best = blob; low = mid } } if (best) return { blob: best, ext }; const final = await toBlobAsync(c, mime, Math.max(minQ, Math.min(maxQ, high))); return { blob: final, ext } } if (fmt === 'png') { const pngBlob = await toBlobAsync(c, 'image/png'); if (!pngBlob) throw new Error('生成图片失败'); if (targetBytes > 0 && pngBlob.size > targetBytes) { const hasAlpha = detectAlpha(img); const webpRes = await tryBinary('image/webp', 'webp'); if (targetBytes > 0 && webpRes.blob.size > targetBytes) { showStatus('已尽力压缩，未完全达到目标大小', 'error') } else { if (hasAlpha) showStatus('为达到目标大小，已切换为 WEBP（保留透明）', 'success') } return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } return { blob: pngBlob, ext: 'png', width: tw, height: th } } if (fmt === 'jpeg') { const jpgRes = await tryBinary('image/jpeg', 'jpg'); if (targetBytes > 0 && jpgRes.blob.size > targetBytes) { const webpRes = await tryBinary('image/webp', 'webp'); if (webpRes.blob.size < jpgRes.blob.size) { showStatus('为达到目标大小，已切换为 WEBP', 'success'); return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } else { showStatus('已尽力压缩，未完全达到目标大小', 'error') } } return { blob: jpgRes.blob, ext: jpgRes.ext, width: tw, height: th } } if (fmt === 'webp') { const webpRes = await tryBinary('image/webp', 'webp'); if (targetBytes > 0 && webpRes.blob.size > targetBytes) { showStatus('已尽力压缩，未完全达到目标大小', 'error') } return { blob: webpRes.blob, ext: webpRes.ext, width: tw, height: th } } const defaultRes = await tryBinary('image/jpeg', 'jpg'); return { blob: defaultRes.blob, ext: defaultRes.ext, width: tw, height: th } }
+  </script>
+  <script src="../../assets/js/tools.js"></script>
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图标工厂 - iOS & Android</title>
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    /* 继承theme.css的基础样式 */
+    /* 以下是工具页面特定的样式覆盖 */
+
+    .container {
+      max-width: 1100px;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: var(--spacing-lg);
+      left: var(--spacing-lg);
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-primary);
+      text-decoration: none;
+      font-size: var(--font-size-large);
+      transition: all .3s;
+      z-index: 10;
+    }
+
+    .home-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    .header h1 {
+      font-size: var(--font-size-xlarge);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .header p {
+      opacity: .9;
+      font-size: var(--font-size-small);
+    }
+
+    .content {
+      padding: var(--spacing-xl);
+    }
+
+    .form-section {
+      background: var(--color-background-alt);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-section h2 {
+      font-size: var(--font-size-large);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--spacing-sm);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-small);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-small);
+      transition: border-color .3s;
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px var(--color-shadow-primary);
+    }
+
+    .file-upload-area {
+      border: 3px dashed var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-xxl);
+      text-align: center;
+      background: var(--color-hover);
+      cursor: pointer;
+      transition: all .3s;
+    }
+
+    .file-upload-area:hover {
+      background: var(--color-surface-alt);
+      border-color: var(--color-primary-dark);
+    }
+
+    .file-upload-area.dragover {
+      background: var(--color-hover);
+      border-color: var(--color-primary);
+    }
+
+    .file-upload-area input[type=file] {
+      display: none;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: var(--color-text-on-primary);
+      border: none;
+      padding: 14px 35px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+      width: 100%
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, .4)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none
+    }
+
+    .loading.show {
+      display: block
+    }
+
+    .spinner {
+      border: 4px solid var(--color-border);
+      border-top: 4px solid var(--color-primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px
+    }
+
+    .preview-card {
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center
+    }
+
+    .preview-title {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px
+    }
+
+    .preview-image {
+      width: 96px;
+      height: 96px;
+      border-radius: var(--radius-lg);
+      object-fit: contain;
+      background: var(--color-surface-alt);
+      border: 1px dashed var(--color-border)
+    }
+
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px
+    }
+
+    .status.show {
+      display: block
+    }
+
+    .status.success {
+      background: var(--color-surface-alt);
+      color: var(--color-success);
+      border: 1px solid #c3e6cb
+    }
+
+    .status.error {
+      background: var(--color-surface-alt);
+      color: var(--color-error);
+      border: 1px solid #f5c6cb
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="../../index.html" class="home-btn" title="返回首页">🏠</a>
+      <h1>🎨 图标工厂</h1>
+      <p>上传一个图标，生成 iOS 与 Android 标准尺寸与文件夹结构</p>
+    </div>
+    <div class="content">
+      <div class="form-section">
+        <h2>上传图标</h2>
+        <div class="file-upload-area" id="uploadArea">
+          <div style="font-size:42px;color:var(--color-primary);margin-bottom:10px">📁</div>
+          <div style="color:var(--color-text);font-size:var(--font-size-base);margin-bottom:6px">点击或拖拽图标到此处</div>
+          <div style="color:var(--color-text-secondary);font-size:var(--font-size-small)">建议上传正方形 PNG，尺寸≥1024×1024</div>
+          <input type="file" id="iconInput" accept="image/*">
+        </div>
+        <div class="status" id="uploadStatus"></div>
+      </div>
+
+      <div class="form-section">
+        <h2>生成设置</h2>
+        <div class="controls-grid">
+          <div class="form-group">
+            <label for="bgColor">背景颜色（用于非正方形图标补边）</label>
+            <input type="color" id="bgColor" value="#FFFFFF">
+          </div>
+          <div class="form-group">
+            <label for="padding">内边距（百分比，0-30）</label>
+            <input type="number" id="padding" min="0" max="30" value="0">
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="generateRound">
+              生成圆形图标（ic_launcher_round）
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="platformSelect">平台</label>
+            <select id="platformSelect">
+              <option value="both">iOS + Android</option>
+              <option value="ios">仅 iOS</option>
+              <option value="android">仅 Android</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" id="generateBtn" disabled>生成并下载 ZIP</button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>正在生成图标及目录结构...</div>
+      </div>
+
+      <div class="form-section">
+        <h2>预览（部分尺寸）</h2>
+        <div class="preview-grid" id="previewGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const iconInput = document.getElementById('iconInput');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const bgColorInput = document.getElementById('bgColor');
+    const paddingInput = document.getElementById('padding');
+    const platformSelect = document.getElementById('platformSelect');
+    const generateBtn = document.getElementById('generateBtn');
+    const loading = document.getElementById('loading');
+    const previewGrid = document.getElementById('previewGrid');
+
+    let baseImage = null;
+
+    uploadArea.addEventListener('click', () => iconInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover') });
+    uploadArea.addEventListener('dragleave', e => { e.preventDefault(); uploadArea.classList.remove('dragover') });
+    uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); const files = e.dataTransfer.files; if (files.length > 0) handleFile(files[0]) });
+    iconInput.addEventListener('change', e => { const file = e.target.files[0]; if (file) handleFile(file) });
+
+    function showStatus(text, type) { uploadStatus.textContent = text; uploadStatus.className = 'status show ' + (type || 'success') }
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) { showStatus('请选择图片文件', 'error'); return }
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          baseImage = img;
+          generateBtn.disabled = false;
+          showStatus('图标加载成功', 'success');
+          renderPreview();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function drawIconToCanvas(size, bgColor, padding) {
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = bgColor; ctx.fillRect(0, 0, size, size);
+      const iw = baseImage.naturalWidth || baseImage.width;
+      const ih = baseImage.naturalHeight || baseImage.height;
+      const inset = size * (padding / 100);
+      const target = size - 2 * inset;
+      const scale = Math.min(Math.min(target / iw, target / ih), 1);
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const dx = (size - dw) / 2;
+      const dy = (size - dh) / 2;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(baseImage, dx, dy, dw, dh);
+      return c;
+    }
+
+    function drawRoundIconToCanvas(size, bgColor, padding) {
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = bgColor; ctx.fillRect(0, 0, size, size);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      const iw = baseImage.naturalWidth || baseImage.width;
+      const ih = baseImage.naturalHeight || baseImage.height;
+      const inset = size * (padding / 100);
+      const target = size - 2 * inset;
+      const scale = Math.min(Math.min(target / iw, target / ih), 1);
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const dx = (size - dw) / 2;
+      const dy = (size - dh) / 2;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(baseImage, dx, dy, dw, dh);
+      ctx.restore();
+      return c;
+    }
+
+    function canvasToBlob(canvas, mime = 'image/png', quality = 1) {
+      return new Promise(res => canvas.toBlob(b => res(b), mime, quality));
+    }
+
+    async function encodePngNative(canvas) {
+      return canvasToBlob(canvas, 'image/png', 1);
+    }
+
+    function renderPreview() {
+      previewGrid.innerHTML = '';
+      if (!baseImage) return;
+      const bg = bgColorInput.value;
+      const pad = parseInt(paddingInput.value) || 0;
+      const previewSizes = [1024, 180, 120, 80, 60, 48, 192];
+      previewSizes.forEach(async s => {
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+        const title = document.createElement('div');
+        title.className = 'preview-title';
+        title.textContent = `${s}×${s}`;
+        const imgEl = document.createElement('img');
+        imgEl.className = 'preview-image';
+        const c = drawIconToCanvas(s, bg, pad);
+        imgEl.src = c.toDataURL('image/png');
+        card.appendChild(title);
+        card.appendChild(imgEl);
+        previewGrid.appendChild(card);
+      });
+    }
+
+    const iosSpecs = [
+      { size: 40, name: 'icon-20@2x.png', idiom: 'iphone', scale: '2x', pt: '20x20' },
+      { size: 60, name: 'icon-20@3x.png', idiom: 'iphone', scale: '3x', pt: '20x20' },
+      { size: 58, name: 'icon-29@2x.png', idiom: 'iphone', scale: '2x', pt: '29x29' },
+      { size: 87, name: 'icon-29@3x.png', idiom: 'iphone', scale: '3x', pt: '29x29' },
+      { size: 80, name: 'icon-40@2x.png', idiom: 'iphone', scale: '2x', pt: '40x40' },
+      { size: 120, name: 'icon-40@3x.png', idiom: 'iphone', scale: '3x', pt: '40x40' },
+      { size: 120, name: 'icon-60@2x.png', idiom: 'iphone', scale: '2x', pt: '60x60' },
+      { size: 180, name: 'icon-60@3x.png', idiom: 'iphone', scale: '3x', pt: '60x60' },
+      { size: 20, name: 'icon-20-ipad.png', idiom: 'ipad', scale: '1x', pt: '20x20' },
+      { size: 40, name: 'icon-20-ipad@2x.png', idiom: 'ipad', scale: '2x', pt: '20x20' },
+      { size: 29, name: 'icon-29-ipad.png', idiom: 'ipad', scale: '1x', pt: '29x29' },
+      { size: 58, name: 'icon-29-ipad@2x.png', idiom: 'ipad', scale: '2x', pt: '29x29' },
+      { size: 40, name: 'icon-40-ipad.png', idiom: 'ipad', scale: '1x', pt: '40x40' },
+      { size: 80, name: 'icon-40-ipad@2x.png', idiom: 'ipad', scale: '2x', pt: '40x40' },
+      { size: 76, name: 'icon-76.png', idiom: 'ipad', scale: '1x', pt: '76x76' },
+      { size: 152, name: 'icon-76@2x.png', idiom: 'ipad', scale: '2x', pt: '76x76' },
+      { size: 167, name: 'icon-83.5@2x.png', idiom: 'ipad', scale: '2x', pt: '83.5x83.5' },
+      { size: 1024, name: 'icon-1024.png', idiom: 'ios-marketing', scale: '1x', pt: '1024x1024' }
+    ];
+
+    const androidSquareSpecs = [
+      { size: 48, dir: 'mipmap-mdpi', name: 'ic_launcher.png' },
+      { size: 72, dir: 'mipmap-hdpi', name: 'ic_launcher.png' },
+      { size: 96, dir: 'mipmap-xhdpi', name: 'ic_launcher.png' },
+      { size: 144, dir: 'mipmap-xxhdpi', name: 'ic_launcher.png' },
+      { size: 192, dir: 'mipmap-xxxhdpi', name: 'ic_launcher.png' }
+    ];
+
+    const androidRoundSpecs = [
+      { size: 48, dir: 'mipmap-mdpi', name: 'ic_launcher_round.png' },
+      { size: 72, dir: 'mipmap-hdpi', name: 'ic_launcher_round.png' },
+      { size: 96, dir: 'mipmap-xhdpi', name: 'ic_launcher_round.png' },
+      { size: 144, dir: 'mipmap-xxhdpi', name: 'ic_launcher_round.png' },
+      { size: 192, dir: 'mipmap-xxxhdpi', name: 'ic_launcher_round.png' }
+    ];
+
+    function buildIosContentsJson(images) {
+      return JSON.stringify({
+        images: images.map(img => ({
+          size: img.pt,
+          idiom: img.idiom,
+          filename: img.name,
+          scale: img.scale
+        })),
+        info: { version: 1, author: "icon-factory" }
+      }, null, 2);
+    }
+
+    generateBtn.addEventListener('click', async () => {
+      if (!baseImage) return;
+      const bg = bgColorInput.value;
+      const pad = parseInt(paddingInput.value) || 0;
+      const platform = platformSelect.value;
+      loading.classList.add('show');
+      try {
+        const zip = new JSZip();
+        if (platform === 'both' || platform === 'ios') {
+          const iosFolder = zip.folder('iOS').folder('AppIcon.appiconset');
+          const iosImages = [];
+          for (const spec of iosSpecs) {
+            const c = drawIconToCanvas(spec.size, bg, pad);
+            const blob = await encodePngNative(c);
+            iosFolder.file(spec.name, blob);
+            iosImages.push(spec);
+          }
+          iosFolder.file('Contents.json', buildIosContentsJson(iosImages));
+        }
+        if (platform === 'both' || platform === 'android') {
+          const andFolder = zip.folder('Android');
+          for (const spec of androidSquareSpecs) {
+            const c = drawIconToCanvas(spec.size, bg, pad);
+            const blob = await encodePngNative(c);
+            andFolder.folder(spec.dir).file(spec.name, blob);
+          }
+          const genRound = document.getElementById('generateRound').checked;
+          if (genRound) {
+            for (const spec of androidRoundSpecs) {
+              const c = drawRoundIconToCanvas(spec.size, bg, pad);
+              const blob = await encodePngNative(c);
+              andFolder.folder(spec.dir).file(spec.name, blob);
+            }
+          }
+        }
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon_factory_${Date.now()}.zip`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showStatus('生成完成，已下载 ZIP 包', 'success');
+      } catch (err) {
+        console.error(err);
+        showStatus('生成失败：' + err.message, 'error');
+      } finally {
+        loading.classList.remove('show');
+      }
+    });
+  </script>
+  <script src="../../assets/js/tools.js"></script>
+  <script src="../../assets/js/themes.js"></script>
+  <script src="../../assets/js/theme-ui.js"></script>
+</body>
+
+</html>
