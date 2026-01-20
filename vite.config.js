@@ -40,27 +40,17 @@ export default defineConfig({
         collapse_vars: true,
         // 减少代码体积
         reduce_vars: true,
-        // 内联单次使用的变量
-        inline: 2,
         // 传递次数
-        passes: 3
+        passes: 2
       },
       mangle: {
-        // 混淆顶层作用域变量名
-        toplevel: true,
         // Safari 10 兼容
-        safari10: true,
-        // 混淆属性名（谨慎使用）
-        properties: {
-          // 只混淆以下划线开头的属性
-          regex: /^_/
-        }
+        safari10: true
+        // 注意：不要启用 toplevel 和 properties，会破坏 Vue 组件
       },
       format: {
         // 删除所有注释
         comments: false,
-        // 美化输出（设为 false 以减小体积）
-        beautify: false,
         // ASCII 输出
         ascii_only: true
       }
