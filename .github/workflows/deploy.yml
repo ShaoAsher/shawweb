@@ -33,13 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Build
+      - name: Build with obfuscation
         run: npm run build
       
-      - name: Copy static assets
-        run: |
-          cp -r public/tools dist/
-          cp -r public/assets dist/
+      - name: Create 404.html for SPA
+        run: cp dist/index.html dist/404.html
       
       - name: Setup Pages
         uses: actions/configure-pages@v5

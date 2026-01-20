@@ -41,9 +41,9 @@
 
 <script setup>
 import ToolLayout from '@/components/ToolLayout.vue'
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { loadScript, loadStyle } from '@/utils/cdn-loader'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -321,21 +321,25 @@ function downloadHtml() {
     return
   }
   const html = marked.value.parse(c)
-  const fullHtml = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markdown 导出</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-<style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;line-height:1.8;color:#333;}pre{background:#f5f5f5;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f5f5f5;padding:2px 6px;border-radius:4px;}blockquote{border-left:4px solid #667eea;padding-left:20px;margin:20px 0;color:#666;background:#f8f9fa;padding:15px 20px;}table{width:100%;border-collapse:collapse;margin:20px 0;}table th,table td{border:1px solid #ddd;padding:8px;}table th{background:#f8f9fa;}img{max-width:100%;height:auto;}</style>
-</head>
-<body>
-${html}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>document.querySelectorAll("pre code").forEach(function(b){hljs.highlightElement(b);});</script>
-</body>
-</html>`
+  const styleContent = 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;line-height:1.8;color:#333;}pre{background:#f5f5f5;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f5f5f5;padding:2px 6px;border-radius:4px;}blockquote{border-left:4px solid #667eea;padding-left:20px;margin:20px 0;color:#666;background:#f8f9fa;padding:15px 20px;}table{width:100%;border-collapse:collapse;margin:20px 0;}table th,table td{border:1px solid #ddd;padding:8px;}table th{background:#f8f9fa;}img{max-width:100%;height:auto;}'
+  const scriptContent = 'document.querySelectorAll("pre code").forEach(function(b){hljs.highlightElement(b);});'
+  const fullHtml = [
+    '<!DOCTYPE html>',
+    '<html lang="zh-CN">',
+    '<head>',
+    '<meta charset="UTF-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+    '<title>Markdown 导出<\/title>',
+    '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">',
+    '<style>' + styleContent + '<\/style>',
+    '<\/head>',
+    '<body>',
+    html,
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>',
+    '<script>' + scriptContent + '<\/script>',
+    '<\/body>',
+    '<\/html>'
+  ].join('\n')
   const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 
 // 工具路由映射 - 按类别分组
@@ -97,8 +97,17 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  // 使用 hash 模式，适合 GitHub Pages 部署
+  history: createWebHashHistory(),
+  routes,
+  // 滚动行为
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
 })
 
 export default router
