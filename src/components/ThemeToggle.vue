@@ -101,10 +101,12 @@ onUnmounted(() => {
 
 <style scoped>
 .theme-toggle-wrapper {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  pointer-events: auto;
 }
 
 .theme-toggle-btn {
@@ -121,6 +123,9 @@ onUnmounted(() => {
   box-shadow: 0 4px 20px var(--color-shadow-primary),
               0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+  position: relative;
+  z-index: 10000;
 }
 
 .theme-toggle-btn:hover {
@@ -147,10 +152,10 @@ onUnmounted(() => {
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
+  z-index: 10001;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
   padding: 20px;
 }
 

@@ -54,9 +54,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import ToolLayout from '@/components/ToolLayout.vue'
-import { useToast } from '@/composables/useToast'
-
-const toast = useToast()
+import toast from '@/utils/toast'
 
 const jsonInput = ref('')
 const jsonPreview = ref('<div style="color: var(--color-text-secondary); text-align: center; padding: var(--spacing-xl);">格式化后的 JSON 将显示在这里</div>')

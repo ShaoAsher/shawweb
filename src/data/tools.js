@@ -208,15 +208,6 @@ export const toolsData = {
       href: "/tools/life/speed_test",
       category: "life",
       rating: 5
-    },
-    {
-      icon: "✍️",
-      title: { zh: "写作助手", en: "Writing Assistant" },
-      desc: { zh: "专业的写作助手系统，包含书架管理、分卷分章创作、大纲管理、人物关系图、时间线甘特图和备注区等功能。", en: "Professional writing assistant system with bookshelf management, volume/chapter creation, outline management, character relationship diagram, timeline Gantt chart and notes area." },
-      keywords: { zh: ["写作", "助手", "作家", "书架", "大纲", "章节", "分卷", "关系图", "甘特图", "创作", "小说"], en: ["writing", "assistant", "author", "bookshelf", "outline", "chapter", "volume", "relationship", "gantt", "creative", "novel"] },
-      href: "/tools/text/writing",
-      category: "text",
-      rating: 5
     }
   ]
 }

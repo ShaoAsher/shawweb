@@ -203,11 +203,9 @@
 <script setup>
 import AppButton from '@/components/AppButton.vue'
 import ToolLayout from '@/components/ToolLayout.vue'
-import { useToast } from '@/composables/useToast.js'
+import toast from '@/utils/toast'
 import { loadScript } from '@/utils/cdn-loader.js'
 import { nextTick, onMounted, ref, watch } from 'vue'
-
-const { success: showSuccess } = useToast()
 
 const STORAGE_KEY = 'keystore_history'
 const packageName = ref('')
@@ -585,7 +583,7 @@ function closeDetailModal() {
 function copyToClipboard(text) {
   if (!text) return
   navigator.clipboard.writeText(text).then(() => {
-    showSuccess('已复制到剪贴板')
+    toast.success('已复制到剪贴板')
   }).catch(err => {
     console.error('复制失败:', err)
   })

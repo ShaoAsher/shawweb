@@ -47,11 +47,6 @@ const toolRoutes = {
   'text/markdown_compile': () => import('./tools/text/markdown/MarkdownCompile.vue'),
   'text/markdown_preview': () => import('./tools/text/markdown/MarkdownPreview.vue'),
   
-  // Text - Writing 写作工具
-  'text/book_home': () => import('./tools/text/writing/BookHome.vue'),
-  'text/book_editor': () => import('./tools/text/writing/BookEditor.vue'),
-  'text/writing_editor': () => import('./tools/text/writing/WritingEditor.vue'),
-  
   // Developer 开发工具
   'developer/device_preview': () => import('./tools/developer/DevicePreview.vue'),
   'developer/keystore_generator': () => import('./tools/developer/KeystoreGenerator.vue'),

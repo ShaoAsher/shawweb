@@ -18,7 +18,6 @@
               <span class="topbar-title"><span>📑</span><span ref="previewTitleRef">目录</span></span>
             </div>
             <div class="action-group">
-              <button class="toolbar-btn" @click="toggleTheme"><span>🎨</span><span>切换主题</span></button>
               <button class="toolbar-btn" @click="goToHome"><span>📖</span><span>Markdown 首页</span></button>
               <button class="toolbar-btn" @click="copyContent"><span>📋</span><span>复制</span></button>
               <button class="toolbar-btn" @click="downloadMd"><span>💾</span><span>下载</span></button>
@@ -262,14 +261,6 @@ function goToHome() {
   router.push('/tools/text/markdown')
 }
 
-function toggleTheme() {
-  if (window.openThemeModal) {
-    window.openThemeModal()
-    setTimeout(() => {
-      updateCodeTheme()
-    }, 200)
-  }
-}
 
 async function copyContent() {
   const c = markdownContent.value || ''

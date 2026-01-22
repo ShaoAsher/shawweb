@@ -9,6 +9,7 @@
     "build:analyze": "vite build --mode analyze"
   },
   "dependencies": {
+    "@neodrag/vue": "^2.3.1",
     "crypto-js": "^4.2.0",
     "gsap": "^3.14.2",
     "jszip": "^3.10.1",

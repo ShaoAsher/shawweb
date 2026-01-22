@@ -2,24 +2,16 @@
   <ToolLayout title="🚀 启动图生成工具" description="一键生成 iOS 和 Android 各机型启动图，支持图片居中、不变形、背景填充">
     <div class="form-section">
       <h2>📸 上传图片</h2>
-      <div 
-        class="file-upload-area" 
-        :class="{ dragover: isDragging }"
-        @click="fileInput?.click()"
-        @dragover.prevent="isDragging = true"
-        @dragleave.prevent="isDragging = false"
-        @drop.prevent="handleDrop"
-        v-if="!originalImage"
-      >
-        <div class="file-upload-icon">📁</div>
-        <div class="file-upload-text">点击或拖拽图片到此处</div>
-        <div class="file-upload-hint">支持 JPG、PNG、WEBP 格式</div>
-        <input ref="fileInput" type="file" accept="image/*" @change="handleFileSelect" style="display:none">
-      </div>
-      <div v-if="originalImage" class="image-preview-container">
-        <img :src="previewImageSrc" class="preview-image" alt="预览">
-        <button class="delete-btn" @click="resetImage" title="删除图片">×</button>
-      </div>
+      <!-- 使用统一的 ImageUploader 组件 -->
+      <ImageUploader
+        v-model="imageFile"
+        icon="🚀"
+        text="点击或拖拽图片到此处"
+        hint="支持 JPG、PNG、WEBP 格式"
+        preview-title="📷 已选择的图片"
+        @change="handleImageChange"
+        @delete="resetImage"
+      />
     </div>
 
     <div class="form-section">
@@ -164,10 +156,9 @@
 import ToolLayout from '@/components/ToolLayout.vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
-const fileInput = ref(null)
+const imageFile = ref(null)
 const previewCanvas = ref(null)
 const fullscreenContent = ref(null)
-const isDragging = ref(false)
 const originalImage = ref(null)
 const previewImageSrc = ref('')
 const currentPlatform = ref('ios')
@@ -232,29 +223,15 @@ function updateSizes() {
   generatedImage.value = null
 }
 
-function handleFileSelect(e) {
-  const file = e.target.files[0]
-  if (file) handleFile(file)
-}
+function handleImageChange(file) {
+  if (!file) return
 
-function handleDrop(e) {
-  isDragging.value = false
-  const files = e.dataTransfer.files
-  if (files.length > 0) handleFile(files[0])
-}
-
-function handleFile(file) {
-  if (!file.type.startsWith('image/')) {
-    showStatus('请选择图片文件', 'error')
-    return
-  }
   const reader = new FileReader()
   reader.onload = (e) => {
     const img = new Image()
     img.onload = () => {
       originalImage.value = img
       previewImageSrc.value = e.target.result
-      showStatus('图片加载成功', 'success')
     }
     img.src = e.target.result
   }
@@ -262,12 +239,11 @@ function handleFile(file) {
 }
 
 function resetImage() {
+  imageFile.value = null
   originalImage.value = null
   previewImageSrc.value = ''
   selectedSize.value = null
   generatedImage.value = null
-  if (fileInput.value) fileInput.value.value = ''
-  showStatus('已清除图片', 'info')
 }
 
 function selectSize(size) {
@@ -591,82 +567,6 @@ onMounted(() => {
   margin-bottom: var(--spacing-lg);
   border-bottom: 2px solid var(--color-primary);
   padding-bottom: var(--spacing-sm);
-}
-
-.file-upload-area {
-  border: 3px dashed var(--color-primary);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xxl);
-  text-align: center;
-  background: var(--color-hover);
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.file-upload-area:hover {
-  background: var(--color-surface-alt);
-  border-color: var(--color-primary-dark);
-}
-
-.file-upload-area.dragover {
-  background: var(--color-hover);
-  border-color: var(--color-primary);
-}
-
-.file-upload-icon {
-  font-size: 48px;
-  color: var(--color-primary);
-  margin-bottom: 15px;
-}
-
-.file-upload-text {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
-  margin-bottom: 10px;
-}
-
-.file-upload-hint {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-small);
-}
-
-.image-preview-container {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.preview-image {
-  max-width: 100%;
-  max-height: 400px;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
-  display: block;
-}
-
-.delete-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(220, 53, 69, 0.9);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: var(--font-size-large);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.delete-btn:hover {
-  background: rgba(220, 53, 69, 1);
-  transform: scale(1.1);
 }
 
 .platform-tabs {

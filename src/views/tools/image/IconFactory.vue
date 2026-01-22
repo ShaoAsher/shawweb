@@ -2,19 +2,15 @@
   <ToolLayout title="🎨 图标工厂" description="上传一个图标，生成 iOS 与 Android 标准尺寸与文件夹结构">
     <div class="form-section">
       <h2>上传图标</h2>
-      <div 
-        class="file-upload-area" 
-        :class="{ dragover: isDragging }"
-        @click="fileInput?.click()"
-        @dragover.prevent="isDragging = true"
-        @dragleave.prevent="isDragging = false"
-        @drop.prevent="handleDrop"
-      >
-        <div style="font-size:42px;color:var(--color-primary);margin-bottom:10px">📁</div>
-        <div style="color:var(--color-text);font-size:var(--font-size-base);margin-bottom:6px">点击或拖拽图标到此处</div>
-        <div style="color:var(--color-text-secondary);font-size:var(--font-size-small)">建议上传正方形 PNG，尺寸≥1024×1024</div>
-        <input ref="fileInput" type="file" accept="image/*" @change="handleFileSelect" style="display:none">
-      </div>
+      <ImageUploader
+        v-model="iconFile"
+        icon="📁"
+        text="点击或拖拽图标到此处"
+        hint="建议上传正方形 PNG，尺寸≥1024×1024"
+        preview-title="🎨 已选择的图标"
+        @change="handleFileChange"
+        @delete="handleDelete"
+      />
       <div v-if="statusMessage" :class="['status', 'show', statusType]">
         {{ statusMessage }}
       </div>
@@ -63,12 +59,13 @@
 
 <script setup>
 import ToolLayout from '@/components/ToolLayout.vue'
+import ImageUploader from '@/components/ImageUploader.vue'
+import AppButton from '@/components/AppButton.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { loadScript } from '@/utils/cdn-loader.js'
 
-const fileInput = ref(null)
 const previewGrid = ref(null)
-const isDragging = ref(false)
+const iconFile = ref(null)
 const baseImage = ref(null)
 const bgColor = ref('#FFFFFF')
 const padding = ref(0)
@@ -100,22 +97,9 @@ function showStatus(text, type) {
   }, 3000)
 }
 
-function handleFileSelect(e) {
-  const file = e.target.files[0]
-  if (file) handleFile(file)
-}
-
-function handleDrop(e) {
-  isDragging.value = false
-  const files = e.dataTransfer.files
-  if (files.length > 0) handleFile(files[0])
-}
-
-function handleFile(file) {
-  if (!file.type.startsWith('image/')) {
-    showStatus('请选择图片文件', 'error')
-    return
-  }
+function handleFileChange(file) {
+  if (!file) return
+  
   const reader = new FileReader()
   reader.onload = (e) => {
     const img = new Image()
@@ -124,9 +108,27 @@ function handleFile(file) {
       showStatus('图标加载成功', 'success')
       renderPreview()
     }
+    img.onerror = () => {
+      showStatus('图片加载失败', 'error')
+    }
     img.src = e.target.result
   }
+  reader.onerror = () => {
+    showStatus('文件读取失败', 'error')
+  }
   reader.readAsDataURL(file)
+}
+
+function handleDelete() {
+  baseImage.value = null
+  iconFile.value = null
+  
+  // 清空预览
+  if (previewGrid.value) {
+    previewGrid.value.innerHTML = ''
+  }
+  
+  showStatus('已清除图标', 'info')
 }
 
 function drawIconToCanvas(size, bgColor, padding) {
@@ -194,7 +196,8 @@ function renderPreview() {
     if (!baseImage.value) return
     const bg = bgColor.value
     const pad = padding.value || 0
-    const previewSizes = [1024, 180, 120, 80, 60, 48, 192]
+    // 常用的预览尺寸，从大到小排列
+    const previewSizes = [192, 180, 120, 96, 80, 72, 60, 48, 40, 29]
     previewSizes.forEach(s => {
       const card = document.createElement('div')
       card.className = 'preview-card'
@@ -438,31 +441,86 @@ async function generate() {
 
 .preview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  grid-auto-rows: 1fr;
 }
 
 .preview-card {
   background: var(--color-surface);
-  border: 2px solid var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 12px;
+  padding: var(--spacing-md);
   text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  min-height: 160px;
+}
+
+.preview-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
 }
 
 .preview-title {
-  font-size: 13px;
+  font-size: var(--font-size-small);
   color: var(--color-text-secondary);
-  margin-bottom: 8px;
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-sm);
+  flex-shrink: 0;
 }
 
 .preview-image {
-  width: 96px;
-  height: 96px;
-  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 100px;
+  height: 100px;
   object-fit: contain;
+  border-radius: var(--radius-sm);
   background: var(--color-surface-alt);
-  border: 1px dashed var(--color-border);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .preview-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--spacing-md);
+  }
+  
+  .preview-card {
+    padding: var(--spacing-sm);
+    min-height: 140px;
+  }
+  
+  .preview-image {
+    max-width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+  }
+  
+  .preview-card {
+    min-height: 120px;
+    padding: var(--spacing-xs);
+  }
+  
+  .preview-image {
+    max-width: 64px;
+    height: 64px;
+  }
 }
 
 .status {

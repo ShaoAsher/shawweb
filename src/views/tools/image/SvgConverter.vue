@@ -2,22 +2,16 @@
   <ToolLayout title="🔄 SVG 互转 PNG/JPG/JPEG" description="支持上传 SVG 或 PNG/JPG/JPEG，进行相互转换与下载">
     <div class="form-section">
       <h2>上传文件</h2>
-      <div 
-        class="file-upload-area" 
-        :class="{ dragover: isDragging }"
-        @click="fileInput?.click()"
-        @dragover.prevent="isDragging = true"
-        @dragleave.prevent="isDragging = false"
-        @drop.prevent="handleDrop"
-      >
-        <div style="font-size:42px;color:var(--color-primary);margin-bottom:10px">📁</div>
-        <div style="color:var(--color-text);font-size:var(--font-size-base);margin-bottom:6px">点击或拖拽文件到此处</div>
-        <div style="color:var(--color-text-secondary);font-size:var(--font-size-small)">支持 SVG、PNG、JPG、JPEG</div>
-        <input ref="fileInput" type="file" accept=".svg,image/*" @change="handleFileSelect" style="display:none">
-      </div>
-      <div v-if="statusMessage" :class="['status', 'show', statusType]">
-        {{ statusMessage }}
-      </div>
+      <!-- 使用统一的 FileUploader 组件 -->
+      <FileUploader
+        v-model="inputFile"
+        accept=".svg,image/*"
+        icon="🔄"
+        text="点击或拖拽文件到此处"
+        hint="支持 SVG、PNG、JPG、JPEG"
+        @change="handleFile"
+        @delete="resetFile"
+      />
     </div>
 
     <div class="form-section">
@@ -83,9 +77,7 @@
 import ToolLayout from '@/components/ToolLayout.vue'
 import { computed, nextTick, ref } from 'vue'
 
-const fileInput = ref(null)
 const inputPreview = ref(null)
-const isDragging = ref(false)
 const inputFile = ref(null)
 const inputType = ref(null) // 'svg' | 'raster'
 const inputDataURL = ref(null)
@@ -97,31 +89,22 @@ const keepAspect = ref(true)
 const bgColor = ref('#FFFFFF')
 const loading = ref(false)
 const outputPreviewUrl = ref('')
-const statusMessage = ref('')
-const statusType = ref('success')
 
 const canConvert = computed(() => !!inputFile.value)
 
-function showStatus(text, type) {
-  statusMessage.value = text
-  statusType.value = type || 'success'
-  setTimeout(() => {
-    statusMessage.value = ''
-  }, 3000)
-}
-
-function handleFileSelect(e) {
-  const file = e.target.files[0]
-  if (file) handleFile(file)
-}
-
-function handleDrop(e) {
-  isDragging.value = false
-  const files = e.dataTransfer.files
-  if (files.length > 0) handleFile(files[0])
+function resetFile() {
+  inputFile.value = null
+  inputType.value = null
+  inputDataURL.value = null
+  svgText.value = null
+  outputPreviewUrl.value = ''
+  if (inputPreview.value) {
+    inputPreview.value.innerHTML = ''
+  }
 }
 
 function handleFile(file) {
+  if (!file) return
   inputFile.value = file
   const name = file.name.toLowerCase()
   const isSvg = name.endsWith('.svg') || file.type === 'image/svg+xml'
@@ -133,7 +116,6 @@ function handleFile(file) {
       svgText.value = e.target.result
       inputDataURL.value = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText.value)
       renderInputPreview()
-      showStatus('SVG 加载成功', 'success')
     }
     reader.readAsText(file)
   } else if (file.type.startsWith('image/')) {
@@ -142,11 +124,8 @@ function handleFile(file) {
     reader.onload = (e) => {
       inputDataURL.value = e.target.result
       renderInputPreview()
-      showStatus('图片加载成功', 'success')
     }
     reader.readAsDataURL(file)
-  } else {
-    showStatus('不支持的文件类型', 'error')
   }
 }
 
@@ -205,10 +184,9 @@ async function convert() {
         triggerDownload(blob, rename(inputFile.value.name, fmt))
       }
     }
-    showStatus('转换完成，已开始下载', 'success')
+    console.log('转换完成，已开始下载')
   } catch (err) {
-    console.error(err)
-    showStatus('转换失败：' + err.message, 'error')
+    console.error('转换失败：', err)
   } finally {
     loading.value = false
   }
@@ -334,26 +312,6 @@ function triggerDownload(blob, filename) {
   padding-bottom: var(--spacing-sm);
 }
 
-.file-upload-area {
-  border: 3px dashed var(--color-primary);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xxl);
-  text-align: center;
-  background: var(--color-hover);
-  cursor: pointer;
-  transition: all .3s;
-}
-
-.file-upload-area:hover {
-  background: var(--color-surface-alt);
-  border-color: var(--color-primary-dark);
-}
-
-.file-upload-area.dragover {
-  background: var(--color-hover);
-  border-color: var(--color-primary);
-}
-
 .controls-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -428,29 +386,6 @@ function triggerDownload(blob, filename) {
   text-align: center;
   flex: 1;
   min-width: 280px;
-}
-
-.status {
-  display: none;
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-sm);
-}
-
-.status.show {
-  display: block;
-}
-
-.status.success {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--color-success);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.status.error {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--color-error);
-  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .loading {

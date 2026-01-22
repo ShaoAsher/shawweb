@@ -12,6 +12,9 @@ import toast from './utils/toast'
 // 全局组件
 import AppButton from './components/AppButton.vue'
 import ButtonGroup from './components/ButtonGroup.vue'
+import FileUploader from './components/FileUploader.vue'
+import ImageUploader from './components/ImageUploader.vue'
+import ImagePreview from './components/ImagePreview.vue'
 
 // 初始化主题
 initTheme()
@@ -29,6 +32,9 @@ const app = createApp(App)
 // 注册全局组件
 app.component('AppButton', AppButton)
 app.component('ButtonGroup', ButtonGroup)
+app.component('FileUploader', FileUploader)
+app.component('ImageUploader', ImageUploader)
+app.component('ImagePreview', ImagePreview)
 
 // 注册全局指令
 app.directive('ripple', vRipple)

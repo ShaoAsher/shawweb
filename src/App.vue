@@ -6,16 +6,7 @@
   <ThemeToggle />
   
   <!-- 路由视图 -->
-  <router-view v-slot="{ Component, route }">
-    <transition 
-      :name="route.meta.transition || 'page'" 
-      mode="out-in"
-      @before-enter="onBeforeEnter"
-      @after-leave="onAfterLeave"
-    >
-      <component :is="Component" :key="route.path" />
-    </transition>
-  </router-view>
+  <router-view />
 </template>
 
 <script setup>
@@ -25,15 +16,6 @@ import VantaBackground from './components/VantaBackground.vue'
 
 // 初始化主题
 initTheme()
-
-// 页面过渡钩子
-function onBeforeEnter(el) {
-  el.style.willChange = 'opacity, transform'
-}
-
-function onAfterLeave(el) {
-  el.style.willChange = 'auto'
-}
 </script>
 
 <style>
@@ -122,78 +104,21 @@ body {
   z-index: 1;
 }
 
-/* ========== 页面切换动画 ========== */
-
-/* 默认页面过渡 - 淡入淡出 + 滑动 */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+/* 确保主题切换按钮始终可点击并显示在右上角 */
+.theme-toggle-wrapper {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 }
 
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
+.theme-toggle-wrapper .theme-toggle-btn {
+  pointer-events: auto !important;
+  z-index: 10000 !important;
 }
 
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-/* 淡入淡出过渡 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* 滑动过渡 - 从右进入 */
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.slide-right-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.slide-right-leave-to {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-/* 滑动过渡 - 从左进入 */
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.slide-left-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-/* 缩放过渡 */
-.scale-enter-active,
-.scale-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
 
 /* ========== 滚动条美化 ========== */
 ::-webkit-scrollbar {
@@ -243,19 +168,4 @@ body {
   outline: none;
 }
 
-/* ========== 无障碍：减少动画 ========== */
-@media (prefers-reduced-motion: reduce) {
-  .page-enter-active,
-  .page-leave-active,
-  .fade-enter-active,
-  .fade-leave-active,
-  .slide-right-enter-active,
-  .slide-right-leave-active,
-  .slide-left-enter-active,
-  .slide-left-leave-active,
-  .scale-enter-active,
-  .scale-leave-active {
-    transition-duration: 0.01ms !important;
-  }
-}
 </style>

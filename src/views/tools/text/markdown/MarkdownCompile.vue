@@ -10,7 +10,6 @@
           <span class="topbar-title"><span>🛠️</span><span>Markdown 编译模式</span></span>
         </div>
         <div class="action-group">
-          <button class="toolbar-btn" @click="toggleTheme"><span>🎨</span><span>切换主题</span></button>
           <button class="toolbar-btn" @click="goToHome"><span>📖</span><span>Markdown 首页</span></button>
           <button class="toolbar-btn" @click="saveHistory"><span>💾</span><span>保存历史</span></button>
           <button class="toolbar-btn" @click="goToPreview"><span>👁️</span><span>预览模式</span></button>
@@ -494,11 +493,6 @@ function goToHome() {
   router.push('/tools/text/markdown')
 }
 
-function toggleTheme() {
-  if (window.openThemeModal) {
-    window.openThemeModal()
-  }
-}
 
 async function copyContent() {
   try {

@@ -27,9 +27,6 @@ const toolRoutes = {
   'text/markdown': () => import('../views/tools/text/markdown/MarkdownHome.vue'),
   'text/markdown/compile': () => import('../views/tools/text/markdown/MarkdownCompile.vue'),
   'text/markdown/preview': () => import('../views/tools/text/markdown/MarkdownPreview.vue'),
-  'text/writing': () => import('../views/tools/text/writing/BookHome.vue'),
-  'text/writing/editor': () => import('../views/tools/text/writing/BookEditor.vue'),
-  'text/writing/writing_editor': () => import('../views/tools/text/writing/WritingEditor.vue'),
 
   // Developer 开发工具
   'developer/device_preview': () => import('../views/tools/developer/DevicePreview.vue'),
@@ -66,22 +63,6 @@ const routes = [
     name: 'MarkdownPreview',
     component: () => import('../views/tools/text/markdown/MarkdownPreview.vue')
   },
-  // 写作助手多页面路由
-  {
-    path: '/tools/text/writing',
-    name: 'BookHome',
-    component: () => import('../views/tools/text/writing/BookHome.vue')
-  },
-  {
-    path: '/tools/text/writing/editor',
-    name: 'BookEditor',
-    component: () => import('../views/tools/text/writing/BookEditor.vue')
-  },
-  {
-    path: '/tools/text/writing/writing_editor',
-    name: 'WritingEditor',
-    component: () => import('../views/tools/text/writing/WritingEditor.vue')
-  },
   // 工具页面路由
   {
     path: '/tools/:category/:tool',
@@ -108,6 +89,13 @@ const router = createRouter({
       return { top: 0 }
     }
   }
+})
+
+// 路由切换时确保恢复 body 滚动
+router.beforeEach((to, from, next) => {
+  // 恢复 body 滚动（防止全屏预览等功能未正确清理）
+  document.body.style.overflow = ''
+  next()
 })
 
 export default router
