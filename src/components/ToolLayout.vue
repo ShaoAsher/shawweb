@@ -1,29 +1,50 @@
 <template>
   <div class="tool-container" ref="containerRef">
     <div class="header">
-      <router-link to="/" class="home-btn btn-ripple" title="返回首页">
+      <router-link 
+        to="/" 
+        ref="homeBtnRef"
+        class="home-btn btn-ripple" 
+        title="返回首页"
+      >
         <span class="home-btn-icon">🏠</span>
       </router-link>
       <div class="header-content">
-        <h1 class="header-title">
-          <span class="header-icon">{{ icon }}</span>
-          <span>{{ title }}</span>
+        <h1 
+          ref="titleRef"
+          class="header-title" 
+          style="color: #FFFFFF !important;"
+        >
+          <span 
+            ref="iconRef"
+            class="header-icon" 
+            style="color: #FFFFFF !important;"
+          >
+            {{ icon }}
+          </span>
+          <span style="color: #FFFFFF !important;">{{ title }}</span>
         </h1>
-        <p class="header-desc" v-if="description">{{ description }}</p>
+        <p 
+          ref="descRef"
+          class="header-desc" 
+          v-if="description" 
+          style="color: #FFFFFF !important;"
+        >
+          {{ description }}
+        </p>
       </div>
     </div>
     <div class="content">
-      <transition name="content-fade" mode="out-in" appear>
-        <div class="content-inner" :key="title">
-          <slot></slot>
-        </div>
-      </transition>
+      <div ref="contentRef" class="content-inner" :key="title">
+        <slot></slot>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { gsap } from 'gsap'
 
 defineProps({
   icon: {
@@ -41,12 +62,101 @@ defineProps({
 })
 
 const containerRef = ref(null)
+const homeBtnRef = ref(null)
+const iconRef = ref(null)
+const titleRef = ref(null)
+const descRef = ref(null)
+const contentRef = ref(null)
 
 onMounted(() => {
-  // 页面加载完成后添加入场动画类
-  if (containerRef.value) {
-    containerRef.value.classList.add('mounted')
-  }
+  nextTick(() => {
+    // 获取实际DOM元素
+    const homeBtnEl = homeBtnRef.value?.$el || homeBtnRef.value
+    
+    // 确保所有元素初始状态正确
+    if (homeBtnEl) {
+      gsap.set(homeBtnEl, { opacity: 1, clearProps: 'all' })
+    }
+    
+    // GSAP 动画时间线
+    const tl = gsap.timeline()
+    
+    // 1. 容器淡入上滑
+    tl.from(containerRef.value, {
+      opacity: 0,
+      y: 50,
+      duration: 0.6,
+      ease: 'power2.out'
+    })
+    
+    // 2. 图标旋转进入
+    if (iconRef.value) {
+      tl.from(iconRef.value, {
+        opacity: 0,
+        rotation: -180,
+        duration: 0.6,
+        ease: 'back.out(1.7)'
+      }, '-=0.5')
+    }
+    
+    // 3. 标题淡入
+    if (titleRef.value) {
+      tl.from(titleRef.value, {
+        opacity: 0,
+        y: -20,
+        duration: 0.5
+      }, '-=0.5')
+    }
+    
+    // 4. 描述淡入
+    if (descRef.value) {
+      tl.from(descRef.value, {
+        opacity: 0,
+        duration: 0.5
+      }, '-=0.4')
+    }
+    
+    // 5. 内容区域淡入
+    if (contentRef.value) {
+      tl.from(contentRef.value, {
+        opacity: 0,
+        y: 20,
+        duration: 0.5
+      }, '-=0.3')
+    }
+    
+    // 添加悬停动画 - 使用实际DOM元素
+    if (homeBtnEl) {
+      homeBtnEl.addEventListener('mouseenter', () => {
+        gsap.to(homeBtnEl, {
+          y: -3,
+          duration: 0.3,
+          ease: 'power2.out'
+        })
+      })
+      
+      homeBtnEl.addEventListener('mouseleave', () => {
+        gsap.to(homeBtnEl, {
+          y: 0,
+          duration: 0.3,
+          ease: 'power2.out'
+        })
+      })
+    }
+    
+    // 图标摇摆动画
+    if (iconRef.value) {
+      iconRef.value.addEventListener('mouseenter', () => {
+        gsap.to(iconRef.value, {
+          rotation: 10,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 3,
+          ease: 'power2.inOut'
+        })
+      })
+    }
+  })
 })
 </script>
 
@@ -114,7 +224,7 @@ onMounted(() => {
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-sm);
   text-shadow: 0 2px 10px rgba(0, 0, 0, .2);
-  color: var(--color-text-on-primary);
+  color: #ffffff !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,7 +249,7 @@ onMounted(() => {
 .header-desc {
   opacity: 0;
   font-size: var(--font-size-small);
-  color: var(--color-text-on-primary);
+  color: #ffffff !important;
   animation: descEnter 0.6s ease-out 0.2s both;
 }
 
@@ -170,46 +280,77 @@ onMounted(() => {
   position: absolute;
   top: var(--spacing-lg);
   left: var(--spacing-lg);
-  width: 44px;
-  height: 44px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 50px;
+  height: 50px;
+  background: #ffffff;
+  border: none;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-on-primary);
+  color: #667eea;
   text-decoration: none;
-  font-size: var(--font-size-large);
+  font-size: 24px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 0 rgba(102, 126, 234, 0.4);
   overflow: hidden;
+  animation: homeBtnPulse 2s ease-in-out infinite;
+}
+
+@keyframes homeBtnPulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2), 0 0 0 8px rgba(102, 126, 234, 0.2);
+  }
+}
+
+.home-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  padding: 2px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .home-btn-icon {
   transition: transform 0.3s;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .home-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: 0 6px 30px rgba(102, 126, 234, 0.4);
+  animation: none;
+}
+
+.home-btn:hover::before {
+  opacity: 1;
 }
 
 .home-btn:hover .home-btn-icon {
-  animation: homeIconPulse 0.5s ease;
+  animation: homeIconBounce 0.6s ease;
 }
 
-@keyframes homeIconPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+@keyframes homeIconBounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(-10deg); }
+  75% { transform: scale(1.2) rotate(10deg); }
 }
 
 .home-btn:active {
-  transform: scale(0.95);
+  transform: scale(1.05) rotate(-5deg);
 }
 
 /* ========== 内容区域 ========== */

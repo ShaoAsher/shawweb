@@ -4,6 +4,7 @@ import router from './router'
 import './assets/css/theme.css'
 import './assets/css/animations.css'
 import { initTheme } from './utils/themes'
+import { initTheme as initSimpleTheme } from './config/theme-config'
 import { initRipple, vRipple } from './utils/ripple'
 import { initFormFeedback } from './utils/form-feedback'
 import toast from './utils/toast'
@@ -14,6 +15,7 @@ import ButtonGroup from './components/ButtonGroup.vue'
 
 // 初始化主题
 initTheme()
+initSimpleTheme()  // 应用简化主题配置
 
 // 初始化涟漪效果
 initRipple()
@@ -34,7 +36,7 @@ app.directive('ripple', vRipple)
 // 注册全局属性
 app.config.globalProperties.$toast = toast
 
-// 使用路由
+// 使用插件
 app.use(router)
 
 // 挂载应用

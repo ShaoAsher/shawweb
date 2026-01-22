@@ -1,6 +1,9 @@
 <template>
   <div class="home-page" ref="containerRef">
     <div class="header animate-header">
+      <div class="header-logo">
+        <img src="/robot-icon.png" alt="Robot Icon" class="logo-image" />
+      </div>
       <h1 class="header-title">{{ homeConfig.title[currentLang] }}</h1>
       <p class="header-desc">{{ homeConfig.description[currentLang] }}</p>
     </div>
@@ -341,6 +344,28 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* ========== Logo 样式 ========== */
+.header-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.logo-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15));
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-image:hover {
+  transform: scale(1.1) rotate(5deg);
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.2));
+}
+
 /* ========== 入场动画 ========== */
 .animate-header {
   animation: fadeInDown 0.6s ease-out;

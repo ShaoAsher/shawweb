@@ -5,21 +5,33 @@
     :disabled="disabled || loading"
     :type="type"
     @click="handleClick"
+    @mouseenter="onHover"
+    @mouseleave="onLeave"
+    @mousedown="onPress"
+    @mouseup="onRelease"
   >
     <!-- 入场光效 -->
     <span class="btn-shine"></span>
     <span v-if="loading" class="btn-loader">
       <span class="btn-spinner"></span>
     </span>
-    <span v-if="icon && !loading" class="btn-icon">{{ icon }}</span>
+    <span 
+      v-if="icon && !loading" 
+      ref="iconRef"
+      class="btn-icon"
+    >
+      {{ icon }}
+    </span>
     <span v-if="$slots.default" class="btn-text"><slot /></span>
   </button>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { gsap } from 'gsap'
 
 const btnRef = ref(null)
+const iconRef = ref(null)
 const hasPlayedShine = ref(false)
 
 const props = defineProps({
@@ -58,6 +70,10 @@ const props = defineProps({
   type: {
     type: String,
     default: 'button'
+  },
+  motionDelay: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -82,13 +98,72 @@ function handleClick(event) {
   }
 }
 
-// 入场光效 - 只播放一次
+// 入场动画
 onMounted(() => {
   if (btnRef.value && !hasPlayedShine.value) {
     hasPlayedShine.value = true
     btnRef.value.classList.add('btn-mounted')
+    
+    // GSAP 淡入
+    gsap.from(btnRef.value, {
+      opacity: 0,
+      y: 10,
+      duration: 0.3,
+      delay: props.motionDelay / 1000,
+      ease: 'power2.out'
+    })
   }
 })
+
+// 悬停动画
+function onHover() {
+  if (props.disabled || props.loading) return
+  
+  gsap.to(btnRef.value, {
+    y: -2,
+    duration: 0.2,
+    ease: 'power2.out'
+  })
+  
+  // 图标旋转
+  if (iconRef.value) {
+    gsap.to(iconRef.value, {
+      rotation: 15,
+      duration: 0.2,
+      yoyo: true,
+      repeat: 1,
+      ease: 'power2.inOut'
+    })
+  }
+}
+
+function onLeave() {
+  if (props.disabled || props.loading) return
+  
+  gsap.to(btnRef.value, {
+    y: 0,
+    duration: 0.2,
+    ease: 'power2.out'
+  })
+}
+
+function onPress() {
+  if (props.disabled || props.loading) return
+  
+  gsap.to(btnRef.value, {
+    y: 0,
+    duration: 0.1
+  })
+}
+
+function onRelease() {
+  if (props.disabled || props.loading) return
+  
+  gsap.to(btnRef.value, {
+    y: -2,
+    duration: 0.1
+  })
+}
 </script>
 
 <style scoped>

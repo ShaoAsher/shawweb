@@ -6,7 +6,10 @@
   >
     <div class="form-section">
       <h2>上传图片</h2>
+      
+      <!-- 未选择图片时显示上传区域 -->
       <div
+        v-if="!originalImage"
         class="file-upload-area"
         :class="{ dragover: isDragging }"
         @click="triggerFileInput"
@@ -25,6 +28,32 @@
           @change="handleFileSelect"
         />
       </div>
+
+      <!-- 已选择图片时显示预览 -->
+      <div v-else class="selected-image-preview">
+        <div class="preview-card">
+          <div class="preview-header">
+            <div class="preview-title">📷 已选择的图片</div>
+            <AppButton 
+              variant="danger" 
+              icon="🗑️" 
+              size="sm"
+              @click="resetState"
+            >
+              删除
+            </AppButton>
+          </div>
+          <div class="preview-image-wrapper" @click="openFullscreen(originalPreviewUrl)">
+            <img :src="originalPreviewUrl" class="preview-image-thumb" alt="原图预览" />
+            <div class="preview-overlay">
+              <span class="preview-fullscreen-icon">🔍</span>
+              <span class="preview-fullscreen-text">点击查看大图</span>
+            </div>
+          </div>
+          <div class="meta">{{ originalMeta }}</div>
+        </div>
+      </div>
+
       <div v-if="statusMessage" class="status-message" :class="statusType">
         {{ statusMessage }}
       </div>
@@ -112,12 +141,22 @@
       <div class="preview-grid">
         <div class="preview-card">
           <div class="preview-title">原图</div>
-          <img :src="originalPreviewUrl" class="preview-image" alt="原图预览" />
+          <div class="preview-image-wrapper" @click="openFullscreen(originalPreviewUrl)">
+            <img :src="originalPreviewUrl" class="preview-image-thumb" alt="原图预览" />
+            <div class="preview-overlay">
+              <span class="preview-fullscreen-icon">🔍</span>
+            </div>
+          </div>
           <div class="meta">{{ originalMeta }}</div>
         </div>
         <div class="preview-card">
           <div class="preview-title">压缩后</div>
-          <img :src="compressedPreviewUrl" class="preview-image" alt="压缩预览" />
+          <div class="preview-image-wrapper" @click="openFullscreen(compressedPreviewUrl)">
+            <img :src="compressedPreviewUrl" class="preview-image-thumb" alt="压缩预览" />
+            <div class="preview-overlay">
+              <span class="preview-fullscreen-icon">🔍</span>
+            </div>
+          </div>
           <div class="meta">{{ compressedMeta }}</div>
         </div>
       </div>
@@ -126,11 +165,26 @@
         <AppButton variant="secondary" icon="🔄" @click="resetState">重新选择图片</AppButton>
       </ButtonGroup>
     </div>
+
+    <!-- 全屏预览模态框 -->
+    <transition name="modal-fade">
+      <div v-if="showFullscreen" class="fullscreen-modal" @click="closeFullscreen">
+        <div class="fullscreen-content-wrapper">
+          <button class="fullscreen-close" @click="closeFullscreen">✕</button>
+          <div class="fullscreen-scroll-container" @click.stop>
+            <img :src="fullscreenImageUrl" class="fullscreen-image" alt="全屏预览" />
+          </div>
+          <div class="fullscreen-hint">滚动查看完整图片 / 点击背景关闭</div>
+        </div>
+      </div>
+    </transition>
   </ToolLayout>
 </template>
 
 <script setup>
 import ToolLayout from '@/components/ToolLayout.vue'
+import AppButton from '@/components/AppButton.vue'
+import ButtonGroup from '@/components/ButtonGroup.vue'
 import { computed, ref } from 'vue'
 
 const fileInput = ref(null)
@@ -147,10 +201,12 @@ const showPreview = ref(false)
 const compressing = ref(false)
 const statusMessage = ref('')
 const statusType = ref('success')
+const showFullscreen = ref(false)
+const fullscreenImageUrl = ref('')
 
 const maxWidth = ref(null)
 const maxHeight = ref(null)
-const targetSizeKB = ref(null)
+const targetSizeKB = ref(300)
 const formatSelect = ref('auto')
 const quality = ref(92)
 const avoidUpscale = ref(true)
@@ -210,8 +266,19 @@ function showStatus(text, type) {
 }
 
 function resetState() {
+  // 释放原图预览 URL
+  if (originalPreviewUrl.value) {
+    URL.revokeObjectURL(originalPreviewUrl.value)
+  }
+  // 释放压缩图预览 URL
+  if (compressedPreviewUrl.value) {
+    URL.revokeObjectURL(compressedPreviewUrl.value)
+  }
+  
   originalImage.value = null
   originalBlob.value = null
+  originalPreviewUrl.value = ''
+  originalMeta.value = '-'
   compressedBlob.value = null
   compressedPreviewUrl.value = ''
   compressedMeta.value = '-'
@@ -384,6 +451,18 @@ function downloadCompressed() {
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
 }
+
+function openFullscreen(imageUrl) {
+  fullscreenImageUrl.value = imageUrl
+  showFullscreen.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeFullscreen() {
+  showFullscreen.value = false
+  fullscreenImageUrl.value = ''
+  document.body.style.overflow = ''
+}
 </script>
 
 <style scoped>
@@ -468,6 +547,34 @@ function downloadCompressed() {
 .file-upload-hint {
   color: var(--color-text-secondary);
   font-size: 12px;
+}
+
+.selected-image-preview {
+  margin-bottom: var(--spacing-md);
+}
+
+.selected-image-preview .preview-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  box-shadow: 0 4px 12px var(--color-shadow-primary);
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.preview-header .preview-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin-bottom: 0;
 }
 
 .btn {
@@ -598,16 +705,196 @@ function downloadCompressed() {
   margin-bottom: 8px;
 }
 
-.preview-image {
+.preview-image-wrapper {
+  position: relative;
   width: 100%;
-  height: auto;
+  max-height: 300px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: var(--color-surface-alt);
+}
+
+.preview-image-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: 300px;
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+  transition: transform 0.3s;
+}
+
+.preview-image-wrapper:hover .preview-image-thumb {
+  transform: scale(1.05);
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: var(--radius-sm);
+}
+
+.preview-image-wrapper:hover .preview-overlay {
+  opacity: 1;
+}
+
+.preview-fullscreen-icon {
+  font-size: 32px;
+  color: white;
+}
+
+.preview-fullscreen-text {
+  color: white;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
 }
 
 .meta {
   font-size: var(--font-size-small);
   color: var(--color-text-secondary);
   margin-top: 8px;
+}
+
+/* 全屏预览模态框 */
+.fullscreen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+.fullscreen-content-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px 20px;
+}
+
+.fullscreen-scroll-container {
+  width: 100%;
+  max-width: 95vw;
+  max-height: calc(100vh - 100px);
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  cursor: default;
+  /* 自定义滚动条 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.fullscreen-scroll-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.fullscreen-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.fullscreen-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.fullscreen-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.fullscreen-image {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  margin: auto;
+}
+
+.fullscreen-close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-full);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.fullscreen-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.fullscreen-hint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--font-size-small);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* 模态框动画 */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active .fullscreen-image,
+.modal-fade-leave-active .fullscreen-image {
+  transition: transform 0.3s ease;
+}
+
+.modal-fade-enter-from .fullscreen-image {
+  transform: scale(0.9);
+}
+
+.modal-fade-leave-to .fullscreen-image {
+  transform: scale(0.9);
 }
 </style>

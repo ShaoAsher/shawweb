@@ -1,5 +1,11 @@
 <template>
+  <!-- Vanta 背景动效 -->
+  <VantaBackground />
+  
+  <!-- 主题切换 -->
   <ThemeToggle />
+  
+  <!-- 路由视图 -->
   <router-view v-slot="{ Component, route }">
     <transition 
       :name="route.meta.transition || 'page'" 
@@ -14,9 +20,8 @@
 
 <script setup>
 import { initTheme } from './utils/themes.js'
-import './assets/css/theme.css'
-import './assets/css/animations.css'
 import ThemeToggle from './components/ThemeToggle.vue'
+import VantaBackground from './components/VantaBackground.vue'
 
 // 初始化主题
 initTheme()
@@ -80,6 +85,41 @@ body {
   overflow-x: hidden;
   font-size: var(--font-size-base);
   line-height: var(--line-height);
+  position: relative;
+}
+
+/* ========== CSS 动态背景 ========== */
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(102, 126, 234, 0.03) 0%, transparent 50%);
+  animation: backgroundFloat 20s ease-in-out infinite;
+}
+
+@keyframes backgroundFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* 确保内容在背景之上 */
+#app > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ========== 页面切换动画 ========== */
