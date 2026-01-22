@@ -24,7 +24,7 @@ export {
 export { loadScript, loadStyle, CDN_RESOURCES } from './cdn-loader.js'
 
 // 主题管理
-export { initTheme, setTheme, getTheme, THEME_PRESETS } from './themes.js'
+export { initTheme, setTheme, getCurrentTheme, getThemes } from './themes.js'
 
 // 通用工具函数
 export {
