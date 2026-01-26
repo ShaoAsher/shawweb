@@ -2,7 +2,7 @@
 export const homeConfig = {
   title: { zh: "常用工具面板", en: "Common Tools Panel" },
   description: { zh: "工具丰富齐全，快速访问使用。", en: "Rich and complete tools, quick access and use." },
-  searchPlaceholder: { zh: "🔍 搜索工具...", en: "🔍 Search tools..." },
+  searchPlaceholder: { zh: "搜索工具...", en: "Search tools..." },
   quickAccessTitle: { zh: "⚡ 快捷入口", en: "⚡ Quick Access" },
   noResultsTitle: { zh: "未找到相关工具", en: "No tools found" },
   noResultsText: { zh: "试试其他关键词吧", en: "Try other keywords" },
