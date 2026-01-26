@@ -9,11 +9,24 @@
         {{ serverInfo }}
       </div>
 
-      <button class="test-button" @click="runSpeedTest" :disabled="testing">
-        <span v-if="testing" class="spinner"></span>
-        <span v-else>🚀</span>
-        <span>{{ testing ? '测试中...' : '开始测速' }}</span>
-      </button>
+      <div class="controls-row">
+        <div class="unit-selector">
+          <label for="unitSelect">速度单位：</label>
+          <select id="unitSelect" v-model="speedUnit" @change="updateSpeedDisplay" class="unit-select">
+            <option value="Mbps">Mbps (兆比特/秒)</option>
+            <option value="MB/s">MB/s (兆字节/秒)</option>
+            <option value="Kbps">Kbps (千比特/秒)</option>
+            <option value="KB/s">KB/s (千字节/秒)</option>
+            <option value="Gbps">Gbps (千兆比特/秒)</option>
+          </select>
+        </div>
+
+        <button class="test-button" @click="runSpeedTest" :disabled="testing">
+          <span v-if="testing" class="spinner"></span>
+          <span v-else>🚀</span>
+          <span>{{ testing ? '测试中...' : '开始测速' }}</span>
+        </button>
+      </div>
 
       <div class="test-results">
         <div class="result-card" :class="{ testing: pingTesting }">
@@ -30,8 +43,8 @@
         <div class="result-card" :class="{ testing: downloadTesting }">
           <div class="result-icon">⬇️</div>
           <div class="result-label">下载速度</div>
-          <div class="result-value">{{ downloadValue }}</div>
-          <div class="result-unit">Mbps</div>
+          <div class="result-value">{{ formattedDownloadValue }}</div>
+          <div class="result-unit">{{ speedUnit }}</div>
           <div class="result-status">{{ downloadStatus }}</div>
           <div v-if="downloadTesting" class="progress-bar active">
             <div class="progress-fill" :style="{ width: downloadProgress + '%' }"></div>
@@ -41,8 +54,8 @@
         <div class="result-card" :class="{ testing: uploadTesting }">
           <div class="result-icon">⬆️</div>
           <div class="result-label">上传速度</div>
-          <div class="result-value">{{ uploadValue }}</div>
-          <div class="result-unit">Mbps</div>
+          <div class="result-value">{{ formattedUploadValue }}</div>
+          <div class="result-unit">{{ speedUnit }}</div>
           <div class="result-status">{{ uploadStatus }}</div>
           <div v-if="uploadTesting" class="progress-bar active">
             <div class="progress-fill" :style="{ width: uploadProgress + '%' }"></div>
@@ -62,11 +75,11 @@
           </div>
           <div class="summary-item">
             <div class="summary-label">下载速度</div>
-            <div class="summary-value">{{ summaryDownload }} Mbps</div>
+            <div class="summary-value">{{ formattedSummaryDownload }} {{ speedUnit }}</div>
           </div>
           <div class="summary-item">
             <div class="summary-label">上传速度</div>
-            <div class="summary-value">{{ summaryUpload }} Mbps</div>
+            <div class="summary-value">{{ formattedSummaryUpload }} {{ speedUnit }}</div>
           </div>
           <div class="summary-item">
             <div class="summary-label">测试时间</div>
@@ -79,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ToolLayout from '@/components/ToolLayout.vue'
 
 const serverInfo = ref('正在选择最佳测试服务器...')
@@ -105,35 +118,197 @@ const summaryDownload = ref('--')
 const summaryUpload = ref('--')
 const summaryTime = ref('--')
 
+// 单位切换相关
+const speedUnit = ref('Mbps')
+const rawDownloadMbps = ref(null) // 原始下载速度（Mbps）
+const rawUploadMbps = ref(null) // 原始上传速度（Mbps）
+
 let currentServer = null
 let testStartTime = null
+let userCountryCode = null
 
+// 单位转换函数：将 Mbps 转换为指定单位
+function convertSpeed(mbps, unit) {
+  if (mbps === null || mbps === undefined || isNaN(mbps) || mbps === '--' || mbps === '错误') {
+    return '--'
+  }
+
+  const value = parseFloat(mbps)
+  if (isNaN(value)) return '--'
+
+  switch (unit) {
+    case 'Mbps':
+      return value.toFixed(2)
+    case 'MB/s':
+      return (value / 8).toFixed(2)
+    case 'Kbps':
+      return (value * 1000).toFixed(2)
+    case 'KB/s':
+      return (value * 1000 / 8).toFixed(2)
+    case 'Gbps':
+      return (value / 1000).toFixed(3)
+    default:
+      return value.toFixed(2)
+  }
+}
+
+// 格式化显示值的计算属性
+const formattedDownloadValue = computed(() => {
+  if (rawDownloadMbps.value === null) {
+    return downloadValue.value
+  }
+  return convertSpeed(rawDownloadMbps.value, speedUnit.value)
+})
+
+const formattedUploadValue = computed(() => {
+  if (rawUploadMbps.value === null) {
+    return uploadValue.value
+  }
+  return convertSpeed(rawUploadMbps.value, speedUnit.value)
+})
+
+const formattedSummaryDownload = computed(() => {
+  if (summaryDownload.value === '--') return '--'
+  return convertSpeed(summaryDownload.value, speedUnit.value)
+})
+
+const formattedSummaryUpload = computed(() => {
+  if (summaryUpload.value === '--') return '--'
+  return convertSpeed(summaryUpload.value, speedUnit.value)
+})
+
+// 更新速度显示（当单位改变时）
+function updateSpeedDisplay() {
+  // 计算属性会自动更新，这里可以添加其他逻辑
+}
+
+// 测速服务器列表
+// 注意：下载和上传测试统一使用 Cloudflare 的测速服务（全球节点，自动选择最近节点）
+// pingUrl 用于测试延迟并选择最优服务器
 const testServers = [
+  // 中国大陆服务器（优先，用于延迟测试）
   {
-    name: 'Cloudflare',
+    name: 'Cloudflare (中国大陆节点)',
+    region: 'CN',
+    pingUrl: 'https://www.cloudflare.com',
+    downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 10
+  },
+  {
+    name: '阿里云 (北京)',
+    region: 'CN',
+    pingUrl: 'https://oss-cn-beijing.aliyuncs.com',
+    downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 10
+  },
+  {
+    name: '阿里云 (上海)',
+    region: 'CN',
+    pingUrl: 'https://oss-cn-shanghai.aliyuncs.com',
+    downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 10
+  },
+  {
+    name: '腾讯云 (北京)',
+    region: 'CN',
+    pingUrl: 'https://cos.ap-beijing.myqcloud.com',
+    downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 10
+  },
+  {
+    name: '百度云 (北京)',
+    region: 'CN',
+    pingUrl: 'https://bj.bcebos.com',
+    downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 10
+  },
+  // 国际服务器
+  {
+    name: 'Cloudflare (全球)',
+    region: 'US',
     pingUrl: 'https://1.1.1.1',
     downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
-    uploadUrl: 'https://speed.cloudflare.com/__up'
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 5
   },
   {
     name: 'Google',
+    region: 'US',
     pingUrl: 'https://www.google.com',
     downloadUrl: 'https://speed.cloudflare.com/__down?bytes=',
-    uploadUrl: 'https://speed.cloudflare.com/__up'
+    uploadUrl: 'https://speed.cloudflare.com/__up',
+    priority: 5
   }
 ]
 
+// 获取用户IP和地理位置
+async function getUserLocation() {
+  try {
+    const response = await fetch('https://ipinfo.io/json', {
+      cache: 'no-store'
+    })
+    if (!response.ok) {
+      throw new Error('无法获取IP信息')
+    }
+    const data = await response.json()
+    userCountryCode = data.country || null
+    return userCountryCode
+  } catch (error) {
+    console.log('获取用户位置失败:', error)
+    // 尝试备用API
+    try {
+      const response = await fetch('https://ipwhois.app/json/', {
+        cache: 'no-store'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          userCountryCode = data.country_code || null
+          return userCountryCode
+        }
+      }
+    } catch (fallbackError) {
+      console.log('备用API也失败:', fallbackError)
+    }
+    return null
+  }
+}
+
 async function selectBestServer() {
+  serverInfo.value = '正在检测用户位置...'
+  
+  // 获取用户地理位置
+  await getUserLocation()
+  
   serverInfo.value = '正在选择最佳测试服务器...'
   
-  let bestServer = testServers[0]
+  // 根据用户位置筛选服务器
+  let candidateServers = testServers
+  
+  // 如果用户在中国大陆，优先选择中国大陆服务器
+  if (userCountryCode === 'CN') {
+    const cnServers = testServers.filter(s => s.region === 'CN')
+    if (cnServers.length > 0) {
+      candidateServers = cnServers
+      serverInfo.value = '检测到中国大陆IP，优先选择国内服务器...'
+    }
+  }
+  
+  let bestServer = candidateServers[0]
   let bestPing = Infinity
+  let testedCount = 0
 
-  for (const server of testServers) {
+  // 测试所有候选服务器的延迟
+  for (const server of candidateServers) {
     try {
       const startTime = performance.now()
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 5000)
+      const timeoutId = setTimeout(() => controller.abort(), 3000) // 缩短超时时间以加快选择
 
       try {
         await fetch(server.pingUrl, {
@@ -149,6 +324,7 @@ async function selectBestServer() {
           bestPing = ping
           bestServer = server
         }
+        testedCount++
       } catch (fetchError) {
         clearTimeout(timeoutId)
         if (fetchError.name !== 'AbortError') {
@@ -160,8 +336,16 @@ async function selectBestServer() {
     }
   }
 
+  // 如果所有服务器都测试失败，使用第一个作为默认
+  if (testedCount === 0) {
+    bestServer = candidateServers[0]
+    serverInfo.value = `已选择测试服务器: ${bestServer.name} (默认)`
+  } else {
+    const regionInfo = userCountryCode === 'CN' ? ' (中国大陆)' : ''
+    serverInfo.value = `已选择测试服务器: ${bestServer.name}${regionInfo} (延迟: ${Math.round(bestPing)}ms)`
+  }
+
   currentServer = bestServer
-  serverInfo.value = `已选择测试服务器: ${bestServer.name}`
   return bestServer
 }
 
@@ -258,6 +442,7 @@ async function testDownload() {
     }
 
     const speedMbps = (totalBytes * 8) / (totalTime * 1000000)
+    rawDownloadMbps.value = speedMbps
     downloadValue.value = speedMbps.toFixed(2)
     downloadStatus.value = '测试完成'
     downloadTesting.value = false
@@ -314,8 +499,9 @@ async function testUpload() {
         totalTime += duration
       } catch (uploadError) {
         if (i === 0) {
-          const downloadSpeed = parseFloat(downloadValue.value) || 10
+          const downloadSpeed = rawDownloadMbps.value || 10
           const estimatedUpload = downloadSpeed * 0.1
+          rawUploadMbps.value = estimatedUpload
           uploadValue.value = estimatedUpload.toFixed(2)
           uploadStatus.value = '估算值（上传测试受限）'
           uploadTesting.value = false
@@ -329,6 +515,7 @@ async function testUpload() {
     }
 
     const speedMbps = (totalBytes * 8) / (totalTime * 1000000)
+    rawUploadMbps.value = speedMbps
     uploadValue.value = speedMbps.toFixed(2)
     uploadStatus.value = '测试完成'
     uploadTesting.value = false
@@ -337,8 +524,9 @@ async function testUpload() {
     return speedMbps
   } catch (error) {
     try {
-      const downloadSpeed = parseFloat(downloadValue.value) || 10
+      const downloadSpeed = rawDownloadMbps.value || 10
       const estimatedUpload = downloadSpeed * 0.1
+      rawUploadMbps.value = estimatedUpload
       uploadValue.value = estimatedUpload.toFixed(2)
       uploadStatus.value = '估算值（上传测试受限）'
       uploadTesting.value = false
@@ -358,6 +546,8 @@ async function runSpeedTest() {
   pingValue.value = '--'
   downloadValue.value = '--'
   uploadValue.value = '--'
+  rawDownloadMbps.value = null
+  rawUploadMbps.value = null
   pingStatus.value = '等待测试'
   downloadStatus.value = '等待测试'
   uploadStatus.value = '等待测试'
@@ -410,6 +600,50 @@ onMounted(() => {
   font-size: var(--font-size-small);
   color: var(--color-text-secondary);
   text-align: center;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.unit-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.unit-selector label {
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.unit-select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 180px;
+}
+
+.unit-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-shadow-primary);
+}
+
+.unit-select:hover {
+  border-color: var(--color-primary);
 }
 
 .test-button {
@@ -595,6 +829,19 @@ onMounted(() => {
 @media (max-width: 768px) {
   .test-results {
     grid-template-columns: 1fr;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .unit-selector {
+    width: 100%;
+  }
+
+  .unit-select {
+    width: 100%;
   }
 
   .test-button {
