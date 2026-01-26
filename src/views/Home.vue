@@ -4,8 +4,8 @@
       <div class="header-logo">
         <img src="/robot-icon.png" alt="Robot Icon" class="logo-image" />
       </div>
-      <h1 class="header-title">{{ homeConfig.title[currentLang] }}</h1>
-      <p class="header-desc">{{ homeConfig.description[currentLang] }}</p>
+      <h1 class="header-title">{{ homeConfig.title }}</h1>
+      <p class="header-desc">{{ homeConfig.description }}</p>
     </div>
     <div class="content">
       <!-- 搜索框 -->
@@ -15,7 +15,7 @@
           class="search-box" 
           ref="searchBoxRef"
           v-model="searchQuery"
-          :placeholder="homeConfig.searchPlaceholder[currentLang]"
+          :placeholder="homeConfig.searchPlaceholder"
           @input="handleSearch"
           @focus="isSearchFocused = true"
           @blur="isSearchFocused = false"
@@ -43,7 +43,7 @@
             @click="switchTab(tab.id)"
           >
             <span class="tab-icon">{{ tab.icon }}</span>
-            <span class="tab-text">{{ tab.name[currentLang] }}</span>
+            <span class="tab-text">{{ tab.name }}</span>
             <span class="tab-count">{{ getTabToolCount(tab.id) }}</span>
           </button>
           <!-- 滑动指示器 -->
@@ -61,7 +61,7 @@
           <TransitionGroup name="card-list" tag="div" class="tools-grid">
             <div
               v-for="(tool, index) in displayTools"
-              :key="tool.href"
+              :key="tool.id"
               class="tool-card hover-lift"
               :style="{ '--card-index': index }"
               @click="navigateToTool(tool.href)"
@@ -70,7 +70,7 @@
                 <div class="tool-icon-wrapper">{{ tool.icon }}</div>
                 <div class="tool-info">
                   <div class="tool-title-row">
-                    <div class="tool-title">{{ getToolText(tool, 'title') }}</div>
+                    <div class="tool-title">{{ tool.title }}</div>
                     <div class="tool-rating">
                       <span
                         v-for="i in 5"
@@ -85,10 +85,10 @@
                   </span>
                 </div>
               </div>
-              <div class="tool-desc">{{ getToolText(tool, 'desc') }}</div>
+              <div class="tool-desc">{{ tool.desc }}</div>
               <div class="tool-footer">
                 <span class="tool-link">
-                  {{ currentLang === 'en' ? 'Use Now' : '立即使用' }}
+                  立即使用
                   <span class="tool-link-arrow">→</span>
                 </span>
               </div>
@@ -102,9 +102,9 @@
         <div v-if="displayTools.length === 0" class="no-results show">
           <div class="no-results-icon animate-float">🔍</div>
           <div class="no-results-title">
-            {{ homeConfig.noResultsTitle[currentLang] }}
+            {{ homeConfig.noResultsTitle }}
           </div>
-          <div class="no-results-text">{{ homeConfig.noResultsText[currentLang] }}</div>
+          <div class="no-results-text">{{ homeConfig.noResultsText }}</div>
         </div>
       </transition>
 
@@ -112,7 +112,7 @@
       <div class="quick-access">
         <div class="quick-access-title">
           <span class="quick-access-icon">⚡</span>
-          <span>{{ homeConfig.quickAccessTitle[currentLang] }}</span>
+          <span>{{ homeConfig.quickAccessTitle }}</span>
         </div>
         <div class="quick-links">
           <a
@@ -124,7 +124,7 @@
             @click.prevent="navigateToTool(tool.href)"
           >
             <span class="quick-link-icon">{{ tool.icon }}</span>
-            <span class="quick-link-text">{{ getToolText(tool, 'title') }}</span>
+            <span class="quick-link-text">{{ tool.title }}</span>
           </a>
         </div>
       </div>
@@ -135,12 +135,11 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { toolsData, homeConfig, categories } from '../data/tools.js'
+import { toolsData, homeConfig, categories, toolsMap } from '../data/tools.js'
 import '../assets/css/home.css'
 
 const router = useRouter()
 
-const currentLang = ref('zh')
 const activeTab = ref('all')
 const searchQuery = ref('')
 const isSearchFocused = ref(false)
@@ -152,12 +151,12 @@ const tabRefs = ref({})
 const tools = toolsData.tools
 
 const tabs = [
-  { id: 'all', icon: '🌟', name: { zh: '全部', en: 'All' } },
-  { id: 'dev', icon: '💻', name: { zh: '开发工具', en: 'Development Tools' } },
-  { id: 'image', icon: '🖼️', name: { zh: '图片工具', en: 'Image Tools' } },
-  { id: 'text', icon: '📝', name: { zh: '文本工具', en: 'Text Tools' } },
-  { id: 'converter', icon: '🔄', name: { zh: '转换工具', en: 'Converter Tools' } },
-  { id: 'life', icon: '🌍', name: { zh: '生活工具', en: 'Life Tools' } }
+  { id: 'all', icon: '🌟', name: '全部' },
+  { id: 'dev', icon: '💻', name: '开发工具' },
+  { id: 'image', icon: '🖼️', name: '图片工具' },
+  { id: 'text', icon: '📝', name: '文本工具' },
+  { id: 'converter', icon: '🔄', name: '转换工具' },
+  { id: 'life', icon: '🌍', name: '生活工具' }
 ]
 
 // 页签指示器样式
@@ -212,16 +211,8 @@ const quickAccessTools = computed(() => {
   return popularTools
 })
 
-function getToolText(tool, field) {
-  if (!tool || !tool[field]) return ''
-  const value = tool[field]
-  return typeof value === 'object' ? (value[currentLang.value] || value.zh || '') : value
-}
-
 function getCategoryName(category) {
-  if (!categories[category]) return category
-  const cat = categories[category]
-  return typeof cat === 'object' ? (cat[currentLang.value] || cat.zh || category) : cat
+  return categories[category] || category
 }
 
 function getCategoryClass(category) {
@@ -258,53 +249,80 @@ function navigateToTool(href) {
   }
 }
 
+// 优化的搜索函数，使用 id 进行快速匹配
 function fuzzySearch(query) {
   if (!query || query.trim() === '') return tools
+  
   const lowerQuery = query.toLowerCase().trim()
   const queryWords = lowerQuery.split(/\s+/).filter(w => w.length > 0)
+  
+  // 如果查询是工具 ID，直接返回匹配的工具
+  if (toolsMap.has(lowerQuery)) {
+    return [toolsMap.get(lowerQuery)]
+  }
 
-  return tools.filter(tool => {
-    const titleZh = getToolText(tool, 'title')
-    const titleEn = (tool.title && typeof tool.title === 'object') ? (tool.title.en || '') : ''
-    const descZh = getToolText(tool, 'desc')
-    const descEn = (tool.desc && typeof tool.desc === 'object') ? (tool.desc.en || '') : ''
-    const keywords = tool.keywords || {}
-    const keywordsZh = keywords.zh || []
-    const keywordsEn = keywords.en || []
-
-    const searchText = (
-      titleZh + ' ' + titleEn + ' ' +
-      descZh + ' ' + descEn + ' ' +
-      keywordsZh.join(' ') + ' ' +
-      keywordsEn.join(' ')
-    ).toLowerCase()
-
-    const titleMatch = queryWords.some(word =>
-      titleZh.toLowerCase().includes(word) ||
-      titleEn.toLowerCase().includes(word)
-    ) || titleZh.toLowerCase().includes(lowerQuery) ||
-      titleEn.toLowerCase().includes(lowerQuery)
-
-    const descMatch = queryWords.some(word =>
-      descZh.toLowerCase().includes(word) ||
-      descEn.toLowerCase().includes(word)
-    ) || descZh.toLowerCase().includes(lowerQuery) ||
-      descEn.toLowerCase().includes(lowerQuery)
-
-    const keywordMatch = queryWords.some(word =>
-      keywordsZh.some(kw => kw.toLowerCase().includes(word) || word.includes(kw.toLowerCase())) ||
-      keywordsEn.some(kw => kw.toLowerCase().includes(word) || word.includes(kw.toLowerCase()))
-    ) || keywordsZh.some(kw => kw.toLowerCase().includes(lowerQuery)) ||
-      keywordsEn.some(kw => kw.toLowerCase().includes(lowerQuery))
-
-    const categoryName = getCategoryName(tool.category)
-    const categoryMatch = categoryName.toLowerCase().includes(lowerQuery)
-
-    const fullTextMatch = searchText.includes(lowerQuery) ||
-      queryWords.every(word => searchText.includes(word))
-
-    return titleMatch || descMatch || keywordMatch || categoryMatch || fullTextMatch
+  // 构建搜索文本并计算匹配分数
+  const results = tools.map(tool => {
+    const title = tool.title.toLowerCase()
+    const desc = tool.desc.toLowerCase()
+    const keywords = (tool.keywords || []).map(kw => kw.toLowerCase())
+    const categoryName = getCategoryName(tool.category).toLowerCase()
+    const toolId = tool.id.toLowerCase()
+    
+    // 构建完整搜索文本
+    const searchText = `${title} ${desc} ${keywords.join(' ')} ${categoryName} ${toolId}`.toLowerCase()
+    
+    let score = 0
+    
+    // ID 精确匹配（最高优先级）
+    if (toolId === lowerQuery) {
+      score += 1000
+    } else if (toolId.includes(lowerQuery)) {
+      score += 500
+    }
+    
+    // 标题匹配（高优先级）
+    if (title === lowerQuery) {
+      score += 100
+    } else if (title.includes(lowerQuery)) {
+      score += 50
+    } else if (queryWords.some(word => title.includes(word))) {
+      score += 20
+    }
+    
+    // 关键词匹配（中优先级）
+    const keywordMatches = keywords.filter(kw => 
+      kw.includes(lowerQuery) || queryWords.some(word => kw.includes(word))
+    )
+    score += keywordMatches.length * 15
+    
+    // 描述匹配（低优先级）
+    if (desc.includes(lowerQuery)) {
+      score += 10
+    } else if (queryWords.some(word => desc.includes(word))) {
+      score += 5
+    }
+    
+    // 分类匹配
+    if (categoryName.includes(lowerQuery)) {
+      score += 8
+    }
+    
+    // 全文匹配
+    if (searchText.includes(lowerQuery)) {
+      score += 3
+    } else if (queryWords.every(word => searchText.includes(word))) {
+      score += 2
+    }
+    
+    return { tool, score }
   })
+  
+  // 过滤掉分数为 0 的结果，并按分数降序排序
+  return results
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(item => item.tool)
 }
 
 function handleSearch() {
