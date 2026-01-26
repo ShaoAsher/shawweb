@@ -26,20 +26,27 @@
           </div>
           <div class="editor-shortcuts-bar">
             <div class="editor-shortcuts">
-              <button class="toolbar-btn" data-i="h1" @click="insertText('h1')">H1</button>
-              <button class="toolbar-btn" data-i="h2" @click="insertText('h2')">H2</button>
-              <button class="toolbar-btn" data-i="h3" @click="insertText('h3')">H3</button>
-              <button class="toolbar-btn" data-i="bold" @click="insertText('bold')">𝐁</button>
-              <button class="toolbar-btn" data-i="italic" @click="insertText('italic')">𝐼</button>
-              <button class="toolbar-btn" data-i="link" @click="insertText('link')">🔗</button>
-              <button class="toolbar-btn" data-i="image" @click="insertText('image')">🖼️</button>
-              <button class="toolbar-btn" data-i="code" @click="insertText('code')">ᐸᐳ</button>
-              <button class="toolbar-btn" data-i="codeblock" @click="insertText('codeblock')">📦</button>
-              <button class="toolbar-btn" data-i="quote" @click="insertText('quote')">❝</button>
-              <button class="toolbar-btn" data-i="list" @click="insertText('list')">•</button>
-              <button class="toolbar-btn" data-i="olist" @click="insertText('olist')">1.</button>
-              <button class="toolbar-btn" data-i="table" @click="insertText('table')">▦</button>
-              <button class="toolbar-btn" data-i="hr" @click="insertText('hr')">➖</button>
+              <button class="toolbar-btn tooltip" data-tooltip="一级标题" data-i="h1" @click="insertText('h1')">H1</button>
+              <button class="toolbar-btn tooltip" data-tooltip="二级标题" data-i="h2" @click="insertText('h2')">H2</button>
+              <button class="toolbar-btn tooltip" data-tooltip="三级标题" data-i="h3" @click="insertText('h3')">H3</button>
+              <button class="toolbar-btn tooltip" data-tooltip="粗体" data-i="bold" @click="insertText('bold')">𝐁</button>
+              <button class="toolbar-btn tooltip" data-tooltip="斜体" data-i="italic" @click="insertText('italic')">𝐼</button>
+              <button class="toolbar-btn tooltip" data-tooltip="链接" data-i="link" @click="insertText('link')">🔗</button>
+              <button class="toolbar-btn tooltip" data-tooltip="插入图片（可选择文件）" data-i="image" @click="insertImage">🖼️</button>
+              <input 
+                ref="imageInputRef"
+                type="file" 
+                accept="image/*" 
+                style="display: none"
+                @change="handleImageSelect"
+              />
+              <button class="toolbar-btn tooltip" data-tooltip="行内代码" data-i="code" @click="insertText('code')">ᐸᐳ</button>
+              <button class="toolbar-btn tooltip" data-tooltip="代码块" data-i="codeblock" @click="insertText('codeblock')">📦</button>
+              <button class="toolbar-btn tooltip" data-tooltip="引用" data-i="quote" @click="insertText('quote')">❝</button>
+              <button class="toolbar-btn tooltip" data-tooltip="无序列表" data-i="list" @click="insertText('list')">•</button>
+              <button class="toolbar-btn tooltip" data-tooltip="有序列表" data-i="olist" @click="insertText('olist')">1.</button>
+              <button class="toolbar-btn tooltip" data-tooltip="表格" data-i="table" @click="insertText('table')">▦</button>
+              <button class="toolbar-btn tooltip" data-tooltip="分隔线" data-i="hr" @click="insertText('hr')">➖</button>
             </div>
           </div>
           <textarea 
@@ -47,7 +54,7 @@
             v-model="editorContent"
             class="editor-textarea" 
             placeholder="在此输入 Markdown 内容..."
-            @input="updatePreview"
+            @input="handleInput"
             @scroll="handleEditorScroll"
             @click="handleEditorClick"
             @keyup="handleEditorKeyup"
@@ -74,13 +81,18 @@ const router = useRouter()
 
 const editorRef = ref(null)
 const previewRef = ref(null)
+const imageInputRef = ref(null)
 const editorContent = ref('')
 const marked = ref(null)
 const hljs = ref(null)
 const isSyncingScroll = ref(false)
 const isUserScrolling = ref(false)
 const lastScrollTop = ref(0)
-const shortcutHistory = ref([])
+
+// 撤销/重做历史记录
+const history = ref([])
+const historyIndex = ref(-1)
+const maxHistorySize = 50
 
 const charCountText = computed(() => {
   return `${editorContent.value.length.toLocaleString()} 字符`
@@ -143,6 +155,18 @@ function updatePreview() {
   })
 }
 
+// 处理输入事件
+function handleInput() {
+  updatePreview()
+  // 输入时延迟添加到历史记录
+  if (handleInput.saveTimeout) {
+    clearTimeout(handleInput.saveTimeout)
+  }
+  handleInput.saveTimeout = setTimeout(() => {
+    addToHistory()
+  }, 500)
+}
+
 watch(previewHtml, () => {
   nextTick(() => {
     if (previewRef.value && hljs.value) {
@@ -153,18 +177,107 @@ watch(previewHtml, () => {
   })
 })
 
-function pushShortcutHistory() {
-  if (!editorRef.value || !previewRef.value) return
-  shortcutHistory.value.push({
-    value: editorContent.value,
-    selectionStart: editorRef.value.selectionStart,
-    selectionEnd: editorRef.value.selectionEnd,
-    editorScrollTop: editorRef.value.scrollTop,
-    previewScrollTop: previewRef.value.scrollTop
-  })
-  if (shortcutHistory.value.length > 100) {
-    shortcutHistory.value.shift()
+// 添加到历史记录
+function addToHistory() {
+  if (!editorRef.value) return
+  
+  const currentContent = editorContent.value
+  
+  // 如果内容没有变化，不添加到历史记录
+  if (history.value.length > 0 && history.value[historyIndex.value] === currentContent) {
+    return
   }
+  
+  // 如果当前不在历史记录末尾，删除后面的记录
+  if (historyIndex.value < history.value.length - 1) {
+    history.value = history.value.slice(0, historyIndex.value + 1)
+  }
+  
+  // 添加新记录
+  history.value.push(currentContent)
+  historyIndex.value = history.value.length - 1
+  
+  // 限制历史记录大小
+  if (history.value.length > maxHistorySize) {
+    history.value.shift()
+    historyIndex.value = history.value.length - 1
+  }
+}
+
+// 撤销
+function undo() {
+  if (historyIndex.value > 0) {
+    historyIndex.value--
+    editorContent.value = history.value[historyIndex.value]
+    updatePreview()
+  }
+}
+
+// 重做
+function redo() {
+  if (historyIndex.value < history.value.length - 1) {
+    historyIndex.value++
+    editorContent.value = history.value[historyIndex.value]
+    updatePreview()
+  }
+}
+
+// 保存到 localStorage
+function saveToStorage() {
+  try {
+    localStorage.setItem('markdownEditorContent', editorContent.value)
+    localStorage.setItem('markdownEditorHistory', JSON.stringify(history.value))
+    localStorage.setItem('markdownEditorHistoryIndex', historyIndex.value.toString())
+    alert('已保存')
+  } catch (err) {
+    alert('保存失败：' + err.message)
+  }
+}
+
+// 插入图片（打开文件选择器）
+function insertImage() {
+  if (imageInputRef.value) {
+    imageInputRef.value.click()
+  }
+}
+
+// 处理图片文件选择
+function handleImageSelect(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  
+  // 检查文件类型
+  if (!file.type.startsWith('image/')) {
+    alert('请选择图片文件')
+    return
+  }
+  
+  // 使用文件名作为图片路径（相对路径）
+  const imagePath = `./images/${file.name}`
+  const alt = file.name.replace(/\.[^/.]+$/, '') // 使用文件名（不含扩展名）作为 alt
+  
+  // 插入 Markdown 图片语法
+  if (!editorRef.value) return
+  
+  const textarea = editorRef.value
+  const start = textarea.selectionStart
+  const end = textarea.selectionEnd
+  
+    addToHistory()
+    
+    const imageMarkdown = `![${alt}](${imagePath})`
+  const newText = editorContent.value.substring(0, start) + imageMarkdown + editorContent.value.substring(end)
+  editorContent.value = newText
+  
+  nextTick(() => {
+    const newPos = start + imageMarkdown.length
+    textarea.setSelectionRange(newPos, newPos)
+    textarea.focus()
+    updatePreview()
+  })
+  
+  // 清空 input，以便可以再次选择同一文件
+  event.target.value = ''
 }
 
 function insertText(type) {
@@ -175,7 +288,7 @@ function insertText(type) {
   const selected = editorContent.value.substring(start, end)
   let insert = ''
   
-  pushShortcutHistory()
+  addToHistory()
   
   if (type === 'h1') { insert = `# ${selected || '标题 1'}` }
   else if (type === 'h2') { insert = `## ${selected || '标题 2'}` }
@@ -411,24 +524,33 @@ function handleEditorKeyup(e) {
 }
 
 function handleEditorKeydown(e) {
-  if ((e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
-    if (shortcutHistory.value.length > 0) {
-      e.preventDefault()
-      const last = shortcutHistory.value.pop()
-      editorContent.value = last.value
-      editorRef.value.selectionStart = last.selectionStart
-      editorRef.value.selectionEnd = last.selectionEnd
-      editorRef.value.scrollTop = last.editorScrollTop || 0
-      updatePreview()
-      if (previewRef.value) previewRef.value.scrollTop = last.previewScrollTop || 0
-      return
-    }
+  // Ctrl/Cmd + Z 撤销
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+    e.preventDefault()
+    undo()
+    return
   }
+  
+  // Ctrl/Cmd + Shift + Z 或 Ctrl/Cmd + Y 重做
+  if ((e.ctrlKey || e.metaKey) && ((e.shiftKey && e.key === 'z') || e.key === 'y')) {
+    e.preventDefault()
+    redo()
+    return
+  }
+  
+  // Ctrl/Cmd + S 保存
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    saveToStorage()
+    return
+  }
+  
+  // Tab 键处理
   if (e.key === 'Tab') {
     e.preventDefault()
     const start = editorRef.value.selectionStart
     const end = editorRef.value.selectionEnd
-    pushShortcutHistory()
+    addToHistory()
     if (typeof editorRef.value.setRangeText === 'function') {
       editorRef.value.setRangeText('    ', start, end, 'end')
     } else {
@@ -436,6 +558,18 @@ function handleEditorKeydown(e) {
       editorRef.value.selectionStart = editorRef.value.selectionEnd = start + 4
     }
     updatePreview()
+    return
+  }
+  
+  // 其他输入操作时添加到历史记录（延迟添加，避免频繁记录）
+  if (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+    // 延迟添加到历史记录，避免每次输入都记录
+    if (handleEditorKeydown.saveTimeout) {
+      clearTimeout(handleEditorKeydown.saveTimeout)
+    }
+    handleEditorKeydown.saveTimeout = setTimeout(() => {
+      addToHistory()
+    }, 500) // 500ms 后添加到历史记录
   }
 }
 
@@ -562,14 +696,60 @@ function downloadHtml() {
 }
 
 onMounted(async () => {
-  await loadLibraries()
-  const stored = sessionStorage.getItem('markdownContent') || ''
-  if (stored && stored.trim()) {
-    editorContent.value = stored
-    updatePreview()
-  } else {
-    updatePreview()
+  // 从 localStorage 恢复内容和历史记录
+  try {
+    const stored = localStorage.getItem('markdownEditorContent')
+    if (stored) {
+      editorContent.value = stored
+    }
+    
+    const storedHistory = localStorage.getItem('markdownEditorHistory')
+    if (storedHistory) {
+      history.value = JSON.parse(storedHistory)
+      const storedIndex = localStorage.getItem('markdownEditorHistoryIndex')
+      if (storedIndex) {
+        historyIndex.value = parseInt(storedIndex, 10)
+      } else {
+        historyIndex.value = history.value.length - 1
+      }
+    } else {
+      // 初始化历史记录
+      history.value = [editorContent.value]
+      historyIndex.value = 0
+    }
+  } catch (err) {
+    console.error('恢复历史记录失败:', err)
+    history.value = [editorContent.value]
+    historyIndex.value = 0
   }
+  
+  // 加载库
+  await loadLibraries()
+  
+  // 优先从 localStorage 恢复（持久化保存）
+  const storedLocal = localStorage.getItem('markdownEditorContent')
+  if (storedLocal && storedLocal.trim()) {
+    editorContent.value = storedLocal
+  } else {
+    // 如果没有持久化保存，尝试从 sessionStorage 恢复（临时保存）
+    const stored = sessionStorage.getItem('markdownContent') || ''
+    if (stored && stored.trim()) {
+      editorContent.value = stored
+    }
+  }
+  
+  // 如果没有历史记录，初始化
+  if (history.value.length === 0) {
+    history.value = [editorContent.value]
+    historyIndex.value = 0
+  }
+  
+  updatePreview()
+  
+  // 监听内容变化，保存到 sessionStorage（用于临时保存）
+  watch(editorContent, (newVal) => {
+    sessionStorage.setItem('markdownContent', newVal)
+  })
 })
 </script>
 

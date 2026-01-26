@@ -24,6 +24,7 @@ const toolRoutes = {
   // Text 文本工具
   'text/string_encryptor': () => import('../views/tools/text/StringEncryptor.vue'),
   'text/string_generator': () => import('../views/tools/text/StringGenerator.vue'),
+  'text/html_editor': () => import('../views/tools/text/HtmlEditor.vue'),
   'text/markdown': () => import('../views/tools/text/markdown/MarkdownHome.vue'),
   'text/markdown/compile': () => import('../views/tools/text/markdown/MarkdownCompile.vue'),
   'text/markdown/preview': () => import('../views/tools/text/markdown/MarkdownPreview.vue'),

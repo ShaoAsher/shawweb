@@ -171,6 +171,16 @@ export const toolsData = {
       rating: 5
     },
     {
+      id: "html_editor",
+      icon: "📝",
+      title: "HTML 富文本编辑器",
+      desc: "支持 HTML 编辑、实时预览和去除 HTML 转义标签功能，提供内联和 iframe 两种预览模式。",
+      keywords: ["html", "富文本", "编辑器", "预览", "转义", "unescape", "wysiwyg", "html编辑"],
+      href: "/tools/text/html_editor",
+      category: "text",
+      rating: 5
+    },
+    {
       id: "timestamp_converter",
       icon: "⏰",
       title: "时间戳转换工具",
