@@ -239,6 +239,36 @@ export const toolsData = {
       href: "/tools/life/speed_test",
       category: "life",
       rating: 5
+    },
+    {
+      id: "pomodoro_timer",
+      icon: "⏱️",
+      title: "专注时钟",
+      desc: "番茄工作法计时器，支持专注、短休息、长休息三种模式，帮助提高工作效率。",
+      keywords: ["番茄钟", "专注", "计时器", "pomodoro", "工作", "效率", "时间管理", "休息"],
+      href: "/tools/life/pomodoro_timer",
+      category: "life",
+      rating: 5
+    },
+    {
+      id: "decision_wheel",
+      icon: "🎯",
+      title: "决定转盘",
+      desc: "添加选项，转动转盘帮你做决定，支持自定义选项列表，让选择变得有趣。",
+      keywords: ["决定", "转盘", "选择", "随机", "decision", "wheel", "spinner", "抽签"],
+      href: "/tools/life/decision_wheel",
+      category: "life",
+      rating: 4
+    },
+    {
+      id: "chinese_calendar",
+      icon: "📅",
+      title: "中国日历",
+      desc: "查看农历日期、节气、节日、宜忌和历史上的今天，了解传统文化和重要事件。",
+      keywords: ["日历", "农历", "节气", "节日", "宜忌", "历史上的今天", "传统", "农历日期"],
+      href: "/tools/life/chinese_calendar",
+      category: "life",
+      rating: 5
     }
   ]
 }

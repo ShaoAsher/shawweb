@@ -59,6 +59,9 @@ const toolRoutes = {
   // Life 生活工具
   'life/ip_query': () => import('./tools/life/IpQuery.vue'),
   'life/speed_test': () => import('./tools/life/SpeedTest.vue'),
+  'life/pomodoro_timer': () => import('./tools/life/PomodoroTimer.vue'),
+  'life/decision_wheel': () => import('./tools/life/DecisionWheel.vue'),
+  'life/chinese_calendar': () => import('./tools/life/ChineseCalendar.vue'),
 }
 
 async function loadComponent() {

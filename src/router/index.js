@@ -40,6 +40,9 @@ const toolRoutes = {
   // Life 生活工具
   'life/ip_query': () => import('../views/tools/life/IpQuery.vue'),
   'life/speed_test': () => import('../views/tools/life/SpeedTest.vue'),
+  'life/pomodoro_timer': () => import('../views/tools/life/PomodoroTimer.vue'),
+  'life/decision_wheel': () => import('../views/tools/life/DecisionWheel.vue'),
+  'life/chinese_calendar': () => import('../views/tools/life/ChineseCalendar.vue'),
 }
 
 const routes = [
