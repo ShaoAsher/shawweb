@@ -182,6 +182,8 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import ToolLayout from '@/components/ToolLayout.vue'
+import AppButton from '@/components/AppButton.vue'
+import ButtonGroup from '@/components/ButtonGroup.vue'
 import { loadScript } from '@/utils/cdn-loader.js'
 
 const activeTab = ref('qrcode')
@@ -239,24 +241,40 @@ async function generateQRCode() {
 
   // 确保库已加载
   if (typeof QRCode === 'undefined') {
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js')
+    try {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js')
+    } catch (e) {
+      alert('加载二维码库失败，请检查网络')
+      return
+    }
   }
+
+  // 等待库完全加载（双重保险）
+  if (typeof QRCode === 'undefined') {
+    alert('二维码库加载失败，请重试')
+    return
+  }
+
+  qrcodeGenerated.value = true
 
   await nextTick()
 
   const qrcodeDiv = document.getElementById('qrcode')
-  qrcodeDiv.innerHTML = ''
+  if (qrcodeDiv) {
+    qrcodeDiv.innerHTML = ''
 
-  qrcodeInstance = new QRCode(qrcodeDiv, {
-    text: qrcodeText.value,
-    width: qrcodeSize.value,
-    height: qrcodeSize.value,
-    colorDark: qrcodeColor.value,
-    colorLight: qrcodeBgColor.value,
-    correctLevel: QRCode.CorrectLevel[qrcodeErrorLevel.value]
-  })
-
-  qrcodeGenerated.value = true
+    qrcodeInstance = new QRCode(qrcodeDiv, {
+      text: qrcodeText.value,
+      width: qrcodeSize.value,
+      height: qrcodeSize.value,
+      colorDark: qrcodeColor.value,
+      colorLight: qrcodeBgColor.value,
+      correctLevel: QRCode.CorrectLevel[qrcodeErrorLevel.value]
+    })
+  } else {
+    console.error('QR code container not found')
+    alert('生成失败：未找到二维码容器')
+  }
 }
 
 function clearQRCode() {
@@ -290,8 +308,21 @@ async function generateBarcode() {
 
   // 确保库已加载
   if (typeof JsBarcode === 'undefined') {
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js')
+    try {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js')
+    } catch (e) {
+      alert('加载条形码库失败，请检查网络')
+      return
+    }
   }
+
+  // 等待库完全加载（双重保险）
+  if (typeof JsBarcode === 'undefined') {
+    alert('条形码库加载失败，请重试')
+    return
+  }
+
+  barcodeGenerated.value = true
 
   await nextTick()
 
@@ -304,9 +335,9 @@ async function generateBarcode() {
       lineColor: barcodeColor.value,
       background: barcodeBgColor.value
     })
-    barcodeGenerated.value = true
   } catch (e) {
     alert('生成条形码失败：' + e.message)
+    barcodeGenerated.value = false
   }
 }
 
