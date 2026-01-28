@@ -261,6 +261,16 @@ export const toolsData = {
       rating: 4
     },
     {
+      id: "mbti_test",
+      icon: "🧠",
+      title: "MBTI 性格测试",
+      desc: "探索您的性格类型，了解您的优势与盲点，只需几分钟，即可获得详细的性格分析报告。",
+      keywords: ["mbti", "性格", "测试", "心理", "人格", "分析", "16型人格"],
+      href: "/tools/life/mbti_test",
+      category: "life",
+      rating: 5
+    },
+    {
       id: "chinese_calendar",
       icon: "📅",
       title: "中国日历",

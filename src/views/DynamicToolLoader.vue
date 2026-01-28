@@ -61,6 +61,7 @@ const toolRoutes = {
   'life/speed_test': () => import('./tools/life/SpeedTest.vue'),
   'life/pomodoro_timer': () => import('./tools/life/PomodoroTimer.vue'),
   'life/decision_wheel': () => import('./tools/life/DecisionWheel.vue'),
+  'life/mbti_test': () => import('./tools/life/MbtiTest.vue'),
   'life/chinese_calendar': () => import('./tools/life/ChineseCalendar.vue'),
 }
 
