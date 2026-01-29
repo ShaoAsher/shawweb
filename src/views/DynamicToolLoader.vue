@@ -63,6 +63,10 @@ const toolRoutes = {
   'life/decision_wheel': () => import('./tools/life/DecisionWheel.vue'),
   'life/mbti_test': () => import('./tools/life/MbtiTest.vue'),
   'life/chinese_calendar': () => import('./tools/life/ChineseCalendar.vue'),
+
+  // Entertainment 娱乐工具
+  'entertainment/liars_dice': () => import('./tools/entertainment/LiarsDice.vue'),
+  'entertainment/truth_bottle': () => import('./tools/entertainment/TruthBottle.vue'),
 }
 
 async function loadComponent() {

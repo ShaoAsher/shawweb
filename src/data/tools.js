@@ -15,11 +15,34 @@ export const categories = {
   image: "图片工具",
   text: "文本工具",
   converter: "转换工具",
-  life: "生活工具"
+  life: "生活工具",
+  entertainment: "娱乐工具"
 }
 
 export const toolsData = {
   tools: [
+    {
+      id: "liars_dice",
+      icon: "🎲",
+      title: "大话骰子 (Liar's Dice)",
+      desc: "3D 模拟大话骰子游戏，支持摇骰子、开盅、重摇等操作，聚会娱乐必备。",
+      keywords: ["骰子", "大话骰", "liar's dice", "game", "游戏", "3d", "dice"],
+      href: "/tools/entertainment/liars_dice",
+      category: "entertainment",
+      rating: 5,
+      minUserMode: 'normal'
+    },
+    {
+      id: "truth_bottle",
+      icon: "🍾",
+      title: "3D 真心话转瓶",
+      desc: "经典的聚会游戏，旋转精致的 3D 瓶子决定谁是幸运儿，真实物理惯性。",
+      keywords: ["真心话", "大冒险", "转瓶子", "bottle", "spin", "party", "聚会"],
+      href: "/tools/entertainment/truth_bottle",
+      category: "entertainment",
+      rating: 5,
+      minUserMode: 'normal'
+    },
     {
       id: "keystore_generator",
       icon: "🔑",
@@ -28,7 +51,8 @@ export const toolsData = {
       keywords: ["android", "安卓", "签名", "keystore", "jks", "证书", "指纹", "公钥", "密钥"],
       href: "/tools/developer/keystore_generator",
       category: "dev",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "apk_analyzer",
@@ -38,7 +62,8 @@ export const toolsData = {
       keywords: ["apk", "应用", "包", "解析", "包名", "证书", "指纹", "信息"],
       href: "/tools/analyzer/apk_analyzer",
       category: "dev",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "api_debugger",
@@ -48,7 +73,8 @@ export const toolsData = {
       keywords: ["api", "调试", "请求", "websocket", "http", "wss", "接口", "测试"],
       href: "/tools/analyzer/api_debugger",
       category: "dev",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "json_formatter",
@@ -58,7 +84,8 @@ export const toolsData = {
       keywords: ["json", "格式化", "压缩", "验证", "预览", "语法高亮"],
       href: "/tools/formatter/json_formatter",
       category: "dev",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "json_to_model",
@@ -68,7 +95,8 @@ export const toolsData = {
       keywords: ["json", "model", "模型", "swift", "kotlin", "java", "dart", "php", "go", "vue", "代码生成"],
       href: "/tools/formatter/json_to_model",
       category: "dev",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "markdown",
@@ -78,7 +106,8 @@ export const toolsData = {
       keywords: ["markdown", "编辑器", "预览", "编译", "历史", "导入", "md", "文档"],
       href: "/tools/text/markdown",
       category: "text",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "device_preview",
@@ -88,7 +117,8 @@ export const toolsData = {
       keywords: ["device", "机型", "手机", "iphone", "android", "预览", "信息", "屏幕"],
       href: "/tools/developer/device_preview",
       category: "dev",
-      rating: 4
+      rating: 4,
+      minUserMode: 'code'
     },
     {
       id: "image_compressor",
@@ -98,7 +128,8 @@ export const toolsData = {
       keywords: ["image", "图片", "压缩", "compress", "png", "jpg", "jpeg", "优化"],
       href: "/tools/image/image_compressor",
       category: "image",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     },
     {
       id: "launch_image_generator",
@@ -108,7 +139,8 @@ export const toolsData = {
       keywords: ["launch", "启动", "启动图", "ios", "android", "splash", "logo"],
       href: "/tools/image/launch_image_generator",
       category: "image",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     },
     {
       id: "icon_factory",
@@ -118,7 +150,8 @@ export const toolsData = {
       keywords: ["icon", "图标", "工厂", "ios", "android", "尺寸", "生成"],
       href: "/tools/image/icon_factory",
       category: "image",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     },
     {
       id: "svg_converter",
@@ -128,7 +161,8 @@ export const toolsData = {
       keywords: ["svg", "png", "jpg", "jpeg", "转换", "位图", "矢量图"],
       href: "/tools/image/svg_converter",
       category: "image",
-      rating: 4
+      rating: 4,
+      minUserMode: 'normal'
     },
     {
       id: "text_image_generator",
@@ -138,7 +172,8 @@ export const toolsData = {
       keywords: ["text", "文字", "图片", "生成", "占位图", "标签"],
       href: "/tools/image/text_image_generator",
       category: "image",
-      rating: 4
+      rating: 4,
+      minUserMode: 'normal'
     },
     {
       id: "qrcode_generator",
@@ -148,7 +183,8 @@ export const toolsData = {
       keywords: ["qrcode", "二维码", "条形码", "barcode", "生成", "扫描"],
       href: "/tools/image/qrcode_generator",
       category: "image",
-      rating: 4
+      rating: 4,
+      minUserMode: 'normal'
     },
     {
       id: "color_converter",
@@ -158,7 +194,8 @@ export const toolsData = {
       keywords: ["color", "颜色", "rgb", "hex", "hsl", "转换", "色彩"],
       href: "/tools/image/color_converter",
       category: "image",
-      rating: 4
+      rating: 4,
+      minUserMode: 'normal'
     },
     {
       id: "string_encryptor",
@@ -168,7 +205,8 @@ export const toolsData = {
       keywords: ["string", "字符串", "加密", "解密", "base64", "md5", "sha", "aes", "编码"],
       href: "/tools/text/string_encryptor",
       category: "text",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "html_editor",
@@ -178,7 +216,8 @@ export const toolsData = {
       keywords: ["html", "富文本", "编辑器", "预览", "转义", "unescape", "wysiwyg", "html编辑"],
       href: "/tools/text/html_editor",
       category: "text",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "timestamp_converter",
@@ -188,7 +227,8 @@ export const toolsData = {
       keywords: ["timestamp", "时间戳", "时间", "日期", "转换", "datetime"],
       href: "/tools/converter/timestamp_converter",
       category: "converter",
-      rating: 4
+      rating: 4,
+      minUserMode: 'code'
     },
     {
       id: "string_generator",
@@ -198,7 +238,8 @@ export const toolsData = {
       keywords: ["generator", "生成器", "生成", "uuid", "mac", "ip", "邮箱", "银行卡"],
       href: "/tools/text/string_generator",
       category: "text",
-      rating: 3
+      rating: 3,
+      minUserMode: 'code'
     },
     {
       id: "unit_converter",
@@ -208,7 +249,8 @@ export const toolsData = {
       keywords: ["unit", "单位", "转换", "converter", "长度", "重量", "温度", "面积", "体积", "时间", "速度", "数据", "角度", "压力", "米", "千克", "摄氏度"],
       href: "/tools/converter/unit_converter",
       category: "converter",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "currency_converter",
@@ -218,7 +260,8 @@ export const toolsData = {
       keywords: ["currency", "汇率", "货币", "转换", "实时", "汇率查询", "人民币", "美元", "欧元", "汇率列表"],
       href: "/tools/converter/currency_converter",
       category: "converter",
-      rating: 5
+      rating: 5,
+      minUserMode: 'code'
     },
     {
       id: "ip_query",
@@ -228,7 +271,8 @@ export const toolsData = {
       keywords: ["ip", "ip地址", "归属地", "地理位置", "isp", "时区", "查询", "定位"],
       href: "/tools/life/ip_query",
       category: "life",
-      rating: 4
+      rating: 4,
+      minUserMode: 'normal'
     },
     {
       id: "speed_test",
@@ -238,7 +282,8 @@ export const toolsData = {
       keywords: ["网络", "测速", "speedtest", "网速", "延迟", "ping", "下载", "上传", "带宽"],
       href: "/tools/life/speed_test",
       category: "life",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     },
     {
       id: "pomodoro_timer",
@@ -248,7 +293,8 @@ export const toolsData = {
       keywords: ["番茄钟", "专注", "计时器", "pomodoro", "工作", "效率", "时间管理", "休息"],
       href: "/tools/life/pomodoro_timer",
       category: "life",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     },
     {
       id: "decision_wheel",
@@ -258,7 +304,8 @@ export const toolsData = {
       keywords: ["决定", "转盘", "选择", "随机", "decision", "wheel", "spinner", "抽签"],
       href: "/tools/life/decision_wheel",
       category: "life",
-      rating: 4
+      rating: 4,
+      minUserMode: 'normal'
     },
     {
       id: "mbti_test",
@@ -268,7 +315,8 @@ export const toolsData = {
       keywords: ["mbti", "性格", "测试", "心理", "人格", "分析", "16型人格"],
       href: "/tools/life/mbti_test",
       category: "life",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     },
     {
       id: "chinese_calendar",
@@ -278,7 +326,8 @@ export const toolsData = {
       keywords: ["日历", "农历", "节气", "节日", "宜忌", "历史上的今天", "传统", "农历日期"],
       href: "/tools/life/chinese_calendar",
       category: "life",
-      rating: 5
+      rating: 5,
+      minUserMode: 'normal'
     }
   ]
 }
