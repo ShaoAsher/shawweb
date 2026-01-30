@@ -44,6 +44,17 @@ export const toolsData = {
       minUserMode: 'normal'
     },
     {
+      id: "reaction_challenge",
+      icon: "🎯",
+      title: "3D 反应力训练",
+      desc: "专业级 FPS 练枪与反应力训练工具，包含网格射击、追踪训练、精准度挑战等多种模式。",
+      keywords: ["反应", "fps", "aim", "shoot", "challenge", "3d", "训练", "aimlab"],
+      href: "/tools/entertainment/reaction_challenge",
+      category: "entertainment",
+      rating: 5,
+      minUserMode: 'normal'
+    },
+    {
       id: "keystore_generator",
       icon: "🔑",
       title: "Android 签名文件生成工具",

@@ -67,6 +67,7 @@ const toolRoutes = {
   // Entertainment 娱乐工具
   'entertainment/liars_dice': () => import('./tools/entertainment/LiarsDice.vue'),
   'entertainment/truth_bottle': () => import('./tools/entertainment/TruthBottle.vue'),
+  'entertainment/reaction_challenge': () => import('./tools/entertainment/ReactionChallenge.vue'),
 }
 
 async function loadComponent() {
