@@ -158,6 +158,8 @@ let raycaster, mouse
 let targets = []
 let lastTargetTime = 0
 let gameTimer = null
+let boundaryX = 6
+let boundaryY = 4
 
 // 音频
 let audioCtx
@@ -225,12 +227,25 @@ const initScene = () => {
 
   raycaster = new THREE.Raycaster()
   mouse = new THREE.Vector2()
-
+// 事件监听
   container.value.addEventListener('mousedown', onMouseDown)
   container.value.addEventListener('mousemove', onMouseMove)
+  container.value.addEventListener('touchstart', onTouchStart, { passive: false })
+  container.value.addEventListener('touchmove', onTouchMove, { passive: false })
 
   animate()
   window.addEventListener('resize', onWindowResize)
+  updateBoundaries()
+}
+
+const updateBoundaries = () => {
+  if (!camera) return
+  const vFOV = THREE.MathUtils.degToRad(camera.fov)
+  const vH = 2 * Math.tan(vFOV / 2) * camera.position.z
+  const vW = vH * camera.aspect
+  const margin = 1.0 // 安全边距
+  boundaryY = Math.max(1, vH / 2 - margin)
+  boundaryX = Math.max(1, vW / 2 - margin)
 }
 
 const startGame = (modeId) => {
@@ -289,15 +304,20 @@ const spawnTarget = () => {
   // 位置逻辑
   let x, y
   if (currentMode.value === 'grid') {
-    // 3x3 网格位置
+    // 3x3 网格位置，动态调整间距以适应窄屏
+    const spacing = Math.min(3, boundaryX) 
+    
     const col = Math.floor(Math.random() * 3) - 1 // -1, 0, 1
     const row = Math.floor(Math.random() * 3) - 1
-    x = col * 3
-    y = row * 3
+    x = col * spacing
+    
+    // 如果垂直方向也受限
+    const vSpacing = Math.min(3, boundaryY)
+    y = row * vSpacing
   } else {
-    // 随机分布
-    x = (Math.random() - 0.5) * 12
-    y = (Math.random() - 0.5) * 8
+    // 随机分布，限制在安全视口内
+    x = (Math.random() - 0.5) * 2 * boundaryX
+    y = (Math.random() - 0.5) * 2 * boundaryY
   }
   
   mesh.position.set(x, y, 0)
@@ -333,6 +353,24 @@ const onMouseMove = (event) => {
   // 极微小的视角晃动模拟呼吸感
   camera.rotation.x = mouse.y * 0.02
   camera.rotation.y = -mouse.x * 0.02
+}
+
+const onTouchStart = (event) => {
+  event.preventDefault()
+  if (gameState.value !== 'playing') return
+  
+  const touch = event.touches[0]
+  const rect = container.value.getBoundingClientRect()
+  mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1
+  mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1
+  
+  // 触发射击
+  onMouseDown()
+}
+
+const onTouchMove = (event) => {
+  event.preventDefault() // 防止滚动
+  // 移动逻辑（可选，目前主要是点击）
 }
 
 const onMouseDown = () => {
@@ -406,8 +444,8 @@ const animate = () => {
       if (t.velocity) {
         t.mesh.position.add(t.velocity)
         // 边界反弹
-        if (t.mesh.position.x > 6 || t.mesh.position.x < -6) t.velocity.x *= -1
-        if (t.mesh.position.y > 4 || t.mesh.position.y < -4) t.velocity.y *= -1
+        if (t.mesh.position.x > boundaryX || t.mesh.position.x < -boundaryX) t.velocity.x *= -1
+        if (t.mesh.position.y > boundaryY || t.mesh.position.y < -boundaryY) t.velocity.y *= -1
       }
     })
     // 追踪模式保持目标数量
@@ -451,6 +489,7 @@ onUnmounted(() => {
   overflow: hidden;
   cursor: crosshair;
   user-select: none;
+  touch-action: none; /* 禁止触摸默认行为 */
 }
 
 #game-container {
@@ -497,6 +536,39 @@ onUnmounted(() => {
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   max-width: 800px;
+}
+
+@media (max-width: 768px) {
+  .mode-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  
+  .mode-card {
+    width: 100%;
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .top-bar {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .stat-box {
+    padding: 4px 12px;
+  }
+  
+  .stat-box .value {
+    font-size: 1.2rem;
+  }
 }
 
 .mode-card {
