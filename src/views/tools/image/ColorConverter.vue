@@ -6,9 +6,9 @@
   >
     <div class="form-section">
       <h2>颜色输入</h2>
-      <div class="controls-grid">
-        <div class="form-group">
-          <label for="hexInput">HEX 颜色值</label>
+      <div class="input-row">
+        <div class="input-col input-col-hex">
+          <label for="hexInput">HEX</label>
           <input
             v-model="hexInput"
             type="text"
@@ -16,44 +16,43 @@
             placeholder="#FF5733 或 FF5733"
             @input="handleHexInput"
           />
+          <span v-if="hexError" class="input-error">{{ hexError }}</span>
         </div>
-        <div class="form-group">
-          <label for="rInput">R (0-255)</label>
-          <input
-            v-model.number="rInput"
-            type="number"
-            id="rInput"
-            min="0"
-            max="255"
-            @input="handleRgbInput"
-          />
-        </div>
-        <div class="form-group">
-          <label for="gInput">G (0-255)</label>
-          <input
-            v-model.number="gInput"
-            type="number"
-            id="gInput"
-            min="0"
-            max="255"
-            @input="handleRgbInput"
-          />
-        </div>
-        <div class="form-group">
-          <label for="bInput">B (0-255)</label>
-          <input
-            v-model.number="bInput"
-            type="number"
-            id="bInput"
-            min="0"
-            max="255"
-            @input="handleRgbInput"
-          />
+        <div class="input-col input-col-rgb">
+          <label>RGB</label>
+          <div class="rgb-inputs">
+            <input
+              v-model.number="rInput"
+              type="number"
+              id="rInput"
+              min="0"
+              max="255"
+              placeholder="R"
+              @input="handleRgbInput"
+            />
+            <input
+              v-model.number="gInput"
+              type="number"
+              id="gInput"
+              min="0"
+              max="255"
+              placeholder="G"
+              @input="handleRgbInput"
+            />
+            <input
+              v-model.number="bInput"
+              type="number"
+              id="bInput"
+              min="0"
+              max="255"
+              placeholder="B"
+              @input="handleRgbInput"
+            />
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <label>颜色预览</label>
-        <div class="color-preview" :style="{ backgroundColor: previewColor }"></div>
+      <div class="preview-row">
+        <div class="color-preview-card" :style="{ backgroundColor: previewColor }"></div>
       </div>
       <ButtonGroup style="margin-top: 15px;">
         <AppButton variant="primary" icon="🔄" @click="convert">转换</AppButton>
@@ -112,6 +111,9 @@ const gInput = ref(126)
 const bInput = ref(234)
 const expandedCard = ref('')
 const result = ref(null)
+const hexError = ref('')
+/** 最后编辑来源：'hex' | 'rgb'，用于互转时以哪边为准，避免互相覆盖 */
+const lastEditedSource = ref('hex')
 
 const presetColorsGroups = [
   {
@@ -226,13 +228,27 @@ const previewColor = computed(() => {
   return '#f0f0f0'
 })
 
-function hexToRgb(hex) {
-  hex = hex.replace('#', '')
-  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('')
-  const r = parseInt(hex.substr(0, 2), 16)
-  const g = parseInt(hex.substr(2, 2), 16)
-  const b = parseInt(hex.substr(4, 2), 16)
+/** 校验并解析 HEX，支持 #RGB / #RRGGBB / RGB / RRGGBB，无效返回 null */
+function parseHex(hex) {
+  if (!hex || typeof hex !== 'string') return null
+  const raw = hex.replace(/^#/, '').trim()
+  if (!/^[0-9A-Fa-f]+$/.test(raw)) return null
+  let normalized = raw
+  if (normalized.length === 3) {
+    normalized = normalized.split('').map(c => c + c).join('')
+  }
+  if (normalized.length !== 6) return null
+  const r = parseInt(normalized.slice(0, 2), 16)
+  const g = parseInt(normalized.slice(2, 4), 16)
+  const b = parseInt(normalized.slice(4, 6), 16)
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return null
   return { r, g, b }
+}
+
+function hexToRgb(hex) {
+  const parsed = parseHex(hex)
+  if (!parsed) throw new Error('HEX 格式错误，需要 3 或 6 位十六进制（如 #F00 或 #FF5733）')
+  return parsed
 }
 
 function rgbToHex(r, g, b) {
@@ -282,42 +298,58 @@ function updateResult(r, g, b) {
   }
 }
 
+/** 从输入框读取 0–255 整数，空或非法为 0 */
+function readRgbChannel(val) {
+  const n = parseInt(String(val), 10)
+  if (Number.isNaN(n)) return 0
+  return Math.max(0, Math.min(255, n))
+}
+
 function convert() {
+  const hexTrim = hexInput.value.trim()
   let r, g, b
 
-  if (hexInput.value.trim()) {
-    try {
-      const rgb = hexToRgb(hexInput.value.trim())
-      r = rgb.r
-      g = rgb.g
-      b = rgb.b
+  const useHex = lastEditedSource.value === 'hex' && hexTrim
+  if (useHex) {
+    const parsed = parseHex(hexTrim)
+    if (parsed) {
+      hexError.value = ''
+      r = parsed.r
+      g = parsed.g
+      b = parsed.b
       rInput.value = r
       gInput.value = g
       bInput.value = b
-    } catch (e) {
-      alert('HEX格式错误')
+      updateResult(r, g, b)
+    } else {
+      hexError.value = 'HEX 格式错误，需要 3 或 6 位十六进制（如 #F00 或 #FF5733）'
       return
     }
   } else {
-    r = Math.max(0, Math.min(255, rInput.value || 0))
-    g = Math.max(0, Math.min(255, gInput.value || 0))
-    b = Math.max(0, Math.min(255, bInput.value || 0))
+    hexError.value = ''
+    r = readRgbChannel(rInput.value)
+    g = readRgbChannel(gInput.value)
+    b = readRgbChannel(bInput.value)
     rInput.value = r
     gInput.value = g
     bInput.value = b
     hexInput.value = rgbToHex(r, g, b)
+    updateResult(r, g, b)
   }
-
-  updateResult(r, g, b)
 }
 
 function handleHexInput() {
+  lastEditedSource.value = 'hex'
   if (hexInput.value.trim()) {
     convert()
+  } else {
+    hexError.value = ''
+    lastEditedSource.value = 'rgb'
   }
 }
 
 function handleRgbInput() {
+  lastEditedSource.value = 'rgb'
   convert()
 }
 
@@ -338,6 +370,7 @@ function clear() {
   bInput.value = 0
   result.value = null
   expandedCard.value = ''
+  hexError.value = ''
 }
 
 // 初始化
@@ -360,17 +393,19 @@ convert()
   padding-bottom: var(--spacing-sm);
 }
 
-.controls-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
 }
 
-.form-group {
-  margin-bottom: 18px;
+.input-col {
+  flex: 1;
+  min-width: 180px;
 }
 
-.form-group label {
+.input-col label {
   display: block;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
@@ -378,7 +413,7 @@ convert()
   font-size: var(--font-size-small);
 }
 
-.form-group input {
+.input-col input {
   width: 100%;
   padding: var(--spacing-sm);
   border: 2px solid var(--color-border);
@@ -388,20 +423,41 @@ convert()
   color: var(--color-text);
 }
 
-.form-group input:focus {
+.input-col input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px var(--color-shadow-primary);
 }
 
-.color-preview {
+.rgb-inputs {
+  display: flex;
+  gap: 8px;
+}
+
+.rgb-inputs input {
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-row {
+  margin-top: 14px;
+}
+
+.color-preview-card {
   width: 100%;
-  height: 120px;
+  max-width: 200px;
+  height: 56px;
   border-radius: var(--radius-sm);
   border: 2px solid var(--color-border);
-  margin-top: 10px;
   background: var(--color-surface-alt);
   transition: background-color 0.3s;
+}
+
+.input-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-error, #e53935);
 }
 
 .btn {

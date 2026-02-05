@@ -132,6 +132,9 @@
                   <span class="tool-category" :class="getCategoryClass(tool.category)">
                     {{ getCategoryName(tool.category) }}
                   </span>
+                  <span v-if="tool.status === 'migrating'" class="tool-status status-migrating">
+                    🚧 迁移中
+                  </span>
                 </div>
               </div>
               <div class="tool-desc">{{ tool.desc }}</div>
@@ -934,5 +937,20 @@ onUnmounted(() => {
 .category-entertainment {
   background: linear-gradient(135deg, #f472b620 0%, #ec489920 100%);
   color: #ec4899;
+}
+
+.tool-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.status-migrating {
+  background: linear-gradient(135deg, #fbbf2420 0%, #f59e0b20 100%);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 </style>

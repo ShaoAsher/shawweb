@@ -143,6 +143,17 @@ export const toolsData = {
       minUserMode: 'normal'
     },
     {
+      id: "image_tinter",
+      icon: "🎨",
+      title: "图片/图标变色工具",
+      desc: "主要对纯色图标或图片进行着色（TintColor），支持自定义颜色与实时预览导出。",
+      keywords: ["image", "icon", "tint", "color", "变色", "着色", "图标", "图片"],
+      href: "/tools/image/image_tinter",
+      category: "image",
+      rating: 5,
+      minUserMode: 'normal'
+    },
+    {
       id: "launch_image_generator",
       icon: "🚀",
       title: "启动图生成工具",

@@ -17,6 +17,7 @@ const toolRoutes = {
   'image/qrcode_generator': () => import('../views/tools/image/QrcodeGenerator.vue'),
   'image/text_image_generator': () => import('../views/tools/image/TextImageGenerator.vue'),
   'image/image_compressor': () => import('../views/tools/image/ImageCompressor.vue'),
+  'image/image_tinter': () => import('../views/tools/image/ImageTinter.vue'),
   'image/svg_converter': () => import('../views/tools/image/SvgConverter.vue'),
   'image/icon_factory': () => import('../views/tools/image/IconFactory.vue'),
   'image/launch_image_generator': () => import('../views/tools/image/LaunchImageGenerator.vue'),
