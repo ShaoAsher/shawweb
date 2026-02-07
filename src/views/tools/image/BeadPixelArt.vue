@@ -65,16 +65,9 @@
 
     <div v-if="pixelData" class="form-section">
       <h2>拼豆图预览</h2>
-      <div class="preview-wrap">
-        <div
-          class="bead-grid"
-          :style="gridStyle"
-        >
-          <div
-            v-for="(row, i) in pixelData"
-            :key="i"
-            class="bead-row"
-          >
+      <div class="preview-trigger" @click="openFullscreenPreview">
+        <div class="bead-grid thumb" :style="gridStyle">
+          <div v-for="(row, i) in pixelData" :key="i" class="bead-row">
             <div
               v-for="(cell, j) in row"
               :key="j"
@@ -83,19 +76,72 @@
             />
           </div>
         </div>
+        <span class="preview-tip">点击全屏预览 · 可缩放</span>
       </div>
       <p class="meta">共 {{ pixelData.length }} × {{ pixelData[0]?.length || 0 }} 格</p>
       <ButtonGroup style="margin-top: 12px;">
+        <AppButton variant="primary" icon="🔍" @click="openFullscreenPreview">
+          全屏预览
+        </AppButton>
         <AppButton variant="primary" icon="⬇️" @click="downloadPng">
           导出 PNG
         </AppButton>
       </ButtonGroup>
     </div>
+
+    <!-- 全屏预览弹窗：正方形居中、可缩放，适配 H5 -->
+    <Teleport to="body">
+      <Transition name="preview-fade">
+        <div
+          v-if="fullscreenPreview"
+          class="preview-fullscreen"
+          @click.self="closeFullscreenPreview"
+        >
+          <div class="preview-fullscreen-square" ref="previewSquareRef">
+            <div
+              class="preview-fullscreen-inner"
+              :style="fullscreenGridWrapStyle"
+              @touchstart="onPreviewTouchStart"
+              @touchmove.prevent="onPreviewTouchMove"
+              @touchend="onPreviewTouchEnd"
+              @wheel.prevent="onPreviewWheel"
+            >
+              <div
+                class="bead-grid fullscreen-grid"
+                :style="fullscreenGridStyle"
+              >
+                <div v-for="(row, i) in pixelData" :key="i" class="bead-row">
+                  <div
+                    v-for="(cell, j) in row"
+                    :key="j"
+                    class="bead-cell"
+                    :style="{ backgroundColor: cell }"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="preview-zoom-controls">
+              <button type="button" class="zoom-btn" @click="zoomOut" aria-label="缩小">−</button>
+              <span class="zoom-value">{{ Math.round(zoomLevel * 100) }}%</span>
+              <button type="button" class="zoom-btn" @click="zoomIn" aria-label="放大">+</button>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="preview-close"
+            aria-label="关闭"
+            @click="closeFullscreenPreview"
+          >
+            ×
+          </button>
+        </div>
+      </Transition>
+    </Teleport>
   </ToolLayout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import ToolLayout from '@/components/ToolLayout.vue'
 import ImageUploader from '@/components/ImageUploader.vue'
 import AppButton from '@/components/AppButton.vue'
@@ -108,6 +154,16 @@ const beadSize = ref(12)
 const usePalette = ref(true)
 const generating = ref(false)
 const pixelData = ref(null)
+
+const fullscreenPreview = ref(false)
+const previewSquareRef = ref(null)
+const zoomLevel = ref(1)
+const scaleToFit = ref(1)
+const MODAL_CELL_PX = 8
+const MIN_ZOOM = 0.25
+const MAX_ZOOM = 4
+const touchStartDist = ref(0)
+const touchStartZoom = ref(1)
 
 /** 常见拼豆色板（HEX） */
 const BEAD_PALETTE = [
@@ -122,6 +178,81 @@ const gridStyle = computed(() => ({
   '--cols': pixelData.value?.[0]?.length || 0,
   '--rows': pixelData.value?.length || 0
 }))
+
+const cols = computed(() => pixelData.value?.[0]?.length || 0)
+const rows = computed(() => pixelData.value?.length || 0)
+
+const fullscreenGridStyle = computed(() => ({
+  '--cell-size': `${MODAL_CELL_PX}px`,
+  '--cols': cols.value,
+  '--rows': rows.value
+}))
+
+const fullscreenGridWrapStyle = computed(() => {
+  const scale = scaleToFit.value * zoomLevel.value
+  return {
+    transform: `scale(${scale})`,
+    width: `${cols.value * MODAL_CELL_PX}px`,
+    height: `${rows.value * MODAL_CELL_PX}px`
+  }
+})
+
+function openFullscreenPreview() {
+  if (!pixelData.value?.length) return
+  fullscreenPreview.value = true
+  zoomLevel.value = 1
+  nextTick(() => {
+    const el = previewSquareRef.value
+    if (!el) return
+    const size = Math.min(el.clientWidth, el.clientHeight)
+    const gridW = cols.value * MODAL_CELL_PX
+    const gridH = rows.value * MODAL_CELL_PX
+    scaleToFit.value = Math.min(1, size / gridW, size / gridH)
+  })
+}
+
+function closeFullscreenPreview() {
+  fullscreenPreview.value = false
+}
+
+function zoomIn() {
+  zoomLevel.value = Math.min(MAX_ZOOM, zoomLevel.value + 0.25)
+}
+
+function zoomOut() {
+  zoomLevel.value = Math.max(MIN_ZOOM, zoomLevel.value - 0.25)
+}
+
+function getTouchDistance(e) {
+  if (e.touches.length < 2) return 0
+  const a = e.touches[0]
+  const b = e.touches[1]
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY)
+}
+
+function onPreviewTouchStart(e) {
+  if (e.touches.length === 2) {
+    touchStartDist.value = getTouchDistance(e)
+    touchStartZoom.value = zoomLevel.value
+  }
+}
+
+function onPreviewTouchMove(e) {
+  if (e.touches.length === 2 && touchStartDist.value > 0) {
+    const d = getTouchDistance(e)
+    const ratio = d / touchStartDist.value
+    zoomLevel.value = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, touchStartZoom.value * ratio))
+  }
+}
+
+function onPreviewTouchEnd() {
+  touchStartDist.value = 0
+}
+
+function onPreviewWheel(e) {
+  if (e.deltaY < 0) zoomIn()
+  else zoomOut()
+}
 
 function hexToRgb(hex) {
   const n = parseInt(hex.slice(1), 16)
@@ -316,13 +447,29 @@ function downloadPng() {
   color: var(--color-text-secondary);
 }
 
-.preview-wrap {
-  overflow: auto;
-  max-width: 100%;
+.preview-trigger {
   padding: 12px;
   background: var(--color-surface);
   border-radius: var(--radius-sm);
   border: 2px solid var(--color-border);
+  cursor: pointer;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.preview-trigger .bead-grid.thumb {
+  --cell-size: 6px;
+  max-width: 100%;
+  max-height: 180px;
+  overflow: hidden;
+  display: block;
+}
+
+.preview-tip {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .bead-grid {
@@ -348,5 +495,127 @@ function downloadPng() {
   margin-top: 10px;
   font-size: var(--font-size-small);
   color: var(--color-text-secondary);
+}
+
+/* 全屏预览弹窗：适配 H5，正方形居中 */
+.preview-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.preview-fullscreen-square {
+  width: 90vmin;
+  height: 90vmin;
+  max-width: 90vmin;
+  max-height: 90vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.preview-fullscreen-inner {
+  flex-shrink: 0;
+  transform-origin: center center;
+  touch-action: none;
+}
+
+.preview-fullscreen-inner .fullscreen-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell-size));
+  grid-template-rows: repeat(var(--rows), var(--cell-size));
+  gap: 0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.preview-fullscreen-inner .bead-cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.preview-zoom-controls {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  z-index: 10000;
+}
+
+.zoom-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zoom-btn:active {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.zoom-value {
+  min-width: 52px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.preview-close {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 12px);
+  right: calc(env(safe-area-inset-right) + 12px);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.preview-close:active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.preview-fade-enter-active,
+.preview-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.preview-fade-enter-from,
+.preview-fade-leave-to {
+  opacity: 0;
 }
 </style>
