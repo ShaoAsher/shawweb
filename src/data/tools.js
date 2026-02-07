@@ -220,6 +220,17 @@ export const toolsData = {
       minUserMode: 'normal'
     },
     {
+      id: "bead_pixel_art",
+      icon: "🧩",
+      title: "拼豆像素图工具",
+      desc: "上传图片生成拼豆/像素风格图，可限制色板、调节像素数量并导出 PNG。",
+      keywords: ["拼豆", "像素", "pixel", "perler", "bead", "图片", "生成"],
+      href: "/tools/image/bead_pixel_art",
+      category: "image",
+      rating: 4,
+      minUserMode: 'normal'
+    },
+    {
       id: "string_encryptor",
       icon: "🔐",
       title: "字符串加解密工具",

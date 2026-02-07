@@ -38,6 +38,7 @@ const toolRoutes = {
   'image/svg_converter': () => import('./tools/image/SvgConverter.vue'),
   'image/icon_factory': () => import('./tools/image/IconFactory.vue'),
   'image/launch_image_generator': () => import('./tools/image/LaunchImageGenerator.vue'),
+  'image/bead_pixel_art': () => import('./tools/image/BeadPixelArt.vue'),
   
   // Text 文本工具
   'text/string_encryptor': () => import('./tools/text/StringEncryptor.vue'),

@@ -21,6 +21,7 @@ const toolRoutes = {
   'image/svg_converter': () => import('../views/tools/image/SvgConverter.vue'),
   'image/icon_factory': () => import('../views/tools/image/IconFactory.vue'),
   'image/launch_image_generator': () => import('../views/tools/image/LaunchImageGenerator.vue'),
+  'image/bead_pixel_art': () => import('../views/tools/image/BeadPixelArt.vue'),
 
   // Text 文本工具
   'text/string_encryptor': () => import('../views/tools/text/StringEncryptor.vue'),
