@@ -798,5 +798,8 @@ export function computeSbtiResult(answers) {
 export function resolveTypeImageUrl(code) {
   const rel = TYPE_IMAGES[code]
   if (!rel) return null
-  return new URL(rel.replace(/^\./, ''), 'https://sbti.unun.dev/').href
+  const filename = rel.replace(/^\.\/image\//, '')
+  const base = import.meta.env.BASE_URL
+  const prefix = base.endsWith('/') ? base : `${base}/`
+  return `${prefix}sbti-posters/${filename}`
 }
