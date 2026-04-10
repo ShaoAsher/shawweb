@@ -352,6 +352,17 @@ export const toolsData = {
       minUserMode: 'normal'
     },
     {
+      id: "sbti_test",
+      icon: "🎭",
+      title: "SBTI 人格测试",
+      desc: "娱乐向十五维度人格测试，含「饮酒」分支题与多种人格海报。仅供娱乐，请勿替代专业心理评估。",
+      keywords: ["sbti", "人格", "测试", "性格", "娱乐", "十五维度", "拿捏者"],
+      href: "/tools/life/sbti_test",
+      category: "life",
+      rating: 5,
+      minUserMode: 'normal'
+    },
+    {
       id: "chinese_calendar",
       icon: "📅",
       title: "中国日历",

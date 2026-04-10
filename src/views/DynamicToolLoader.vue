@@ -64,6 +64,7 @@ const toolRoutes = {
   'life/pomodoro_timer': () => import('./tools/life/PomodoroTimer.vue'),
   'life/decision_wheel': () => import('./tools/life/DecisionWheel.vue'),
   'life/mbti_test': () => import('./tools/life/MbtiTest.vue'),
+  'life/sbti_test': () => import('./tools/life/SbtiTest.vue'),
   'life/chinese_calendar': () => import('./tools/life/ChineseCalendar.vue'),
 
   // Entertainment 娱乐工具
